@@ -658,11 +658,6 @@ input:focus-visible {
   background: #1a0707;
 }
 
-#openMalemaZilleImage > img {
-  width: 299.462px;
-  height: 197px;
-}
-
 .msn-card:hover .msn-card-media img {
   transform: scale(1.03);
 }

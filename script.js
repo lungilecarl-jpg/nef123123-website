@@ -203,10 +203,9 @@ const articleCatalog = {
     dot: 'N',
     category: 'NEF123123 NEWS | SOUTH AFRICA',
     title: 'Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies',
-    img: '/assets/aistudio/file_000000003a2082088105c11d1db7f84e_d2d4105b.png',
-    alt: 'Malema challenges Helen Zille over court venue outside the High Court with EFF and DA emblems',
-    imgFit: 'contain',
-    imgPosition: 'center',
+    img: '/assets/aistudio/890413003_1578851484289238_3775189520668897129_n_1be87c8f.jpg',
+    alt: 'EFF leader Julius Malema smiling in a red beret while speaking with journalists',
+    imgPosition: 'center 15%',
     source: 'NEF123123 News | South Africa',
     paragraphs: [
       "Julius Malema questions Helen Zille's decision to oppose proceedings in the Western Cape High Court, insisting that the legal dispute should be heard in Johannesburg, where the alleged conduct took place.",
