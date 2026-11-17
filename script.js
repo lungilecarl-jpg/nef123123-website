@@ -53,12 +53,15 @@ document.getElementById('joinForm')?.addEventListener('submit', (event) => {
   message.classList.add('form-success');
 });
 
+const heroAmazonImg =
+  document.getElementById('heroSlideImg')?.getAttribute('src') || '/assets/aistudio/image_a0935a15.png';
+
 // MSN-style Hero Carousel Switcher across existing NEF perspectives
 const heroSlides = [
   {
     href: 'https://link.amazon/B0iCzskXw',
     external: true,
-    img: document.getElementById('heroSlideImg')?.getAttribute('src') || '/assets/aistudio/image_a0935a15.png',
+    img: heroAmazonImg,
     alt: 'Amazon affiliate storefront sign',
     label: 'AMAZON AFFILIATE',
     category: 'FEATURED SELECTION',
