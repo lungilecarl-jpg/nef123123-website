@@ -1005,6 +1005,10 @@ input:focus-visible {
   transition: transform 0.5s ease;
 }
 
+.msn-hero-card img.hero-img-top {
+  object-position: center top;
+}
+
 .msn-hero-card:hover img {
   transform: scale(1.03);
 }

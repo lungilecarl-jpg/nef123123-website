@@ -53,15 +53,28 @@ document.getElementById('joinForm')?.addEventListener('submit', (event) => {
   message.classList.add('form-success');
 });
 
-const heroAmazonImg =
-  document.getElementById('heroSlideImg')?.getAttribute('src') || '/assets/aistudio/image_a0935a15.png';
+const heroAmazonImg = '/assets/aistudio/image_a0935a15.png';
 
 // MSN-style Hero Carousel Switcher across existing NEF perspectives
 const heroSlides = [
   {
+    href: 'https://link.amazon/B0h9v6R7P',
+    external: true,
+    img: '/assets/aistudio/Screenshot_2026-11-17_220544_77bf0c7a.png',
+    imgPosition: 'center top',
+    alt: "Amazon Black Friday deals drop Thursday featuring Skullcandy, UGG, De'Longhi, Cuisinart, and category discounts",
+    label: 'AMAZON BLACK FRIDAY',
+    category: 'BLACK FRIDAY DEALS DROP THURSDAY',
+    title: 'Amazon Early Black Friday Deals Are Live',
+    desc: "Amazon is featuring up to 65% off devices, 50% off Outlet, 40% off toys, and 30% off own brands—plus $120 off Skullcandy headphones, De'Longhi Espresso ($149.95), Cuisinart Air Fryer ($99.95), and UGG blankets ($72.99) with Prime free shipping.",
+    cta: 'Shop Black Friday on Amazon',
+    ariaLabel: 'Shop Amazon Black Friday deals on Amazon',
+  },
+  {
     href: 'https://link.amazon/B0iCzskXw',
     external: true,
     img: heroAmazonImg,
+    imgPosition: 'center 72%',
     alt: 'Amazon affiliate storefront sign',
     label: 'AMAZON AFFILIATE',
     category: 'FEATURED SELECTION',
@@ -73,6 +86,7 @@ const heroSlides = [
   {
     href: '#economy',
     img: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1100&q=85',
+    imgPosition: 'center 72%',
     alt: 'Industrial production facility',
     label: 'BEYOND EXTRACTION',
     category: 'WEALTH SOVEREIGNTY',
@@ -83,6 +97,7 @@ const heroSlides = [
   {
     href: '#movement',
     img: regeneratedImg,
+    imgPosition: 'center 72%',
     alt: 'Economic freedom movement leadership and supporters waving',
     label: 'OUR MOVEMENT',
     category: 'NAVIGANT ECONOMIC FREEDOM',
@@ -116,6 +131,7 @@ function renderSlide(index) {
   heroLink.setAttribute('aria-label', slide.ariaLabel || slide.title);
   heroImg.setAttribute('src', slide.img);
   heroImg.setAttribute('alt', slide.alt);
+  heroImg.classList.toggle('hero-img-top', slide.imgPosition === 'center top');
   heroLabel.textContent = slide.label;
   heroCategory.textContent = slide.category;
   heroTitle.textContent = slide.title;
