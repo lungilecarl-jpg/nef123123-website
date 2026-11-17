@@ -659,7 +659,8 @@ input:focus-visible {
 }
 
 #openMalemaZilleImage > img {
-  height: 229px;
+  width: 299.462px;
+  height: 197px;
 }
 
 .msn-card:hover .msn-card-media img {
