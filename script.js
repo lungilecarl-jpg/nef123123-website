@@ -6,6 +6,10 @@ const coalitionImg =
   document.querySelector('#openCoalitionImage img')?.getAttribute('src') ||
   './src/assets/images/assets/aistudio/image_e921a8c9.png';
 
+const malemaZilleImg =
+  document.querySelector('#openMalemaZilleImage img')?.getAttribute('src') ||
+  './src/assets/images/regenerated_image_1794932529148.jpg';
+
 const today = new Date();
 const todayEl = document.getElementById('today');
 if (todayEl) {
@@ -203,7 +207,7 @@ const articleCatalog = {
     dot: 'N',
     category: 'NEF123123 NEWS | SOUTH AFRICA',
     title: 'Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies',
-    img: '/assets/aistudio/890413003_1578851484289238_3775189520668897129_n_1be87c8f.jpg',
+    img: malemaZilleImg,
     alt: 'EFF leader Julius Malema smiling in a red beret while speaking with journalists',
     imgPosition: 'center 15%',
     source: 'NEF123123 News | South Africa',
