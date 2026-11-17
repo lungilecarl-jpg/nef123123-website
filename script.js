@@ -199,6 +199,25 @@ searchForm?.addEventListener('submit', (event) => {
 
 // In-page article reader modal for Latest News story bodies
 const articleCatalog = {
+  malemaZille: {
+    dot: 'N',
+    category: 'NEF123123 NEWS | SOUTH AFRICA',
+    title: 'Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies',
+    img: '/assets/aistudio/file_000000003a2082088105c11d1db7f84e_d2d4105b.png',
+    alt: 'Malema challenges Helen Zille over court venue outside the High Court with EFF and DA emblems',
+    imgFit: 'contain',
+    imgPosition: 'center',
+    source: 'NEF123123 News | South Africa',
+    paragraphs: [
+      "Julius Malema questions Helen Zille's decision to oppose proceedings in the Western Cape High Court, insisting that the legal dispute should be heard in Johannesburg, where the alleged conduct took place.",
+      "Economic Freedom Fighters (EFF) leader Julius Sello Malema has publicly questioned Helen Zille's decision to oppose a legal application brought against her in the Western Cape Division of the High Court in Cape Town.",
+      'In a statement published on his official X account, Malema indicated that he and the EFF intend to pursue the matter in Johannesburg, arguing that the alleged conduct at the centre of the dispute took place there.',
+      'Malema questioned why Zille appears determined to have the proceedings heard in Cape Town rather than Johannesburg.',
+      '"We are suing her in Johannesburg, but she insists that the case be heard in Cape Town. What does she know about that court that gives her such confidence?" Malema stated.',
+      'He further argued that Zille made the remarks in Johannesburg and is also a mayoral candidate in the city, questioning why she would prefer the matter to be heard outside Johannesburg.',
+      'Malema maintained that the applicants would fight to have the case heard where the alleged conduct took place.',
+    ],
+  },
   coalition: {
     dot: 'N',
     category: 'SOUTH AFRICA · POLITICS',
@@ -336,11 +355,13 @@ function openArticleReader(articleId, triggerEl) {
       articleModalMedia.hidden = false;
       articleModalImg.setAttribute('src', article.img);
       articleModalImg.setAttribute('alt', article.alt);
+      articleModalImg.style.objectFit = article.imgFit || '';
       articleModalImg.style.objectPosition = article.imgPosition || 'center';
     } else {
       articleModalMedia.hidden = true;
       articleModalImg.removeAttribute('src');
       articleModalImg.setAttribute('alt', '');
+      articleModalImg.style.objectFit = '';
     }
   }
   if (articleModalText) {
