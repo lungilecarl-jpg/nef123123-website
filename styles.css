@@ -734,6 +734,37 @@ input:focus-visible {
   color: var(--gold-light);
 }
 
+.msn-card-featured-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(280px, 420px) 1fr;
+  align-items: stretch;
+}
+
+.msn-card-featured-row .msn-card-media {
+  height: 100%;
+  min-height: 228px;
+}
+
+.msn-card-featured-row .story-body {
+  padding: 20px 24px;
+}
+
+.msn-card-featured-row .story-body h3 {
+  font-size: 20px;
+}
+
+.msn-card-featured-row .story-body p {
+  display: block;
+  overflow: visible;
+  font-size: 13.5px;
+}
+
+.msn-card-featured-row .story-card-actions {
+  justify-content: flex-start;
+  gap: 18px;
+}
+
 .story-body {
   padding: 14px 16px 16px;
   display: flex;
@@ -3602,6 +3633,24 @@ footer {
 
   .msn-card {
     min-height: 0;
+  }
+
+  .msn-card-featured-row {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .msn-card-featured-row .msn-card-media {
+    height: 186px;
+    min-height: 0;
+  }
+
+  .msn-card-featured-row .story-body {
+    padding: 14px 16px 16px;
+  }
+
+  .msn-card-featured-row .story-body h3 {
+    font-size: 17px;
   }
 
   .msn-hero-card {

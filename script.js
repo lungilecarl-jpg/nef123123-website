@@ -18,6 +18,10 @@ const faoSchwarzImg =
   document.getElementById('heroSlideFaoImgRef')?.getAttribute('href') ||
   './src/assets/images/fao-schwarz-store-b0d0vnini.jpg';
 
+const sihleLonziImg =
+  document.querySelector('#openSihleLonziImage img')?.getAttribute('src') ||
+  './src/assets/images/eff-sihle-lonzi-parliament-youth.jpg';
+
 const today = new Date();
 const todayEl = document.getElementById('today');
 if (todayEl) {
@@ -381,6 +385,22 @@ const articleCatalog = {
       'Hon. Maotwe confirms that key state institutions—including National Treasury, the Presidency, and the Department of Public Service and Administration (DPSA)—have all expressed support for insourcing, noting that the remaining outstanding matters relate strictly to the technicalities of implementation.',
       'Addressing workers and the broader public, she stresses that the Insourcing Bill must now advance to the desirability stage without any further delays.',
       'She warns that workers and ordinary citizens cannot be expected to wait indefinitely for the legislation to be enacted into law, calling for decisive parliamentary momentum to end precarious outsourcing.',
+    ],
+  },
+  sihleLonzi: {
+    dot: 'N',
+    category: 'NEF123123 NEWS | PARLIAMENT',
+    title: 'EFF MP Hon. Sihle Lonzi Invites Students & Young Professionals Into Parliament Weekly',
+    img: sihleLonziImg,
+    alt: 'EFF Member of Parliament Hon. Sihle Lonzi speaking outside Parliament about inviting students and young professionals to observe Portfolio Committee proceedings',
+    imgPosition: 'center 12%',
+    source: 'Economic Freedom Fighters · Parliament Video',
+    externalUrl: 'https://www.facebook.com/share/v/1KMb6CGar7/',
+    externalLabel: 'Watch Video on Facebook →',
+    paragraphs: [
+      'Standing on the steps of Parliament, Economic Freedom Fighters (EFF) Member of Parliament Hon. Sihle Lonzi announced a weekly initiative welcoming students and young professionals from across South Africa to attend and observe Parliamentary Portfolio Committee proceedings.',
+      'Hon. Lonzi explained that the programme is designed to give young citizens firsthand exposure to how Parliament operates, how oversight of government departments takes place, and how legislation and public budgets are interrogated.',
+      'He emphasised that youth must be brought closer to Parliament and given meaningful opportunities to participate in decisions shaping their future, rather than having their future discussed behind closed doors without their involvement.',
     ],
   },
   africaDignity: {
