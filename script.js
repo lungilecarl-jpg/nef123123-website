@@ -14,6 +14,10 @@ const effInsourcingImg =
   document.querySelector('#openAgricultureImage img')?.getAttribute('src') ||
   './src/assets/images/eff-insourcing-bill-maotwe.jpg';
 
+const faoSchwarzImg =
+  document.getElementById('heroSlideFaoImgRef')?.getAttribute('href') ||
+  './src/assets/images/fao-schwarz-store-b0d0vnini.jpg';
+
 const today = new Date();
 const todayEl = document.getElementById('today');
 if (todayEl) {
@@ -61,6 +65,19 @@ const heroAmazonImg = '/assets/aistudio/image_a0935a15.png';
 
 // MSN-style Hero Carousel Switcher across News, Africa, Amazon Deals & Movement perspectives
 const heroSlides = [
+  {
+    href: 'https://link.amazon/B0d0vNini',
+    external: true,
+    img: faoSchwarzImg,
+    imgPosition: 'center',
+    alt: 'FAO Schwarz Official Amazon Storefront — A World of Wonder Awaits featuring plush teddy bears, toys, and musical gifts',
+    label: 'AMAZON BRAND STORE',
+    category: 'SPONSORED · FAO SCHWARZ OFFICIAL STORE',
+    title: 'FAO Schwarz on Amazon: A World of Wonder Awaits',
+    desc: 'Explore the official FAO Schwarz storefront featuring iconic Soldier Bear & Adopt-A-Pets plush, Giant Dance Mat Pianos, Kids Electric Guitars, wooden Castle Blocks, Arts & Music kits, and 30% off Early Black Friday gifts.',
+    cta: 'Shop FAO Schwarz Store',
+    ariaLabel: 'Shop the official FAO Schwarz storefront on Amazon',
+  },
   {
     href: 'https://www.facebook.com/share/v/1JN4arz1oe/',
     external: true,
