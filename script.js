@@ -86,9 +86,9 @@ const heroSlides = [
   {
     href: 'https://link.amazon/B0h9v6R7P',
     external: true,
-    img: '/assets/aistudio/Screenshot_2026-11-17_220544_77bf0c7a.png',
+    img: './src/assets/images/regenerated_image_1794993525957.jpg',
     imgPosition: 'center top',
-    alt: "Amazon Black Friday deals drop Thursday featuring Skullcandy, UGG, De'Longhi, Cuisinart, and category discounts",
+    alt: 'Amazon Black Friday deals start tomorrow featuring Prime shipping, early deals on top brands and Skullcandy headphones',
     label: 'AMAZON BLACK FRIDAY',
     category: 'BLACK FRIDAY DEALS DROP THURSDAY',
     title: 'Amazon Early Black Friday Deals Are Live',
