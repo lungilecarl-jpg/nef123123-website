@@ -10,6 +10,10 @@ const malemaZilleImg =
   document.querySelector('#openMalemaZilleImage img')?.getAttribute('src') ||
   './src/assets/images/regenerated_image_1794932529148.jpg';
 
+const effInsourcingImg =
+  document.querySelector('#openAgricultureImage img')?.getAttribute('src') ||
+  './src/assets/images/eff-insourcing-bill-maotwe.jpg';
+
 const today = new Date();
 const todayEl = document.getElementById('today');
 if (todayEl) {
@@ -57,6 +61,20 @@ const heroAmazonImg = '/assets/aistudio/image_a0935a15.png';
 
 // MSN-style Hero Carousel Switcher across News, Africa, Amazon Deals & Movement perspectives
 const heroSlides = [
+  {
+    href: 'https://www.facebook.com/share/v/1JN4arz1oe/',
+    external: true,
+    externalRel: 'noopener noreferrer',
+    img: effInsourcingImg,
+    imgPosition: 'center top',
+    alt: 'EFF Treasurer-General and MP Hon. Omphile Maotwe speaking outside Parliament on the EFF Insourcing Bill',
+    label: 'PARLIAMENT VIDEO',
+    category: 'NEF123123 NEWS | PARLIAMENT',
+    title: 'EFF’s Omphile Maotwe Urges Swift Progress on Insourcing Bill After Four Years',
+    desc: 'EFF Treasurer-General & MP Hon. Omphile Maotwe reflects on the Insourcing Bill’s four-year journey since Nov 2022, confirming Treasury, Presidency & DPSA support and urging no further delays.',
+    cta: 'Watch Video on Facebook',
+    ariaLabel: 'Watch EFF Treasurer-General Hon. Omphile Maotwe speak on the EFF Insourcing Bill on Facebook',
+  },
   {
     href: '#latest-news',
     articleId: 'malemaZille',
@@ -153,7 +171,7 @@ function renderSlide(index) {
   heroLink?.setAttribute('href', slide.href);
   if (slide.external) {
     heroLink?.setAttribute('target', '_blank');
-    heroLink?.setAttribute('rel', 'noopener noreferrer sponsored');
+    heroLink?.setAttribute('rel', slide.externalRel || 'noopener noreferrer sponsored');
   } else {
     heroLink?.removeAttribute('target');
     heroLink?.removeAttribute('rel');
@@ -333,17 +351,19 @@ const articleCatalog = {
   },
   agriculture: {
     dot: 'N',
-    category: 'FOOD & LAND SOVEREIGNTY',
-    title: 'Agricultural Cooperatives Expand Sovereign Grain and Seed Reserves',
-    img: 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=900&q=80',
-    alt: 'African farmers tending thriving agricultural land',
-    imgPosition: 'center',
-    source: 'NEF123123 Dispatch · Food & Land Sovereignty',
+    category: 'NEF123123 NEWS | PARLIAMENT',
+    title: 'EFF’s Omphile Maotwe Urges Swift Progress on Insourcing Bill After Four Years',
+    img: effInsourcingImg,
+    alt: 'EFF Treasurer-General and MP Hon. Omphile Maotwe speaking outside Parliament on the EFF Insourcing Bill',
+    imgPosition: 'center 12%',
+    source: 'Economic Freedom Fighters · Parliament Reel',
+    externalUrl: 'https://www.facebook.com/share/v/1JN4arz1oe/',
+    externalLabel: 'Watch Video on Facebook →',
     paragraphs: [
-      'Community-governed farming syndicates across the continent are expanding shared grain silos and local seed banks to protect household food security and reduce reliance on imported staples.',
-      'Through cooperative pooling of storage infrastructure, organic fertiliser production, and regional distribution routes, smallholder producers are able to hold harvests beyond peak season rather than selling grain at depressed farm-gate prices.',
-      'Agronomists working with regional cooperatives note that preserving drought-tolerant indigenous seed varieties strengthens long-term resilience against erratic rainfall and volatile international commodity markets.',
-      'Supporters of people-centred rural development emphasise that direct investment in land access, irrigation, and community-owned processing mills keeps agricultural value circulating within local economies.',
+      'In a video address from Parliament, EFF Treasurer-General and Member of Parliament Hon. Omphile Maotwe reflects on the four-year legislative journey of the Economic Freedom Fighters’ Insourcing Bill, which was first tabled in Parliament on 18 November 2022.',
+      'Hon. Maotwe confirms that key state institutions—including National Treasury, the Presidency, and the Department of Public Service and Administration (DPSA)—have all expressed support for insourcing, noting that the remaining outstanding matters relate strictly to the technicalities of implementation.',
+      'Addressing workers and the broader public, she stresses that the Insourcing Bill must now advance to the desirability stage without any further delays.',
+      'She warns that workers and ordinary citizens cannot be expected to wait indefinitely for the legislation to be enacted into law, calling for decisive parliamentary momentum to end precarious outsourcing.',
     ],
   },
   africaDignity: {
