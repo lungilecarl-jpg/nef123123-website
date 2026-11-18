@@ -126,13 +126,13 @@ const heroSlides = [
     external: true,
     img: heroAmazonImg,
     imgPosition: 'center 72%',
-    alt: 'Amazon affiliate storefront sign',
-    label: 'AMAZON AFFILIATE',
+    alt: 'Amazon storefront sign',
+    label: 'AMAZON FEATURED',
     category: 'FEATURED SELECTION',
     title: 'Shop curated picks & deals on Amazon',
-    desc: 'Explore verified affiliate recommendations and everyday essentials selected for the NEF123123 community.',
+    desc: 'Explore verified partner recommendations and everyday essentials selected for the NEF123123 community.',
     cta: 'Shop on Amazon',
-    ariaLabel: 'Shop featured Amazon affiliate selection on Amazon',
+    ariaLabel: 'Shop featured Amazon selection on Amazon',
   },
 ];
 
@@ -408,17 +408,17 @@ const articleCatalog = {
   },
   affiliatePartners: {
     dot: 'A',
-    category: 'AMAZON & SHOPIFY AFFILIATE',
-    title: 'Amazon & Shopify Affiliate Marketing',
+    category: 'AMAZON & SHOPIFY PARTNERS',
+    title: 'Amazon & Shopify Partner Marketing',
     img: null,
     alt: '',
     imgPosition: 'center',
-    source: 'Affiliate Marketing Overview · Amazon & Shopify',
+    source: 'Partner Marketing Overview · Amazon & Shopify',
     paragraphs: [
-      'Affiliate marketing through Amazon and Shopify gives publishers, creators, and online storefronts a direct way to recommend verified products and earn referral commissions when visitors complete qualifying purchases.',
-      'With the Amazon Associates programme, featured links direct shoppers straight to marketplace listings across home essentials, electronics, books, and everyday goods, with real-time pricing and checkout handled securely on Amazon.',
-      'Shopify affiliate marketing complements marketplace links by connecting audiences to independent direct-to-consumer brands, niche retail stores, and digital product storefronts powered by Shopify’s e-commerce platform and partner tracking tools.',
-      'Clear affiliate disclosure ensures shoppers always know when links are sponsored, while curated Amazon and Shopify recommendations keep product discovery focused on practical value at no extra cost to the buyer.',
+      'Partner marketing through Amazon and Shopify gives publishers, creators, and online storefronts a direct way to recommend verified products and earn referral commissions when visitors complete qualifying purchases.',
+      'With Amazon Partner storefronts, featured links direct shoppers straight to marketplace listings across home essentials, electronics, books, and everyday goods, with real-time pricing and checkout handled securely on Amazon.',
+      'Shopify partner marketing complements marketplace links by connecting audiences to independent direct-to-consumer brands, niche retail stores, and digital product storefronts powered by Shopify’s e-commerce platform and partner tracking tools.',
+      'Clear sponsorship disclosure ensures shoppers always know when links are sponsored, while curated Amazon and Shopify recommendations keep product discovery focused on practical value at no extra cost to the buyer.',
     ],
   },
 };
@@ -1854,12 +1854,15 @@ document.addEventListener('keydown', (event) => {
 
       const thumbWrap = document.createElement('div');
       thumbWrap.className = 'sport-news-thumb';
-      const imgUrl =
+      const rawImgUrl =
         item.thumbnail && /^https:\/\//i.test(item.thumbnail)
           ? item.thumbnail
           : item.enclosure?.link && /^https:\/\//i.test(item.enclosure.link)
             ? item.enclosure.link
             : '';
+      const imgUrl = rawImgUrl
+        ? rawImgUrl.replace(/(ichef\.bbci\.co\.uk\/(?:ace\/standard|news)\/)\d+\//i, '$1800/')
+        : '';
 
       const makeFallback = () => {
         thumbWrap.textContent = '';
@@ -1875,7 +1878,14 @@ document.addEventListener('keydown', (event) => {
         img.alt = '';
         img.loading = 'lazy';
         img.referrerPolicy = 'no-referrer';
-        img.onerror = makeFallback;
+        img.onerror = () => {
+          if (rawImgUrl && img.src !== rawImgUrl) {
+            img.src = rawImgUrl;
+            img.onerror = makeFallback;
+          } else {
+            makeFallback();
+          }
+        };
         thumbWrap.appendChild(img);
       } else {
         makeFallback();

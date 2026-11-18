@@ -978,15 +978,13 @@ input:focus-visible {
   transform: translateX(3px);
 }
 
-/* MSN Bento Hero + Affiliate Marketing Widget Row */
+/* MSN Bento Full-Width Featured Stories Hero */
 .msn-bento-hero {
-  display: grid;
-  grid-template-columns: 1.75fr 1fr;
-  gap: 14px;
+  display: block;
 }
 
 .msn-hero-card {
-  height: 410px;
+  height: 430px;
   position: relative;
   overflow: hidden;
   border-radius: var(--portal-radius);
@@ -1038,7 +1036,7 @@ input:focus-visible {
   left: 56px;
   right: 56px;
   bottom: 44px;
-  max-width: 580px;
+  max-width: 640px;
   color: #fff;
 }
 
@@ -1456,10 +1454,7 @@ input:focus-visible {
 }
 
 .news-ads-layout {
-  display: grid;
-  grid-template-columns: 0.85fr 1.4fr;
-  gap: 14px;
-  align-items: stretch;
+  display: block;
 }
 
 .news-dispatch-panel {
@@ -1473,14 +1468,13 @@ input:focus-visible {
 }
 
 .ads-showcase-panel {
-  background: transparent;
-  padding: 0;
+  padding: 18px;
   display: flex;
   flex-direction: column;
 }
 
 .ads-showcase-panel > .panel-subhead {
-  padding-top: 18px;
+  padding-top: 0;
 }
 
 .panel-subhead {
@@ -1608,18 +1602,18 @@ input:focus-visible {
 .affiliate-ad-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px;
   flex: 1;
 }
 
 .affiliate-ad-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--portal-radius);
-  padding: 14px;
+  padding: 18px;
   box-shadow: var(--portal-shadow);
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
@@ -1639,21 +1633,26 @@ input:focus-visible {
 }
 
 .ad-thumb {
-  height: 132px;
-  border-radius: 8px;
+  height: 230px;
+  border-radius: 9px;
   overflow: hidden;
   border: 1px solid var(--line);
   background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
+  padding: 8px;
 }
 
 .ad-thumb img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  transition: transform 0.35s ease;
+}
+
+.affiliate-ad-card:hover .ad-thumb img {
+  transform: scale(1.03);
 }
 
 .ad-thumb.ad-thumb-cover {
@@ -1666,29 +1665,37 @@ input:focus-visible {
   object-position: center 72%;
 }
 
+.ad-thumb.ad-thumb-top img {
+  object-position: center top;
+}
+
 .ad-partner-mark {
-  height: 132px;
-  border-radius: 8px;
+  height: 230px;
+  border-radius: 9px;
   background: linear-gradient(135deg, #0d5891 0%, #1888d6 100%);
   color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 12px;
+  gap: 6px;
+  padding: 16px;
   text-align: center;
 }
 
+.ad-partner-mark.ad-sponsor-mark {
+  background: linear-gradient(135deg, #1b4d3e 0%, #0d6bb0 100%);
+}
+
 .ad-partner-mark span {
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 1.4px;
+  letter-spacing: 1.6px;
   color: var(--gold-light);
 }
 
 .ad-partner-mark strong {
-  font: 700 18px/1.15 'DM Sans', Arial, sans-serif;
+  font: 700 24px/1.15 'DM Sans', Arial, sans-serif;
   color: #ffffff;
 }
 
@@ -1700,9 +1707,9 @@ input:focus-visible {
 
 .ad-brand-badge {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--blue-dark);
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .ad-brand-badge.ad-brand-partner {
@@ -1710,20 +1717,21 @@ input:focus-visible {
 }
 
 .ad-copy h4 {
-  font: 700 16px/1.26 'DM Sans', Arial, sans-serif;
-  margin: 0 0 6px;
+  font: 700 18px/1.28 'DM Sans', Arial, sans-serif;
+  margin: 0 0 7px;
   color: var(--ink);
 }
 
 .ad-copy p {
-  font-size: 12.5px;
+  font-size: 13.5px;
+  line-height: 1.48;
   color: var(--muted);
-  margin: 0 0 12px;
+  margin: 0 0 14px;
 }
 
 .ad-cta {
   margin-top: auto;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--blue-dark);
   display: inline-flex;
@@ -2174,7 +2182,15 @@ footer {
   display: block;
 }
 
-/* Live Weather Section */
+/* Live Weather Section (Compact) */
+#weather .section-heading {
+  margin-bottom: 10px;
+}
+
+#weather .section-heading h2 {
+  font-size: clamp(20px, 2vw, 24px);
+}
+
 .weather-toolbar,
 .sport-toolbar {
   display: flex;
@@ -2191,18 +2207,18 @@ footer {
   background: var(--surface);
   border: 1px solid var(--line-strong);
   border-radius: 999px;
-  padding: 2px 4px 2px 12px;
+  padding: 2px 4px 2px 10px;
   gap: 6px;
 }
 
 .weather-city-search input {
-  width: 175px;
+  width: 150px;
   min-width: 0;
   border: 0;
   background: transparent;
-  font: 500 12px 'DM Sans', sans-serif;
+  font: 500 11.5px 'DM Sans', sans-serif;
   color: var(--ink);
-  padding: 6px 0;
+  padding: 4px 0;
   outline: none;
 }
 
@@ -2215,7 +2231,7 @@ footer {
   background: var(--blue-dark);
   color: #ffffff;
   border-radius: 999px;
-  padding: 6px 12px;
+  padding: 5px 10px;
   font: 700 11px 'DM Sans', sans-serif;
   cursor: pointer;
   white-space: nowrap;
@@ -2231,8 +2247,8 @@ footer {
   background: var(--surface);
   color: var(--ink);
   border-radius: 999px;
-  padding: 7px 13px;
-  font: 600 12px 'DM Sans', sans-serif;
+  padding: 5px 11px;
+  font: 600 11.5px 'DM Sans', sans-serif;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
@@ -2259,8 +2275,8 @@ footer {
   background: transparent;
   color: var(--muted);
   border-radius: 999px;
-  padding: 5px 10px;
-  font: 700 11.5px 'DM Sans', sans-serif;
+  padding: 4px 9px;
+  font: 700 11px 'DM Sans', sans-serif;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 0.18s ease, color 0.18s ease;
@@ -2284,7 +2300,8 @@ footer {
 }
 
 .weather-city-tabs {
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .weather-city-tabs::-webkit-scrollbar,
@@ -2306,6 +2323,12 @@ footer {
   transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
 
+.weather-city-tab {
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+}
+
 .weather-city-tab:hover,
 .sport-tab:hover {
   border-color: var(--line-strong);
@@ -2323,8 +2346,8 @@ footer {
 
 .weather-grid {
   display: grid;
-  grid-template-columns: 1.05fr 1.25fr;
-  gap: 14px;
+  grid-template-columns: 0.92fr 1.38fr;
+  gap: 12px;
   align-items: stretch;
 }
 
@@ -2334,46 +2357,46 @@ footer {
   border: 1px solid rgba(94, 193, 247, 0.36);
   border-radius: var(--portal-radius);
   box-shadow: var(--portal-shadow);
-  padding: 22px 24px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 18px;
+  gap: 10px;
 }
 
 .weather-current-top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
 }
 
 .weather-region {
-  margin: 0 0 4px;
-  font-size: 11px;
+  margin: 0 0 2px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.9px;
+  letter-spacing: 0.8px;
   color: var(--gold-light);
   text-transform: uppercase;
 }
 
 .weather-current-card h3 {
   margin: 0;
-  font: 700 28px/1.15 'Playfair Display', serif;
+  font: 700 21px/1.15 'Playfair Display', serif;
   color: #ffffff;
   text-wrap: balance;
 }
 
 .weather-updated {
-  margin: 5px 0 0;
-  font-size: 12px;
+  margin: 2px 0 0;
+  font-size: 11px;
   color: #d9ecfc;
 }
 
 .weather-icon-hero {
-  width: 72px;
-  height: 72px;
-  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.22);
   display: flex;
@@ -2382,15 +2405,20 @@ footer {
   flex-shrink: 0;
 }
 
+.weather-icon-hero svg {
+  width: 28px;
+  height: 28px;
+}
+
 .weather-temp-row {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
 }
 
 .weather-temp-main {
-  font: 800 clamp(42px, 4.4vw, 56px)/1 'DM Sans', Arial, sans-serif;
-  letter-spacing: -1.5px;
+  font: 800 clamp(32px, 3vw, 38px)/1 'DM Sans', Arial, sans-serif;
+  letter-spacing: -1px;
   font-variant-numeric: tabular-nums;
   color: #ffffff;
 }
@@ -2398,17 +2426,17 @@ footer {
 .weather-condition-stack {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .weather-condition-stack strong {
-  font-size: 16px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #ffffff;
 }
 
 .weather-condition-stack span {
-  font-size: 12.5px;
+  font-size: 11.5px;
   color: #e3f1fc;
   font-variant-numeric: tabular-nums;
 }
@@ -2416,35 +2444,47 @@ footer {
 .weather-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 6px;
   margin: 0;
 }
 
 .weather-metrics > div {
   background: rgba(255, 255, 255, 0.13);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 8px;
+  padding: 6px 8px;
 }
 
 .weather-metrics dt {
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 600;
   color: #d6eafb;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .weather-metrics dd {
   margin: 0;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: #ffffff;
   font-variant-numeric: tabular-nums;
 }
 
 .weather-forecast-card {
+  padding: 12px 15px;
   justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
+}
+
+.weather-forecast-card .rail-heading {
+  padding-bottom: 6px;
+  margin-bottom: 0;
+}
+
+.weather-forecast-card .rail-heading h3 {
+  font: 700 15px 'DM Sans', Arial, sans-serif;
+  margin: 0;
+  color: var(--ink);
 }
 
 .weather-forecast-list {
@@ -2454,12 +2494,12 @@ footer {
 
 .weather-forecast-row {
   display: grid;
-  grid-template-columns: 90px 30px 1fr auto;
+  grid-template-columns: 78px 24px 1fr auto;
   align-items: center;
-  gap: 10px;
-  padding: 9px 4px;
+  gap: 8px;
+  padding: 4.5px 2px;
   border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .weather-forecast-row:last-child {
@@ -2477,9 +2517,14 @@ footer {
   justify-content: center;
 }
 
+.weather-day-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
 .weather-day-cond {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2488,36 +2533,36 @@ footer {
 .weather-day-temps {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .weather-day-rain {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: var(--blue-dark);
-  min-width: 34px;
+  min-width: 30px;
   text-align: right;
 }
 
 .weather-temp-hi {
   font-weight: 700;
   color: var(--ink);
-  min-width: 34px;
+  min-width: 32px;
   text-align: right;
 }
 
 .weather-temp-lo {
   font-weight: 500;
   color: var(--subtle);
-  min-width: 32px;
+  min-width: 30px;
   text-align: right;
 }
 
 .weather-regional-strip {
   border-top: 1px solid var(--line);
-  padding-top: 10px;
+  padding-top: 6px;
 }
 
 .weather-strip-head {
@@ -2525,11 +2570,11 @@ footer {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 0.9px;
+  letter-spacing: 0.8px;
   color: var(--subtle);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .weather-feedback {
@@ -2541,19 +2586,19 @@ footer {
 .weather-mini-cities {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
 }
 
 .weather-mini-btn {
   border: 1px solid var(--line);
   background: var(--surface-sub);
-  border-radius: 9px;
-  padding: 8px 10px;
+  border-radius: 7px;
+  padding: 5px 8px;
   text-align: left;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   transition: border-color 0.18s ease, background-color 0.18s ease;
 }
 
@@ -2564,7 +2609,7 @@ footer {
 }
 
 .weather-mini-btn span {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   color: var(--ink);
   white-space: nowrap;
@@ -2573,14 +2618,14 @@ footer {
 }
 
 .weather-mini-btn strong {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--blue-dark);
   font-variant-numeric: tabular-nums;
 }
 
 .weather-mini-btn small {
-  font-size: 10.5px;
+  font-size: 9.5px;
   color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
@@ -2597,9 +2642,9 @@ footer {
 /* Sport Section */
 .sport-layout {
   display: grid;
-  grid-template-columns: 1.28fr 1fr;
+  grid-template-columns: 1fr 1.15fr;
   gap: 14px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .sport-scoreboard-panel,
@@ -2732,30 +2777,30 @@ footer {
 .sport-bafana-spotlight {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 164px 1fr;
-  gap: 14px;
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  align-items: stretch;
   width: 100%;
   text-align: left;
   font-family: inherit;
   border: 1px solid var(--line-strong);
   border-radius: 10px;
   background: linear-gradient(135deg, #ecf7ff 0%, #ffffff 55%, #f5f9e6 100%);
-  padding: 12px 14px;
+  padding: 14px;
   cursor: pointer;
   transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .sport-bafana-spotlight:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   border-color: var(--blue-dark);
-  box-shadow: 0 6px 18px rgba(13, 107, 176, 0.1);
+  box-shadow: 0 8px 22px rgba(13, 107, 176, 0.12);
 }
 
 .sport-spotlight-media {
   width: 100%;
-  height: 112px;
-  border-radius: 8px;
+  height: 268px;
+  border-radius: 9px;
   overflow: hidden;
   background: #dff0fc;
   border: 1px solid var(--line);
@@ -2765,13 +2810,18 @@ footer {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 20%;
+  transition: transform 0.35s ease;
+}
+
+.sport-bafana-spotlight:hover .sport-spotlight-media img {
+  transform: scale(1.03);
 }
 
 .sport-spotlight-copy {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -2784,14 +2834,14 @@ footer {
 
 .sport-spotlight-copy h4 {
   margin: 0;
-  font: 700 15px/1.28 'DM Sans', Arial, sans-serif;
+  font: 700 16.5px/1.3 'DM Sans', Arial, sans-serif;
   color: var(--ink);
 }
 
 .sport-spotlight-copy p {
   margin: 0;
   font-size: 12.5px;
-  line-height: 1.45;
+  line-height: 1.48;
   color: var(--muted);
 }
 
@@ -2804,10 +2854,11 @@ footer {
 @media (max-width: 640px) {
   .sport-bafana-spotlight {
     grid-template-columns: 1fr;
+    padding: 11px;
   }
 
   .sport-spotlight-media {
-    height: 150px;
+    height: 196px;
   }
 }
 
@@ -3066,7 +3117,7 @@ footer {
 
 .markets-news-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 0.92fr 1.08fr;
   gap: 14px;
   align-items: stretch;
 }
@@ -3074,6 +3125,113 @@ footer {
 .markets-news-panel,
 .markets-realestate-panel {
   min-width: 0;
+}
+
+#sportNewsList,
+#globalMarketsNewsList,
+#realEstateNewsList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-content: start;
+}
+
+#sportNewsList .sport-news-item,
+#globalMarketsNewsList .sport-news-item,
+#realEstateNewsList .sport-news-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-sub);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+#sportNewsList .sport-news-item:hover,
+#globalMarketsNewsList .sport-news-item:hover,
+#realEstateNewsList .sport-news-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(13, 107, 176, 0.1);
+}
+
+#sportNewsList .sport-news-thumb,
+#globalMarketsNewsList .sport-news-thumb,
+#realEstateNewsList .sport-news-thumb {
+  width: 100%;
+  height: 148px;
+  border-radius: 8px;
+}
+
+#sportNewsList .sport-news-thumb img,
+#globalMarketsNewsList .sport-news-thumb img,
+#realEstateNewsList .sport-news-thumb img {
+  object-position: center 20%;
+  transition: transform 0.35s ease;
+}
+
+#sportNewsList .sport-news-item:hover .sport-news-thumb img,
+#globalMarketsNewsList .sport-news-item:hover .sport-news-thumb img,
+#realEstateNewsList .sport-news-item:hover .sport-news-thumb img {
+  transform: scale(1.03);
+}
+
+#sportNewsList .sport-news-copy,
+#globalMarketsNewsList .sport-news-copy,
+#realEstateNewsList .sport-news-copy {
+  gap: 5px;
+}
+
+#sportNewsList .sport-news-copy h4,
+#globalMarketsNewsList .sport-news-copy h4,
+#realEstateNewsList .sport-news-copy h4 {
+  font-size: 14.5px;
+  line-height: 1.3;
+  -webkit-line-clamp: 3;
+}
+
+#sportNewsList .sport-news-copy p,
+#globalMarketsNewsList .sport-news-copy p,
+#realEstateNewsList .sport-news-copy p {
+  font-size: 12px;
+  line-height: 1.45;
+  -webkit-line-clamp: 2;
+}
+
+#sportNewsList .sport-news-item:first-child,
+#globalMarketsNewsList .sport-news-item:first-child,
+#realEstateNewsList .sport-news-item:first-child {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #f3f9ff 0%, #ffffff 100%);
+  border-color: var(--line-strong);
+  padding: 12px;
+}
+
+#sportNewsList .sport-news-item:first-child .sport-news-thumb,
+#globalMarketsNewsList .sport-news-item:first-child .sport-news-thumb,
+#realEstateNewsList .sport-news-item:first-child .sport-news-thumb {
+  height: 225px;
+}
+
+#sportNewsList .sport-news-item:first-child .sport-news-copy h4,
+#globalMarketsNewsList .sport-news-item:first-child .sport-news-copy h4,
+#realEstateNewsList .sport-news-item:first-child .sport-news-copy h4 {
+  font-size: 16.5px;
+}
+
+#sportNewsList .sport-news-item:first-child .sport-news-copy p,
+#globalMarketsNewsList .sport-news-item:first-child .sport-news-copy p,
+#realEstateNewsList .sport-news-item:first-child .sport-news-copy p {
+  -webkit-line-clamp: 3;
+}
+
+#sportNewsList .sport-state-box,
+#globalMarketsNewsList .sport-state-box,
+#realEstateNewsList .sport-state-box {
+  grid-column: 1 / -1;
 }
 
 .re-converter {
@@ -3214,8 +3372,8 @@ footer {
     height: 380px;
   }
 
-  .news-ads-layout {
-    grid-template-columns: 1fr;
+  .affiliate-ad-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -3442,8 +3600,29 @@ footer {
   }
 
   .affiliate-ad-grid,
-  .sport-matches-grid {
+  .sport-matches-grid,
+  #sportNewsList,
+  #globalMarketsNewsList,
+  #realEstateNewsList {
     grid-template-columns: 1fr;
+  }
+
+  #sportNewsList .sport-news-item:first-child .sport-news-thumb,
+  #sportNewsList .sport-news-thumb,
+  #globalMarketsNewsList .sport-news-item:first-child .sport-news-thumb,
+  #globalMarketsNewsList .sport-news-thumb,
+  #realEstateNewsList .sport-news-item:first-child .sport-news-thumb,
+  #realEstateNewsList .sport-news-thumb {
+    height: 180px;
+  }
+
+  .affiliate-ad-card {
+    padding: 14px;
+  }
+
+  .ad-thumb,
+  .ad-partner-mark {
+    height: 190px;
   }
 
   .markets-fx-pills {
