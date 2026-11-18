@@ -2174,8 +2174,1028 @@ footer {
   display: block;
 }
 
+/* Live Weather Section */
+.weather-toolbar,
+.sport-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.weather-city-search {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 2px 4px 2px 12px;
+  gap: 6px;
+}
+
+.weather-city-search input {
+  width: 175px;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: 500 12px 'DM Sans', sans-serif;
+  color: var(--ink);
+  padding: 6px 0;
+  outline: none;
+}
+
+.weather-city-search input::placeholder {
+  color: var(--subtle);
+}
+
+.weather-city-search button {
+  border: 0;
+  background: var(--blue-dark);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: 700 11px 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.18s ease;
+}
+
+.weather-city-search button:hover {
+  background: var(--blue);
+}
+
+.weather-ctrl-btn {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 7px 13px;
+  font: 600 12px 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+.weather-ctrl-btn:hover {
+  border-color: var(--blue);
+  background: var(--surface-hover);
+  color: var(--blue-dark);
+}
+
+.weather-unit-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.weather-unit-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font: 700 11.5px 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.weather-unit-btn.active {
+  background: var(--blue-dark);
+  color: #ffffff;
+}
+
+.weather-city-tabs,
+.sport-league-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.weather-city-tabs {
+  margin-bottom: 12px;
+}
+
+.weather-city-tabs::-webkit-scrollbar,
+.sport-league-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.weather-city-tab,
+.sport-tab {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 8px 13px;
+  font: 600 12px 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.weather-city-tab:hover,
+.sport-tab:hover {
+  border-color: var(--line-strong);
+  color: var(--blue-dark);
+  background: var(--surface-hover);
+}
+
+.weather-city-tab.active,
+.sport-tab.active {
+  background: var(--blue-dark);
+  border-color: var(--blue-dark);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1.25fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.weather-current-card {
+  background: linear-gradient(135deg, #0b5690 0%, #157bc6 55%, #379ee6 100%);
+  color: #ffffff;
+  border: 1px solid rgba(94, 193, 247, 0.36);
+  border-radius: var(--portal-radius);
+  box-shadow: var(--portal-shadow);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.weather-current-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.weather-region {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  color: var(--gold-light);
+  text-transform: uppercase;
+}
+
+.weather-current-card h3 {
+  margin: 0;
+  font: 700 28px/1.15 'Playfair Display', serif;
+  color: #ffffff;
+  text-wrap: balance;
+}
+
+.weather-updated {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: #d9ecfc;
+}
+
+.weather-icon-hero {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.weather-temp-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.weather-temp-main {
+  font: 800 clamp(42px, 4.4vw, 56px)/1 'DM Sans', Arial, sans-serif;
+  letter-spacing: -1.5px;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+}
+
+.weather-condition-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.weather-condition-stack strong {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.weather-condition-stack span {
+  font-size: 12.5px;
+  color: #e3f1fc;
+  font-variant-numeric: tabular-nums;
+}
+
+.weather-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.weather-metrics > div {
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.weather-metrics dt {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #d6eafb;
+  margin-bottom: 4px;
+}
+
+.weather-metrics dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.weather-forecast-card {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.weather-forecast-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.weather-forecast-row {
+  display: grid;
+  grid-template-columns: 90px 30px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.weather-forecast-row:last-child {
+  border-bottom: 0;
+}
+
+.weather-day-name {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.weather-day-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.weather-day-cond {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.weather-day-temps {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.weather-day-rain {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--blue-dark);
+  min-width: 34px;
+  text-align: right;
+}
+
+.weather-temp-hi {
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 34px;
+  text-align: right;
+}
+
+.weather-temp-lo {
+  font-weight: 500;
+  color: var(--subtle);
+  min-width: 32px;
+  text-align: right;
+}
+
+.weather-regional-strip {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.weather-strip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  color: var(--subtle);
+  margin-bottom: 8px;
+}
+
+.weather-feedback {
+  color: var(--blue-dark);
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+.weather-mini-cities {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.weather-mini-btn {
+  border: 1px solid var(--line);
+  background: var(--surface-sub);
+  border-radius: 9px;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.weather-mini-btn:hover,
+.weather-mini-btn.active {
+  border-color: var(--blue);
+  background: #e2f1fc;
+}
+
+.weather-mini-btn span {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.weather-mini-btn strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--blue-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.weather-mini-btn small {
+  font-size: 10.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.weather-loading-row,
+.sport-loading {
+  padding: 20px 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Sport Section */
+.sport-layout {
+  display: grid;
+  grid-template-columns: 1.28fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.sport-scoreboard-panel,
+.sport-news-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.weather-current-card,
+.weather-forecast-card,
+.sport-match-card {
+  min-width: 0;
+}
+
+.sport-matches-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sport-match-card {
+  border: 1px solid var(--line);
+  background: #f7fbff;
+  border-radius: 10px;
+  padding: 12px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.sport-match-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.sport-match-status.is-live {
+  color: var(--red-text);
+}
+
+.sport-match-status.is-final {
+  color: var(--ink);
+}
+
+.sport-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sport-team-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sport-team-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sport-team-crest {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.sport-team-fallback {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #dff0fc;
+  color: var(--blue-dark);
+  border: 1px solid var(--line-strong);
+  font-size: 10px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sport-team-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sport-team-row.is-winner .sport-team-name,
+.sport-team-row.is-winner .sport-team-score {
+  color: var(--blue-dark);
+}
+
+.sport-team-score {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.sport-match-foot {
+  border-top: 1px solid var(--line);
+  padding-top: 7px;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sport-event-card {
+  grid-column: 1 / -1;
+}
+
+.sport-bafana-spotlight {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 164px 1fr;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ecf7ff 0%, #ffffff 55%, #f5f9e6 100%);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.sport-bafana-spotlight:hover {
+  transform: translateY(-1px);
+  border-color: var(--blue-dark);
+  box-shadow: 0 6px 18px rgba(13, 107, 176, 0.1);
+}
+
+.sport-spotlight-media {
+  width: 100%;
+  height: 112px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #dff0fc;
+  border: 1px solid var(--line);
+}
+
+.sport-spotlight-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.sport-spotlight-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sport-spotlight-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #0e743b;
+}
+
+.sport-spotlight-copy h4 {
+  margin: 0;
+  font: 700 15px/1.28 'DM Sans', Arial, sans-serif;
+  color: var(--ink);
+}
+
+.sport-spotlight-copy p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.sport-spotlight-cta {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue-dark);
+}
+
+@media (max-width: 640px) {
+  .sport-bafana-spotlight {
+    grid-template-columns: 1fr;
+  }
+
+  .sport-spotlight-media {
+    height: 150px;
+  }
+}
+
+.sport-news-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.sport-news-item {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+  padding: 11px 6px;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 12px;
+  align-items: start;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+
+.sport-news-item:last-child {
+  border-bottom: 0;
+}
+
+.sport-news-item:hover {
+  background: rgba(24, 136, 214, 0.06);
+}
+
+.sport-news-thumb {
+  width: 76px;
+  height: 58px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--surface-sub);
+  border: 1px solid var(--line);
+}
+
+.sport-news-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sport-news-thumb-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0d6bb0 0%, #379ee6 100%);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sport-news-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.sport-news-meta {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--blue-dark);
+}
+
+.sport-news-copy h4 {
+  margin: 0;
+  font: 700 13.5px/1.3 'DM Sans', Arial, sans-serif;
+  color: var(--ink);
+}
+
+.sport-news-copy p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sport-state-box {
+  grid-column: 1 / -1;
+}
+
+.sport-retry-btn {
+  margin-top: 8px;
+}
+
+.article-modal-ext-link {
+  color: var(--blue-dark);
+  font-weight: 700;
+  margin-left: 10px;
+}
+
+.article-modal-ext-link:hover {
+  color: var(--red);
+  text-decoration: underline;
+}
+
+/* Global Live Markets & Real-Estate Markets Section */
+.markets-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.markets-curr-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font: 700 11.5px 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.markets-curr-btn.active {
+  background: var(--blue-dark);
+  color: #ffffff;
+}
+
+.markets-quote-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.market-quote-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--portal-radius);
+  box-shadow: var(--portal-shadow);
+  padding: 13px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.market-quote-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.market-quote-symbol {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: var(--blue-dark);
+}
+
+.market-quote-kind {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--subtle);
+}
+
+.market-quote-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.market-quote-price {
+  font: 800 18px/1.15 'DM Sans', Arial, sans-serif;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.market-delta {
+  font-size: 11.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.market-delta.is-up {
+  color: #0e743b;
+}
+
+.market-delta.is-down {
+  color: #c91d1d;
+}
+
+.market-delta.is-flat {
+  color: var(--subtle);
+}
+
+.markets-fx-strip {
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+
+.markets-fx-strip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  color: var(--subtle);
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.markets-fx-pills {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.markets-fx-cell {
+  background: var(--surface-sub);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.markets-fx-cell span {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.markets-fx-cell strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.markets-news-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.markets-news-panel,
+.markets-realestate-panel {
+  min-width: 0;
+}
+
+.re-converter {
+  background: linear-gradient(135deg, #edf6fd 0%, #f7f9e8 100%);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 11px 13px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.re-converter label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue-dark);
+}
+
+.re-converter-inputs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.re-converter-inputs input {
+  flex: 1 1 130px;
+  min-width: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ink);
+  padding: 7px 10px;
+  font: 700 13px 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.re-converter-inputs select {
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ink);
+  padding: 7px 10px;
+  font: 700 12px 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+.re-converter-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.re-converter-results span strong {
+  color: var(--blue-dark);
+}
+
+.re-converter-results .re-bond-highlight strong {
+  color: #0e743b;
+}
+
+.sa-re-tabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.sa-re-tab {
+  border: 1px solid var(--line);
+  background: var(--surface-sub);
+  color: var(--muted);
+  border-radius: 7px;
+  padding: 5px 10px;
+  font: 700 11.5px 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+}
+
+.sa-re-tab:hover {
+  border-color: var(--blue-dark);
+  color: var(--blue-dark);
+}
+
+.sa-re-tab.active {
+  background: var(--blue-dark);
+  border-color: var(--blue-dark);
+  color: #ffffff;
+}
+
 /* Tablet breakpoint */
 @media (max-width: 1080px) {
+  .section-heading {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .weather-toolbar,
+  .sport-toolbar,
+  .markets-toolbar {
+    width: 100%;
+  }
+
+  .weather-grid,
+  .sport-layout,
+  .markets-news-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .markets-quote-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .markets-fx-pills {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
   .msn-feed-grid.bento-lead-left,
   .msn-feed-grid.bento-lead-right {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2415,8 +3435,38 @@ footer {
     padding: 14px;
   }
 
-  .affiliate-ad-grid {
+  .affiliate-ad-grid,
+  .sport-matches-grid,
+  .markets-quote-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .affiliate-ad-grid,
+  .sport-matches-grid {
     grid-template-columns: 1fr;
+  }
+
+  .markets-fx-pills {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .weather-city-search input {
+    width: 140px;
+  }
+
+  .weather-metrics,
+  .weather-mini-cities {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .weather-forecast-row {
+    grid-template-columns: 74px 26px 1fr auto;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .weather-day-cond {
+    display: none;
   }
 
   .affiliate-box,

@@ -77,9 +77,12 @@
     <nav class="main-nav" id="mainNav">
       <div class="wrap nav-inner">
         <a class="active" href="#home">Home</a>
+        <a href="#top-stories">Top Stories</a>
         <a href="#latest-news">Latest News</a>
         <a href="#africa">Africa</a>
-        <a href="#top-stories">Affiliate</a>
+        <a href="#markets">Markets</a>
+        <a href="#weather">Weather</a>
+        <a href="#sport">Sport</a>
         <a href="#economy">Economy</a>
         <a href="#movement">The Movement</a>
         <a href="#news-ads">News &amp; Ads</a>
@@ -94,15 +97,15 @@
     <section class="wrap portal-section" id="top-stories">
       <div class="msn-bento-hero">
         <article class="lead-story msn-hero-card" data-searchable>
-          <a class="image-link" href="https://link.amazon/B0h9v6R7P" target="_blank" rel="noopener noreferrer sponsored" id="heroSlideLink" aria-label="Shop Amazon Black Friday deals on Amazon">
-            <img id="heroSlideImg" class="hero-img-top" src="/assets/aistudio/Screenshot_2026-11-17_220544_77bf0c7a.png" alt="Amazon Black Friday deals drop Thursday featuring Skullcandy, UGG, De'Longhi, Cuisinart, and category discounts">
+          <a class="image-link" href="#latest-news" id="heroSlideLink" aria-label="Read full story: Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies">
+            <img id="heroSlideImg" class="hero-img-top" src="./src/assets/images/regenerated_image_1794932529148.jpg" alt="EFF leader Julius Malema smiling in a red beret while speaking with journalists">
             <span class="image-shade"></span>
-            <span class="lead-label" id="heroSlideLabel">AMAZON BLACK FRIDAY</span>
+            <span class="lead-label" id="heroSlideLabel">LATEST NEWS</span>
             <div class="lead-copy">
-              <p class="category" id="heroSlideCategory">BLACK FRIDAY DEALS DROP THURSDAY</p>
-              <h2 id="heroSlideTitle">Amazon Early Black Friday Deals Are Live</h2>
-              <p id="heroSlideDesc">Amazon is featuring up to 65% off devices, 50% off Outlet, 40% off toys, and 30% off own brands—plus $120 off Skullcandy headphones, De'Longhi Espresso ($149.95), Cuisinart Air Fryer ($99.95), and UGG blankets ($72.99) with Prime free shipping.</p>
-              <span class="read-link" id="heroSlideCta">Shop Black Friday on Amazon <b>→</b></span>
+              <p class="category" id="heroSlideCategory">NEF123123 NEWS | SOUTH AFRICA</p>
+              <h2 id="heroSlideTitle">Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies</h2>
+              <p id="heroSlideDesc">Julius Malema questions Helen Zille&#39;s decision to oppose proceedings in the Western Cape High Court, insisting that the legal dispute should be heard in Johannesburg, where the alleged conduct took place.</p>
+              <span class="read-link" id="heroSlideCta">Read Full Story <b>→</b></span>
             </div>
           </a>
           <button type="button" class="hero-nav-btn hero-nav-prev" id="heroPrev" aria-label="Previous featured story">‹</button>
@@ -113,6 +116,8 @@
               <button type="button" class="hero-dot" data-slide="1" aria-label="Slide 2" aria-selected="false"></button>
               <button type="button" class="hero-dot" data-slide="2" aria-label="Slide 3" aria-selected="false"></button>
               <button type="button" class="hero-dot" data-slide="3" aria-label="Slide 4" aria-selected="false"></button>
+              <button type="button" class="hero-dot" data-slide="4" aria-label="Slide 5" aria-selected="false"></button>
+              <button type="button" class="hero-dot" data-slide="5" aria-label="Slide 6" aria-selected="false"></button>
             </div>
           </div>
         </article>
@@ -293,6 +298,215 @@
           <span class="ticker-divider">✊</span>
           <span>Unity, Land, and Freedom.</span>
           <a href="#movement">Discover our mission →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap portal-section" id="markets" data-searchable>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">GLOBAL FX, COMMODITIES, NEWS &amp; PROPERTY</p>
+          <h2>Global Live Markets &amp; Real Estate</h2>
+        </div>
+        <div class="markets-toolbar" role="group" aria-label="Global markets controls">
+          <div class="weather-unit-toggle" role="group" aria-label="Quote currency">
+            <button type="button" class="markets-curr-btn active" data-currency="zar" aria-pressed="true">ZAR (R)</button>
+            <button type="button" class="markets-curr-btn" data-currency="usd" aria-pressed="false">USD ($)</button>
+          </div>
+          <button type="button" class="weather-ctrl-btn" id="marketsRefreshBtn" aria-label="Refresh live global and real-estate markets">Refresh</button>
+        </div>
+      </div>
+
+      <div class="markets-quote-grid" id="marketsQuoteGrid" aria-live="polite">
+        <div class="sport-loading">Loading live FX rates, gold &amp; global assets…</div>
+      </div>
+
+      <div class="markets-fx-strip msn-widget-card" aria-label="African and major currencies live strip">
+        <div class="markets-fx-strip-head">
+          <span>AFRICAN &amp; GLOBAL FX CROSS RATES (PER 1 USD)</span>
+          <span id="marketsUpdatedText">CONNECTING TO LIVE FEEDS…</span>
+        </div>
+        <div class="markets-fx-pills" id="marketsFxList"></div>
+      </div>
+
+      <div class="markets-news-layout">
+        <div class="news-dispatch-panel markets-news-panel">
+          <div class="panel-subhead">
+            <h3>Global Markets News</h3>
+            <span>CLICK STORY TO READ</span>
+          </div>
+          <div class="sport-news-list" id="globalMarketsNewsList" aria-live="polite">
+            <div class="sport-loading">Loading live global markets dispatches…</div>
+          </div>
+        </div>
+
+        <div class="news-dispatch-panel markets-realestate-panel">
+          <div class="panel-subhead">
+            <h3>South Africa Real-Estate Markets</h3>
+            <span>SA PROPERTY &amp; BOND DESK</span>
+          </div>
+
+          <form class="re-converter" id="reConverterForm" aria-label="South Africa property valuation in Rands, bond and currency calculator">
+            <label for="reAmountInput">South Africa property value in Rands &amp; 20-yr bond estimator</label>
+            <div class="re-converter-inputs">
+              <input type="number" id="reAmountInput" min="1" step="any" value="2500000" aria-label="South Africa property valuation amount">
+              <select id="reFromCurrency" aria-label="Property valuation currency">
+                <option value="ZAR" selected>Rands (R)</option>
+                <option value="USD">USD ($)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="EUR">EUR (€)</option>
+              </select>
+              <select id="reBondRateSelect" aria-label="South Africa home loan interest rate">
+                <option value="10.25">10.25% p.a.</option>
+                <option value="11" selected>11.00% Prime</option>
+                <option value="11.75">11.75% p.a.</option>
+                <option value="12.5">12.50% p.a.</option>
+              </select>
+            </div>
+            <div class="re-converter-results" id="reConverterResults" aria-live="polite">Calculating live SA Rands bond &amp; property values…</div>
+          </form>
+
+          <div class="sa-re-tabs" id="saPropertyTabs" role="tablist" aria-label="South Africa property regions">
+            <button type="button" class="sa-re-tab active" role="tab" aria-selected="true" data-sa-filter="all">All SA Property</button>
+            <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-filter="cape">Cape Town &amp; WC</button>
+            <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-filter="gauteng">Gauteng &amp; JHB</button>
+            <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-filter="commercial">Malls &amp; Estates</button>
+          </div>
+
+          <div class="sport-news-list" id="realEstateNewsList" aria-live="polite">
+            <div class="sport-loading">Loading live South Africa property reports…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap portal-section" id="weather" data-searchable>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">LIVE METEOROLOGY · SOUTH AFRICA &amp; AFRICA</p>
+          <h2>Live Weather</h2>
+        </div>
+        <div class="weather-toolbar" role="group" aria-label="Weather controls">
+          <form class="weather-city-search" id="weatherSearchForm" role="search" aria-label="Search city weather">
+            <input type="search" id="weatherCityInput" placeholder="Search city (e.g. Polokwane)..." aria-label="Search city for weather">
+            <button type="submit">Go</button>
+          </form>
+          <button type="button" class="weather-ctrl-btn" id="weatherLocateBtn" title="Use current device location">My location</button>
+          <div class="weather-unit-toggle" role="group" aria-label="Temperature unit">
+            <button type="button" class="weather-unit-btn active" data-unit="c" aria-pressed="true">°C</button>
+            <button type="button" class="weather-unit-btn" data-unit="f" aria-pressed="false">°F</button>
+          </div>
+          <button type="button" class="weather-ctrl-btn" id="weatherRefreshBtn" aria-label="Refresh live weather">Refresh</button>
+        </div>
+      </div>
+
+      <div class="weather-city-tabs" id="weatherCityTabs" role="tablist" aria-label="Featured cities">
+        <button type="button" class="weather-city-tab active" role="tab" aria-selected="true" data-city-key="johannesburg">Johannesburg</button>
+        <button type="button" class="weather-city-tab" role="tab" aria-selected="false" data-city-key="cape-town">Cape Town</button>
+        <button type="button" class="weather-city-tab" role="tab" aria-selected="false" data-city-key="durban">Durban</button>
+        <button type="button" class="weather-city-tab" role="tab" aria-selected="false" data-city-key="pretoria">Pretoria</button>
+        <button type="button" class="weather-city-tab" role="tab" aria-selected="false" data-city-key="gqeberha">Gqeberha</button>
+        <button type="button" class="weather-city-tab" role="tab" aria-selected="false" data-city-key="nairobi">Nairobi</button>
+        <button type="button" class="weather-city-tab" role="tab" aria-selected="false" data-city-key="lagos">Lagos</button>
+      </div>
+
+      <div class="weather-grid">
+        <article class="weather-current-card" id="weatherCurrentCard" aria-live="polite">
+          <div class="weather-current-top">
+            <div>
+              <p class="weather-region" id="weatherRegionLabel">Gauteng · South Africa</p>
+              <h3 id="weatherCityName">Johannesburg</h3>
+              <p class="weather-updated" id="weatherUpdatedText">Loading live forecast…</p>
+            </div>
+            <div class="weather-icon-hero" id="weatherCurrentIcon" aria-hidden="true"></div>
+          </div>
+
+          <div class="weather-temp-row">
+            <div class="weather-temp-main" id="weatherTempMain">--°</div>
+            <div class="weather-condition-stack">
+              <strong id="weatherConditionLabel">Checking sky conditions</strong>
+              <span id="weatherHighLow">High --° / Low --°</span>
+            </div>
+          </div>
+
+          <dl class="weather-metrics">
+            <div>
+              <dt>Feels like</dt>
+              <dd id="weatherFeelsLike">--°</dd>
+            </div>
+            <div>
+              <dt>Humidity</dt>
+              <dd id="weatherHumidity">--%</dd>
+            </div>
+            <div>
+              <dt>Wind</dt>
+              <dd id="weatherWind">-- km/h</dd>
+            </div>
+            <div>
+              <dt>Rain chance</dt>
+              <dd id="weatherRainChance">--%</dd>
+            </div>
+          </dl>
+        </article>
+
+        <div class="weather-forecast-card msn-widget-card">
+          <div class="rail-heading">
+            <h3>5-Day Outlook</h3>
+            <span>OPEN-METEO LIVE</span>
+          </div>
+          <div class="weather-forecast-list" id="weatherForecastList" aria-live="polite">
+            <div class="weather-loading-row">Loading 5-day forecast…</div>
+          </div>
+          <div class="weather-regional-strip" aria-label="South African cities live snapshot">
+            <div class="weather-strip-head">
+              <span>SOUTH AFRICA SNAPSHOT</span>
+              <span id="weatherSearchFeedback" class="weather-feedback"></span>
+            </div>
+            <div class="weather-mini-cities" id="weatherRegionalGrid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap portal-section" id="sport" data-searchable>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">FIXTURES, SCORES &amp; HEADLINES</p>
+          <h2>Sport</h2>
+        </div>
+        <div class="sport-toolbar">
+          <div class="sport-league-tabs" id="sportLeagueTabs" role="tablist" aria-label="Sport leagues">
+            <button type="button" class="sport-tab active" role="tab" aria-selected="true" data-league="bafana">Bafana Bafana</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="rsa-psl">SA Premiership</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="caf-cl">CAF Champions</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="eng-pl">Premier League</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="uefa-cl">Champions League</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="rugby-intl">Rugby Tests</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="f1">Formula 1</button>
+          </div>
+          <button type="button" class="weather-ctrl-btn" id="sportRefreshBtn" aria-label="Refresh sport scores and news">Refresh</button>
+        </div>
+      </div>
+
+      <div class="sport-layout">
+        <div class="sport-scoreboard-panel msn-widget-card">
+          <div class="panel-subhead">
+            <h3 id="sportBoardTitle">Bafana Bafana · AFCON 2027 Qualifiers</h3>
+            <span id="sportBoardUpdated">LIVE FEED</span>
+          </div>
+          <div class="sport-matches-grid" id="sportMatchesList" aria-live="polite">
+            <div class="sport-loading">Loading Bafana Bafana match report &amp; scores…</div>
+          </div>
+        </div>
+
+        <div class="sport-news-panel news-dispatch-panel">
+          <div class="panel-subhead">
+            <h3 id="sportNewsTitle">Bafana Bafana &amp; Mofokeng News</h3>
+            <span>CLICK STORY TO READ</span>
+          </div>
+          <div class="sport-news-list" id="sportNewsList" aria-live="polite">
+            <div class="sport-loading">Loading Bafana Bafana reports…</div>
+          </div>
         </div>
       </div>
     </section>
@@ -487,7 +701,7 @@
         <p>Navigating the path to economic freedom. Reporting, teaching and building.</p>
         <strong>✊ Unity, Land, and Freedom.</strong>
       </div>
-      <div><h3>Explore</h3><a href="#latest-news">Latest news</a><a href="#africa">Africa in focus</a><a href="#top-stories">Affiliate marketing</a><a href="#economy">Economic freedom</a><a href="#news-ads">News &amp; Ads</a></div>
+      <div><h3>Explore</h3><a href="#top-stories">Top stories &amp; deals</a><a href="#latest-news">Latest news</a><a href="#africa">Africa in focus</a><a href="#markets">Markets &amp; real estate</a><a href="#weather">Live weather</a><a href="#sport">Sport</a><a href="#economy">Economic freedom</a><a href="#news-ads">News &amp; Ads</a></div>
       <div><h3>The movement</h3><a href="#movement">About NEF123123</a><a href="#affiliates">Affiliates</a><a href="#join">Join the movement</a><a href="#contact">Contact</a></div>
       <div>
         <h3>Get in touch</h3>
