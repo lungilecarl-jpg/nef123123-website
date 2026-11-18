@@ -1021,6 +1021,17 @@ input:focus-visible {
     linear-gradient(0deg, rgba(10, 12, 16, 0.84), transparent 58%);
 }
 
+#heroSlideLink[target="_blank"] .image-shade {
+  background:
+    linear-gradient(90deg, rgba(10, 12, 16, 0.95) 0%, rgba(10, 12, 16, 0.76) 44%, rgba(10, 12, 16, 0.12) 100%),
+    linear-gradient(0deg, rgba(10, 12, 16, 0.9) 0%, rgba(10, 12, 16, 0.38) 58%, rgba(10, 12, 16, 0.22) 100%);
+}
+
+#heroSlideLink[target="_blank"] .lead-label,
+#heroSlideLink[target="_blank"] .lead-copy {
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
 .lead-label {
   position: absolute;
   top: 18px;
