@@ -1617,6 +1617,20 @@ input:focus-visible {
   flex: 1;
 }
 
+@media (min-width: 641px) {
+  .affiliate-ad-grid > .affiliate-ad-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .affiliate-ad-grid > .affiliate-ad-card:last-child:nth-child(odd) .ad-thumb {
+    flex: 0 0 380px;
+    height: 220px;
+  }
+}
+
 .affiliate-ad-card {
   display: flex;
   flex-direction: column;
@@ -1738,6 +1752,26 @@ input:focus-visible {
   line-height: 1.48;
   color: var(--muted);
   margin: 0 0 14px;
+}
+
+.ad-price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.ad-price {
+  font: 800 20px/1.1 'DM Sans', Arial, sans-serif;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.ad-price-unit {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
 }
 
 .ad-cta {
