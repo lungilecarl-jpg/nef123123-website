@@ -335,9 +335,213 @@ searchForm?.addEventListener('submit', (event) => {
   applyPortalSearch(true);
 });
 
+// Dynamic SEO & Canonical URL Helpers (Official domain: https://www.nef123123.co.za)
+const OFFICIAL_SITE_ORIGIN = 'https://www.nef123123.co.za';
+const HOME_SEO = {
+  title: 'NEF123123 | Navigant Economic Freedom',
+  description:
+    'NEF123123 — Navigant Economic Freedom. Navigating the path to African liberation, wealth sovereignty and economic justice. Unity, Land, and Freedom.',
+  canonicalUrl: `${OFFICIAL_SITE_ORIGIN}/`,
+  ogType: 'website',
+  image: `${OFFICIAL_SITE_ORIGIN}/favicon.png`,
+};
+
+function buildDynamicCanonicalUrl(pathname) {
+  const rawPath = String(pathname || '/').split('?')[0].split('#')[0];
+  if (!rawPath || rawPath === '/' || rawPath === '/index.html') {
+    return `${OFFICIAL_SITE_ORIGIN}/`;
+  }
+  const normalized = rawPath.replace(/\.html$/i, '').replace(/\/+$/, '');
+  return `${OFFICIAL_SITE_ORIGIN}${normalized.startsWith('/') ? normalized : `/${normalized}`}`;
+}
+
+function upsertMetaTag(attrName, attrValue, content) {
+  if (!content) return;
+  let el = document.head.querySelector(`meta[${attrName}="${attrValue}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attrName, attrValue);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
+
+function upsertCanonicalTag(canonicalUrl) {
+  let link =
+    document.getElementById('canonicalLink') ||
+    document.head.querySelector('link[rel="canonical"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.setAttribute('rel', 'canonical');
+    link.id = 'canonicalLink';
+    document.head.appendChild(link);
+  }
+  link.setAttribute('href', canonicalUrl);
+}
+
+function resolveAbsoluteImageUrl(imgUrl) {
+  if (!imgUrl) return `${OFFICIAL_SITE_ORIGIN}/favicon.png`;
+  if (/^https?:\/\//i.test(imgUrl)) return imgUrl;
+  const cleaned = imgUrl.replace(/^\.\//, '').replace(/^\/+/, '');
+  return `${OFFICIAL_SITE_ORIGIN}/${cleaned}`;
+}
+
+function updateStructuredData(schemaObj) {
+  let script = document.getElementById('structuredData');
+  if (!script) {
+    script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'structuredData';
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify(schemaObj);
+}
+
+function applyPageSeo({ title, description, canonicalUrl, ogType, image, article }) {
+  const resolvedCanonical = canonicalUrl || buildDynamicCanonicalUrl(window.location.pathname);
+  const resolvedTitle = title || HOME_SEO.title;
+  const resolvedDesc = description || HOME_SEO.description;
+  const resolvedImage = resolveAbsoluteImageUrl(image);
+
+  document.title = resolvedTitle;
+  upsertCanonicalTag(resolvedCanonical);
+  upsertMetaTag('name', 'description', resolvedDesc);
+  upsertMetaTag('property', 'og:title', resolvedTitle);
+  upsertMetaTag('property', 'og:description', resolvedDesc);
+  upsertMetaTag('property', 'og:type', ogType || 'website');
+  upsertMetaTag('property', 'og:url', resolvedCanonical);
+  upsertMetaTag('property', 'og:image', resolvedImage);
+  upsertMetaTag('name', 'twitter:title', resolvedTitle);
+  upsertMetaTag('name', 'twitter:description', resolvedDesc);
+  upsertMetaTag('name', 'twitter:image', resolvedImage);
+
+  if (article && article.slug) {
+    updateStructuredData({
+      '@context': 'https://schema.org',
+      '@type': 'NewsArticle',
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': resolvedCanonical,
+      },
+      headline: article.title,
+      description: resolvedDesc,
+      image: [resolvedImage],
+      datePublished: article.publishedDate || '2026-04-15',
+      dateModified: article.publishedDate || '2026-04-15',
+      author: {
+        '@type': 'Organization',
+        name: 'NEF123123 Editorial Desk',
+        url: `${OFFICIAL_SITE_ORIGIN}/`,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'NEF123123 — Navigant Economic Freedom',
+        logo: {
+          '@type': 'ImageObject',
+          url: `${OFFICIAL_SITE_ORIGIN}/favicon.png`,
+        },
+      },
+      articleSection: article.category || 'News',
+      url: resolvedCanonical,
+    });
+  } else {
+    updateStructuredData({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'NewsMediaOrganization',
+          '@id': `${OFFICIAL_SITE_ORIGIN}/#organization`,
+          name: 'NEF123123 — Navigant Economic Freedom',
+          alternateName: 'NEF123123',
+          url: `${OFFICIAL_SITE_ORIGIN}/`,
+          logo: {
+            '@type': 'ImageObject',
+            url: `${OFFICIAL_SITE_ORIGIN}/favicon.png`,
+          },
+        },
+        {
+          '@type': 'WebSite',
+          '@id': `${OFFICIAL_SITE_ORIGIN}/#website`,
+          url: `${OFFICIAL_SITE_ORIGIN}/`,
+          name: HOME_SEO.title,
+          description: HOME_SEO.description,
+          publisher: {
+            '@id': `${OFFICIAL_SITE_ORIGIN}/#organization`,
+          },
+        },
+      ],
+    });
+  }
+}
+
 // In-page article reader modal for Latest News story bodies
 const articleCatalog = {
+  africanOwnedSupplyChains: {
+    slug: 'african-owned-supply-chains',
+    seoTitle: 'African-Owned Supply Chains & Continental Trade | NEF123123',
+    metaDescription:
+      'How African-owned supply chains, local beneficiation, and intra-continental logistics build sovereign wealth and economic freedom across Africa.',
+    publishedDate: '2026-04-15',
+    dot: 'N',
+    category: 'AFRICA · ECONOMIC FREEDOM',
+    title: 'African-Owned Supply Chains: Building Continental Value & Sovereign Trade',
+    img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1100&q=85',
+    alt: 'Container logistics and freight corridors powering African-owned supply chains',
+    imgPosition: 'center',
+    source: 'NEF123123 Editorial Desk · Economic Sovereignty',
+    paragraphs: [
+      'Across Africa, true economic freedom depends on more than extracting raw materials—it requires African ownership and control over the entire supply chain, from local sourcing and industrial processing to freight logistics, cold-chain storage, and cross-border wholesale distribution.',
+      'For decades, colonial-era trade corridors were designed to move unprocessed minerals, timber, and agricultural harvests directly to ports for export, leaving African producers locked out of packaging, refining, shipping, and retail margins.',
+      'Building African-owned supply chains under the African Continental Free Trade Area (AfCFTA) framework means investing in regional rail networks, cooperative aggregation hubs, domestic agro-processing plants, and African-financed trade credit so smallholder farmers and local manufacturers can supply continental supermarkets and state procurement directly.',
+      'Within the Seven Pillars of Navigant Economic Freedom, strengthening African-owned supply chains retains capital inside local communities, reduces import vulnerability, creates skilled jobs across logistics and manufacturing, and anchors long-term continental wealth sovereignty.',
+    ],
+  },
+  stokvelsAndSavingsCircles: {
+    slug: 'stokvels-and-savings-circles',
+    seoTitle: 'Stokvels and Savings Circles: Collective Capital | NEF123123',
+    metaDescription:
+      'Exploring how South African stokvels and community savings circles pool grassroots capital to fund cooperative enterprise and shared wealth.',
+    publishedDate: '2026-04-15',
+    dot: 'N',
+    category: 'ECONOMIC FREEDOM · FINANCE',
+    title: 'Stokvels and Savings Circles: Mobilising Collective African Capital',
+    img: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1100&q=85',
+    alt: 'Community savings and collective investment capital growth representing stokvels',
+    imgPosition: 'center',
+    source: 'NEF123123 Editorial Desk · Cooperative Finance',
+    paragraphs: [
+      'South Africa’s stokvels and Africa’s rotating savings circles represent one of the continent’s most resilient, trusted grassroots financial institutions—mobilising tens of billions of rand every year through disciplined collective saving, mutual accountability, and Ubuntu.',
+      'Traditionally used for groceries, burials, and education expenses, modern investment stokvels are increasingly channelling pooled community capital into bulk procurement, property acquisition, agricultural cooperatives, renewable energy micro-projects, and community-owned retail outlets.',
+      'By formalising transparent constitutions, collective bargaining with wholesalers, and cooperative banking partnerships, stokvels can negotiate lower input costs and retain financial returns inside townships and rural economies rather than losing wealth to predatory high-interest lending.',
+      'Within Navigant Economic Freedom, stokvels and savings circles demonstrate that African communities already possess the social trust and capital discipline required to build democratic, community-owned wealth from the ground up.',
+    ],
+  },
+  projectMayibuyeSpyOperation: {
+    slug: 'project-mayibuye-spy-operation',
+    seoTitle: 'Project Mayibuye Spy Operation & Accountability | NEF123123',
+    metaDescription:
+      'Inside the declassified State Security Agency Project Mayibuye operation, intelligence oversight concerns, and calls for democratic accountability.',
+    publishedDate: '2026-04-15',
+    dot: 'N',
+    category: 'SOUTH AFRICA · INVESTIGATIONS',
+    title: 'Project Mayibuye Spy Operation: Declassified Records & Accountability',
+    img: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1100&q=85',
+    alt: 'Parliamentary accountability and legal oversight gavel representing public scrutiny',
+    imgPosition: 'center',
+    source: 'NEF123123 News Desk · South Africa Oversight',
+    paragraphs: [
+      'Public disclosures and testimony surrounding the State Security Agency’s (SSA) covert "Project Mayibuye" operation have renewed national scrutiny over how South Africa’s intelligence services operated, how secret funds were authorised, and whether covert programmes strayed beyond their constitutional mandate.',
+      'Records cited in parliamentary oversight and inquiry proceedings indicate that Project Mayibuye operated within the SSA’s Special Operations structures, raising urgent questions from civil society, opposition parties, and legal analysts about domestic surveillance, political interference, and weak oversight controls.',
+      'Constitutional law experts and accountability advocates emphasise that Section 199 of South Africa’s Constitution prohibits security services from furthering any partisan political interest or prejudicing legitimate political activity, making independent parliamentary review and declassification essential to public trust.',
+      'Calls continue for full transparency, strengthened powers for the Inspector-General of Intelligence, and clear legislative safeguards to ensure state intelligence institutions protect national sovereignty and citizens’ constitutional rights rather than factional agendas.',
+    ],
+  },
   malemaZille: {
+    slug: 'malema-challenges-helen-zille-court-venue',
+    seoTitle: 'Malema Challenges Helen Zille Over Court Venue | NEF123123',
+    metaDescription:
+      'EFF leader Julius Malema challenges Helen Zille over her push to move their High Court legal dispute from Johannesburg to Cape Town.',
+    publishedDate: '2026-04-15',
     dot: 'N',
     category: 'NEF123123 NEWS | SOUTH AFRICA',
     title: 'Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies',
@@ -356,6 +560,11 @@ const articleCatalog = {
     ],
   },
   coalition: {
+    slug: 'da-invites-eff-mk-party-municipal-coalition-talks',
+    seoTitle: 'DA Invites EFF & MK to Municipal Coalition Talks | NEF123123',
+    metaDescription:
+      'In a major political shift, the Democratic Alliance formally invites the EFF and MK Party to municipal coalition talks across South Africa.',
+    publishedDate: '2026-04-15',
     dot: 'N',
     category: 'SOUTH AFRICA · POLITICS',
     title: 'DA Makes U-Turn, Invites EFF and MK Party to Municipal Coalition Talks',
@@ -371,6 +580,11 @@ const articleCatalog = {
     ],
   },
   agriculture: {
+    slug: 'eff-omphile-maotwe-insourcing-bill-parliament',
+    seoTitle: 'Omphile Maotwe Urges Insourcing Bill Progress | NEF123123',
+    metaDescription:
+      'EFF Treasurer-General Hon. Omphile Maotwe urges Parliament to advance the Insourcing Bill to the desirability stage after four years.',
+    publishedDate: '2026-04-15',
     dot: 'N',
     category: 'NEF123123 NEWS | PARLIAMENT',
     title: 'EFF’s Omphile Maotwe Urges Swift Progress on Insourcing Bill After Four Years',
@@ -388,6 +602,11 @@ const articleCatalog = {
     ],
   },
   sihleLonzi: {
+    slug: 'eff-sihle-lonzi-weekly-parliament-youth-initiative',
+    seoTitle: 'Hon. Sihle Lonzi Invites Youth Into Parliament | NEF123123',
+    metaDescription:
+      'EFF MP Hon. Sihle Lonzi launches a weekly initiative inviting South African students and young professionals to observe Parliamentary committees.',
+    publishedDate: '2026-04-15',
     dot: 'N',
     category: 'NEF123123 NEWS | PARLIAMENT',
     title: 'EFF MP Hon. Sihle Lonzi Invites Students & Young Professionals Into Parliament Weekly',
@@ -404,6 +623,11 @@ const articleCatalog = {
     ],
   },
   africaDignity: {
+    slug: 'african-future-dignity-self-determination',
+    seoTitle: 'African Future Rooted in Dignity & Self-Rule | NEF123123',
+    metaDescription:
+      'Examining how accountable institutions, regional trade corridors, and economic agency build an African future rooted in dignity and self-determination.',
+    publishedDate: '2026-04-15',
     dot: 'N',
     category: 'AFRICA',
     title: 'Building an African future rooted in dignity and self-determination',
@@ -419,6 +643,11 @@ const articleCatalog = {
     ],
   },
   africaDevelopment: {
+    slug: 'who-owns-future-of-african-development',
+    seoTitle: 'Who Owns the Future of African Development? | NEF123123',
+    metaDescription:
+      'As infrastructure reshapes African cities, domestic procurement, local engineering, and transparent financing determine who owns long-term value.',
+    publishedDate: '2026-04-15',
     dot: 'N',
     category: 'DEVELOPMENT',
     title: 'Who owns the future of African development?',
@@ -434,6 +663,11 @@ const articleCatalog = {
     ],
   },
   africaLand: {
+    slug: 'land-resources-shared-prosperity',
+    seoTitle: 'Land, Resources & Shared African Prosperity | NEF123123',
+    metaDescription:
+      'How equitable land tenure, local mineral beneficiation, and stewardship turn Africa’s natural wealth into durable, shared prosperity.',
+    publishedDate: '2026-04-15',
     dot: 'N',
     category: 'LAND & RESOURCES',
     title: 'Land, resources and the promise of shared prosperity',
@@ -449,6 +683,11 @@ const articleCatalog = {
     ],
   },
   industrialisation: {
+    slug: 'continental-value-addition-local-manufacturing',
+    seoTitle: 'Continental Value Addition & Manufacturing | NEF123123',
+    metaDescription:
+      'Why shifting from raw commodity exports to African beneficiation and local manufacturing strengthens jobs, currencies, and economic sovereignty.',
+    publishedDate: '2026-04-15',
     dot: 'N',
     category: 'INDUSTRIALISATION',
     title: 'Continental Value Addition & Local Manufacturing',
@@ -480,6 +719,18 @@ const articleCatalog = {
   },
 };
 
+function findArticleByPath(pathname) {
+  const cleaned = String(pathname || '')
+    .split('?')[0]
+    .split('#')[0]
+    .replace(/\.html$/i, '')
+    .replace(/\/+$/, '');
+  const match = cleaned.match(/^\/news\/([a-z0-9-]+)$/i);
+  if (!match) return null;
+  const slug = match[1].toLowerCase();
+  return Object.values(articleCatalog).find((item) => item.slug === slug) || null;
+}
+
 const clickableStoryContainers = Array.from(
   document.querySelectorAll(
     '.story-body-clickable[data-article-id], .news-dispatch-clickable[data-article-id], .affiliate-ad-clickable-card[data-article-id]'
@@ -497,8 +748,9 @@ const articleModalImg = document.getElementById('articleModalImg');
 const articleModalText = document.getElementById('articleModalText');
 const articleModalSource = document.getElementById('articleModalSource');
 let lastReaderTrigger = null;
+let activeEditorialSlug = null;
 
-function openArticleReader(articleOrId, triggerEl) {
+function openArticleReader(articleOrId, triggerEl, options = {}) {
   const article =
     typeof articleOrId === 'string' ? articleCatalog[articleOrId] : articleOrId;
   if (!articleReaderModal || !article) return;
@@ -546,17 +798,84 @@ function openArticleReader(articleOrId, triggerEl) {
     }
   }
 
+  if (article.slug) {
+    activeEditorialSlug = article.slug;
+    const articlePath = `/news/${article.slug}`;
+    if (
+      !options.skipHistory &&
+      /^https?:$/i.test(window.location.protocol) &&
+      window.location.pathname !== articlePath
+    ) {
+      try {
+        window.history.pushState({ articleSlug: article.slug }, '', articlePath);
+      } catch {
+        // Ignore history pushState restrictions in sandboxed environments
+      }
+    }
+    const dynamicCanonical = buildDynamicCanonicalUrl(articlePath);
+    applyPageSeo({
+      title: article.seoTitle || `${article.title} | NEF123123`,
+      description: article.metaDescription || (article.paragraphs && article.paragraphs[0]) || HOME_SEO.description,
+      canonicalUrl: dynamicCanonical,
+      ogType: 'article',
+      image: article.img,
+      article,
+    });
+  }
+
   articleReaderModal.hidden = false;
   document.body.style.overflow = 'hidden';
   closeArticleModalBtn?.focus();
 }
 
-function closeArticleReader() {
+function closeArticleReader(options = {}) {
   if (!articleReaderModal || articleReaderModal.hidden) return;
   articleReaderModal.hidden = true;
   document.body.style.overflow = '';
+  if (activeEditorialSlug) {
+    activeEditorialSlug = null;
+    if (
+      !options.skipHistory &&
+      /^https?:$/i.test(window.location.protocol) &&
+      /^\/news\//i.test(window.location.pathname)
+    ) {
+      try {
+        window.history.pushState({}, '', '/');
+      } catch {
+        // Ignore history pushState restrictions
+      }
+    }
+    applyPageSeo(HOME_SEO);
+  }
   lastReaderTrigger?.focus();
 }
+
+// Sync initial SEO and support direct /news/<slug> routing if served via fallback
+(() => {
+  const matchedArticle = findArticleByPath(window.location.pathname);
+  if (matchedArticle) {
+    openArticleReader(matchedArticle, null, { skipHistory: true });
+  } else {
+    applyPageSeo({
+      ...HOME_SEO,
+      canonicalUrl: buildDynamicCanonicalUrl(window.location.pathname),
+    });
+  }
+})();
+
+window.addEventListener('popstate', () => {
+  const matchedArticle = findArticleByPath(window.location.pathname);
+  if (matchedArticle) {
+    openArticleReader(matchedArticle, null, { skipHistory: true });
+  } else if (articleReaderModal && !articleReaderModal.hidden) {
+    closeArticleReader({ skipHistory: true });
+  } else {
+    applyPageSeo({
+      ...HOME_SEO,
+      canonicalUrl: buildDynamicCanonicalUrl(window.location.pathname),
+    });
+  }
+});
 
 clickableStoryContainers.forEach((storyContainer) => {
   const articleId = storyContainer.dataset.articleId;
@@ -590,9 +909,9 @@ document
     });
   });
 
-closeArticleModalBtn?.addEventListener('click', closeArticleReader);
-closeArticleModalFooterBtn?.addEventListener('click', closeArticleReader);
-articleModalBackdrop?.addEventListener('click', closeArticleReader);
+closeArticleModalBtn?.addEventListener('click', () => closeArticleReader());
+closeArticleModalFooterBtn?.addEventListener('click', () => closeArticleReader());
+articleModalBackdrop?.addEventListener('click', () => closeArticleReader());
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && articleReaderModal && !articleReaderModal.hidden) {
