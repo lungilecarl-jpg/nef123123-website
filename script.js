@@ -22,6 +22,10 @@ const sihleLonziImg =
   document.querySelector('#openSihleLonziImage img')?.getAttribute('src') ||
   './src/assets/images/eff-sihle-lonzi-parliament-youth.jpg';
 
+const malemaWaterCrisisImg =
+  document.querySelector('#openMalemaWaterCrisisImage img')?.getAttribute('src') ||
+  './src/assets/images/malema-water-crisis-warning.jpg';
+
 const today = new Date();
 const todayEl = document.getElementById('today');
 if (todayEl) {
@@ -620,6 +624,28 @@ const articleCatalog = {
       'Standing on the steps of Parliament, Economic Freedom Fighters (EFF) Member of Parliament Hon. Sihle Lonzi announced a weekly initiative welcoming students and young professionals from across South Africa to attend and observe Parliamentary Portfolio Committee proceedings.',
       'Hon. Lonzi explained that the programme is designed to give young citizens firsthand exposure to how Parliament operates, how oversight of government departments takes place, and how legislation and public budgets are interrogated.',
       'He emphasised that youth must be brought closer to Parliament and given meaningful opportunities to participate in decisions shaping their future, rather than having their future discussed behind closed doors without their involvement.',
+    ],
+  },
+  malemaWaterCrisis: {
+    slug: 'malema-past-warning-south-africa-water-crisis',
+    seoTitle: 'Julius Malema’s Warning as SA Water Crisis Grows | NEF123123',
+    metaDescription:
+      'Julius Malema’s past warning on water shortages resurfaces as Bronkhorstspruit, Tshwane, and Johannesburg face escalating water restrictions.',
+    publishedDate: '2026-04-15',
+    dot: 'N',
+    category: 'NEF123123 NEWS | SOUTH AFRICA',
+    title: 'Julius Malema’s Past Warning Comes True as South Africa’s Water Crisis Escalates',
+    img: malemaWaterCrisisImg,
+    alt: 'NEF123123 video report featuring Julius Malema and Bronkhorstspruit residents facing a worsening water crisis',
+    imgPosition: 'center',
+    source: 'NEF123123 · Facebook Video',
+    externalUrl: 'https://www.facebook.com/share/v/1Drffe8xqh/',
+    externalLabel: 'Watch Video on Facebook →',
+    paragraphs: [
+      'Julius Malema previously told communities facing water shortages to demand help from the party they voted for. Now, as reported from the ground, the water crisis has become a serious concern for South Africans across multiple municipalities.',
+      'In Bronkhorstspruit, desperate residents are forced to fetch water from a local stream after a chlorine issue at the water treatment facility left over 500 people hospitalised with stomach cramps.',
+      'Since 20 October, the City of Tshwane has restricted residents in affected areas to using tap water only to flush toilets as municipal water supply and safety pressures mount.',
+      'Meanwhile, the City of Johannesburg is implementing Level 2 water restrictions starting on the 21st—banning the watering of gardens and hosing down of driveways to support strained reservoir levels while multiple areas remain without water.',
     ],
   },
   africaDignity: {
