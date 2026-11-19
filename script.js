@@ -20,7 +20,7 @@ const faoSchwarzImg =
 
 const sihleLonziImg =
   document.querySelector('#openSihleLonziImage img')?.getAttribute('src') ||
-  './src/assets/images/eff-sihle-lonzi-parliament-youth.jpg';
+  '/assets/aistudio/Screenshot_2026-11-19_093542_1cad536d.png';
 
 const malemaWaterCrisisImg =
   document.querySelector('#openMalemaWaterCrisisImage img')?.getAttribute('src') ||
