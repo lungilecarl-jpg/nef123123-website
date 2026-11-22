@@ -2419,6 +2419,27 @@ document.addEventListener('keydown', (event) => {
     renderFxStrip(liveRates || latestFx || {});
     renderPropertyConverter();
 
+    if (fxPerUsd.ZAR) {
+      const formatZar = (amount) =>
+        `R${amount.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`;
+      document.querySelectorAll('#news-ads .ad-price[data-usd-price]').forEach((priceEl) => {
+        const usdPrice = Number(priceEl.dataset.usdPrice);
+        if (!Number.isFinite(usdPrice) || usdPrice <= 0) return;
+        const zarTotal = usdPrice * fxPerUsd.ZAR;
+        const prefix = priceEl.dataset.pricePrefix || '';
+        priceEl.textContent = `${prefix}${formatZar(zarTotal)} ZAR`;
+        const unitEl = priceEl.closest('.ad-price-row')?.querySelector('.ad-price-unit[data-unit-count]');
+        const unitCount = Number(unitEl?.dataset.unitCount);
+        if (unitEl && Number.isFinite(unitCount) && unitCount > 0) {
+          const unitLabel = unitEl.dataset.unitLabel || 'count';
+          unitEl.textContent = `${formatZar(zarTotal / unitCount)} / ${unitLabel} · Amazon`;
+        }
+      });
+    }
+
     const nowStr = new Date().toLocaleTimeString('en-ZA', {
       hour: '2-digit',
       minute: '2-digit',
