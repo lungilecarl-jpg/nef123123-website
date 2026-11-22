@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.nef123123.co.za/</loc>
     <lastmod>2026-04-15</lastmod>
@@ -11,71 +12,129 @@
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&amp;fit=crop&amp;w=1200&amp;q=85</image:loc>
+      <image:title>African-Owned Supply Chains: Building Continental Value &amp; Sovereign Trade</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/stokvels-and-savings-circles</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&amp;fit=crop&amp;w=1200&amp;q=85</image:loc>
+      <image:title>Stokvels and Savings Circles: Mobilising Collective African Capital</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/project-mayibuye-spy-operation</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&amp;fit=crop&amp;w=1200&amp;q=85</image:loc>
+      <image:title>Project Mayibuye Spy Operation: Declassified Records &amp; Accountability</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.nef123123.co.za/news/malema-fires-back-at-helen-zille-mashaba-affidavit-da-emails</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.nef123123.co.za/src/assets/images/malema-fires-back-zille.jpg</image:loc>
+      <image:title>Julius Malema Fires Back at Helen Zille: “I’m Going to Sue You!” | Mashaba Affidavit &amp; DA Emails Exposed</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/malema-challenges-helen-zille-court-venue</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.nef123123.co.za/src/assets/images/regenerated_image_1794932529148.jpg</image:loc>
+      <image:title>Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/da-invites-eff-mk-party-municipal-coalition-talks</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.nef123123.co.za/src/assets/images/assets/aistudio/image_e921a8c9.png</image:loc>
+      <image:title>DA Makes U-Turn, Invites EFF and MK Party to Municipal Coalition Talks</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/eff-omphile-maotwe-insourcing-bill-parliament</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.nef123123.co.za/src/assets/images/eff-insourcing-bill-maotwe.jpg</image:loc>
+      <image:title>EFF’s Omphile Maotwe Urges Swift Progress on Insourcing Bill After Four Years</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/eff-sihle-lonzi-weekly-parliament-youth-initiative</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.nef123123.co.za/assets/aistudio/Screenshot_2026-11-19_093542_1cad536d.png</image:loc>
+      <image:title>EFF MP Hon. Sihle Lonzi Invites Students &amp; Young Professionals Into Parliament Weekly</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/malema-past-warning-south-africa-water-crisis</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.nef123123.co.za/src/assets/images/malema-water-crisis-warning.jpg</image:loc>
+      <image:title>Julius Malema’s Past Warning Comes True as South Africa’s Water Crisis Escalates</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/african-future-dignity-self-determination</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&amp;fit=crop&amp;w=1200&amp;q=85</image:loc>
+      <image:title>Building an African future rooted in dignity and self-determination</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/who-owns-future-of-african-development</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=1200&amp;q=85</image:loc>
+      <image:title>Who owns the future of African development?</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/land-resources-shared-prosperity</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&amp;fit=crop&amp;w=1200&amp;q=85</image:loc>
+      <image:title>Land, resources and the promise of shared prosperity</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.nef123123.co.za/news/continental-value-addition-local-manufacturing</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&amp;fit=crop&amp;w=1200&amp;q=85</image:loc>
+      <image:title>Continental Value Addition &amp; Local Manufacturing</image:title>
+    </image:image>
   </url>
 </urlset>

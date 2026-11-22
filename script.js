@@ -26,6 +26,14 @@ const malemaWaterCrisisImg =
   document.querySelector('#openMalemaWaterCrisisImage img')?.getAttribute('src') ||
   './src/assets/images/malema-water-crisis-warning.jpg';
 
+const malemaFiresBackZilleImg =
+  document.querySelector('#openMalemaFiresBackZilleImage img')?.getAttribute('src') ||
+  './src/assets/images/malema-fires-back-zille.jpg';
+
+const malemaBombshellNamesImg =
+  document.getElementById('heroSlideMalemaNamesImgRef')?.getAttribute('href') ||
+  './src/assets/images/malema-bombshell-names.jpg';
+
 const today = new Date();
 const todayEl = document.getElementById('today');
 if (todayEl) {
@@ -65,7 +73,7 @@ document.getElementById('joinForm')?.addEventListener('submit', (event) => {
   const message = document.getElementById('formMessage');
   if (!message) return;
   message.textContent =
-    'Thank you for your interest. The subscription service must be connected by the site administrator before sign-ups can be stored.';
+    'Breaking-news subscriber registration is safely paused until durable persistent storage is activated. No email addresses are stored in temporary storage.';
   message.classList.add('form-success');
 });
 
@@ -165,17 +173,18 @@ const heroSlides = [
     ariaLabel: 'Explore Beyond Extraction and economic sovereignty',
   },
   {
-    href: 'https://link.amazon/B0iCzskXw',
+    href: 'https://www.facebook.com/share/v/1JNzB5KvMC/',
     external: true,
-    img: heroAmazonImg,
-    imgPosition: 'center 72%',
-    alt: 'Amazon storefront sign',
-    label: 'AMAZON FEATURED',
-    category: 'FEATURED SELECTION',
-    title: 'Shop curated picks & deals on Amazon',
-    desc: 'Explore verified partner recommendations and everyday essentials selected for the NEF123123 community.',
-    cta: 'Shop on Amazon',
-    ariaLabel: 'Shop featured Amazon selection on Amazon',
+    externalRel: 'noopener noreferrer',
+    img: malemaBombshellNamesImg,
+    imgPosition: 'center top',
+    alt: 'EFF President Julius Malema speaking at a studio microphone in a red beret during an explosive interview on NEF123123',
+    label: 'NEF123123 VIDEO',
+    category: 'NEF123123 NEWS | EXCLUSIVE INTERVIEW',
+    title: 'Julius Malema Drops Bombshell: “You Will Die If I Release The Names!”',
+    desc: 'EFF leader Julius Malema explains why he refuses to publicly name trusted figures allegedly working against the party, cites intelligence tracking secret Zanzibar meetings and financial records, and alleges journalists were compromised dating back to #FeesMustFall.',
+    cta: 'Watch Video on Facebook',
+    ariaLabel: 'Watch NEF123123 video on Facebook: Julius Malema Drops Bombshell — You Will Die If I Release The Names',
   },
 ];
 
@@ -538,6 +547,28 @@ const articleCatalog = {
       'Records cited in parliamentary oversight and inquiry proceedings indicate that Project Mayibuye operated within the SSA’s Special Operations structures, raising urgent questions from civil society, opposition parties, and legal analysts about domestic surveillance, political interference, and weak oversight controls.',
       'Constitutional law experts and accountability advocates emphasise that Section 199 of South Africa’s Constitution prohibits security services from furthering any partisan political interest or prejudicing legitimate political activity, making independent parliamentary review and declassification essential to public trust.',
       'Calls continue for full transparency, strengthened powers for the Inspector-General of Intelligence, and clear legislative safeguards to ensure state intelligence institutions protect national sovereignty and citizens’ constitutional rights rather than factional agendas.',
+    ],
+  },
+  malemaFiresBackZille: {
+    slug: 'malema-fires-back-at-helen-zille-mashaba-affidavit-da-emails',
+    seoTitle: 'Malema Fires Back at Helen Zille Over DA Emails | NEF123123',
+    metaDescription:
+      'EFF President Julius Malema responds to Helen Zille’s claims, explains his defamation lawsuit, cites Herman Mashaba’s affidavit and leaked DA emails.',
+    publishedDate: '2026-04-15',
+    dot: 'N',
+    category: 'NEF123123 NEWS | SOUTH AFRICA',
+    title: 'Julius Malema Fires Back at Helen Zille: “I’m Going to Sue You!” | Mashaba Affidavit & DA Emails Exposed',
+    img: malemaFiresBackZilleImg,
+    alt: 'Split-screen of Helen Zille and EFF President Julius Malema speaking at a microphone in his red EFF beret',
+    imgPosition: 'center 15%',
+    source: 'NEF123123 · Facebook Video',
+    externalUrl: 'https://www.facebook.com/share/v/14y7c9DShKA/',
+    externalLabel: 'Watch Video on Facebook →',
+    paragraphs: [
+      'EFF President Julius Malema has responded forcefully to allegations made by Helen Zille claiming he influenced former Johannesburg Mayor Herman Mashaba to appoint Shadrack Sibiya and manipulate municipal fleet tenders.',
+      'In the NEF123123 video report, Malema explains why he is taking legal action against Zille—declaring "I\'m going to sue you!"—and insists her public accusations must be tested in court rather than driven through unsubstantiated narratives.',
+      'Malema points directly to Herman Mashaba’s affidavit and leaked emails implicating senior Democratic Alliance (DA) leaders, while calling out what he describes as manufactured social media outrage targeting the Economic Freedom Fighters.',
+      'He further questions Zille’s commitment to the people of Johannesburg, criticising her stated intention to serve as a "part-time" Johannesburg councillor while continuing to reside in Cape Town.',
     ],
   },
   malemaZille: {
@@ -2425,7 +2456,7 @@ document.addEventListener('keydown', (event) => {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}`;
-      document.querySelectorAll('#news-ads .ad-price[data-usd-price]').forEach((priceEl) => {
+      document.querySelectorAll('.ad-price[data-usd-price]').forEach((priceEl) => {
         const usdPrice = Number(priceEl.dataset.usdPrice);
         if (!Number.isFinite(usdPrice) || usdPrice <= 0) return;
         const zarTotal = usdPrice * fxPerUsd.ZAR;

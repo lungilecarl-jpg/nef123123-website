@@ -10,6 +10,10 @@ function getMultiPageInputs() {
   const inputs = {
     main: path.resolve(__dirname, 'index.html'),
   };
+  const adminHtml = path.resolve(__dirname, 'admin', 'index.html');
+  if (fs.existsSync(adminHtml)) {
+    inputs.admin = adminHtml;
+  }
   if (fs.existsSync(newsDir)) {
     for (const file of fs.readdirSync(newsDir)) {
       if (file.endsWith('.html')) {
@@ -25,7 +29,12 @@ function cleanNewsUrlMiddleware(baseDir) {
   return (req, _res, next) => {
     if (!req.url) return next();
     const [pathname, query] = req.url.split('?');
-    if (/^\/news\/[a-z0-9-]+\/?$/i.test(pathname)) {
+    if (/^\/admin\/?$/i.test(pathname)) {
+      const adminCandidate = path.join(baseDir, 'admin', 'index.html');
+      if (fs.existsSync(adminCandidate)) {
+        req.url = `/admin/index.html${query ? `?${query}` : ''}`;
+      }
+    } else if (/^\/news\/[a-z0-9-]+\/?$/i.test(pathname)) {
       const normalized = pathname.replace(/\/+$/, '');
       const candidateFile = path.join(baseDir, `${normalized}.html`);
       if (fs.existsSync(candidateFile)) {
