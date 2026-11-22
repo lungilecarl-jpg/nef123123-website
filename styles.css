@@ -4152,3 +4152,453 @@ footer {
   }
 }
 
+/* Unified Block Sizing — Match Global Live Markets & Real-Estate Proportions Site-Wide */
+
+/* 1. Top Stories Hero & Welcome Band */
+#top-stories .msn-bento-hero {
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 14px;
+}
+
+#top-stories .msn-hero-card,
+#top-stories .hero-side-stack {
+  height: 340px;
+}
+
+#top-stories .hero-side-stack {
+  gap: 12px;
+}
+
+#top-stories .hero-side-card {
+  grid-template-columns: 136px minmax(0, 1fr);
+  border-radius: 10px;
+  background: var(--surface-sub);
+  box-shadow: none;
+}
+
+#top-stories .hero-side-card:hover {
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(13, 107, 176, 0.1);
+}
+
+#top-stories .hero-side-copy {
+  padding: 10px 12px;
+}
+
+#home .portal-welcome-card {
+  padding: 18px 20px;
+}
+
+/* 2. Latest News (#latest-news) & Africa in Focus (#africa) */
+#latest-news .msn-feed-grid.bento-lead-left,
+#africa .msn-feed-grid.bento-lead-right {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--portal-radius);
+  padding: 18px;
+  box-shadow: var(--portal-shadow);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-card-featured-row,
+#africa .msn-feed-grid.bento-lead-right > .msn-card,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child {
+  grid-column: span 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: static;
+  min-height: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-sub);
+  box-shadow: none;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:hover,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child:hover,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-card-featured-row:hover,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:hover,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(13, 107, 176, 0.1);
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .msn-card-media,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child .msn-card-media,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-card-featured-row .msn-card-media,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .msn-card-media,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .msn-card-media {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: 148px;
+  min-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child .msn-card-media::after,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .msn-card-media::after {
+  display: none;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .msn-card-media img,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .msn-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-body,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child .story-body,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-card-featured-row .story-body,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .story-body,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .story-body {
+  position: static;
+  margin-top: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: transparent;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-body-clickable:hover,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .story-body-clickable:hover {
+  background: transparent;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .msn-meta,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .msn-meta {
+  margin-bottom: 0;
+  gap: 6px;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .category,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child .category,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .category,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .category {
+  font-size: 10.5px;
+  color: var(--subtle);
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-body h3,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child .story-body h3,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-card-featured-row .story-body h3,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .story-body h3,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .story-body h3 {
+  font-size: 14.5px;
+  line-height: 1.3;
+  color: var(--ink);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-body p,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child .story-body p,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-card-featured-row .story-body p,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .story-body p,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .story-body p {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-card-actions,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-card-featured-row .story-card-actions {
+  margin-top: auto;
+  padding-top: 4px;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-read-btn,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child .story-read-btn,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .story-read-btn,
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .story-read-btn {
+  font-size: 11.5px;
+  color: var(--blue-dark);
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-read-btn:hover,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-body-clickable:hover .story-read-btn,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .story-read-btn:hover,
+#africa .msn-feed-grid.bento-lead-right > .msn-card .story-body-clickable:hover .story-read-btn {
+  color: var(--red);
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child .story-video-link {
+  color: var(--red);
+  background: transparent;
+  border-color: transparent;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:first-child .story-video-link:hover {
+  color: var(--blue-dark);
+  background: transparent;
+}
+
+/* Latest News Lead Pair (matches Global Markets & Real Estate lead card dimensions) */
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1),
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(2) {
+  grid-column: span 2;
+  background: linear-gradient(135deg, #f3f9ff 0%, #ffffff 100%);
+  border-color: var(--line-strong);
+  padding: 12px;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .msn-card-media,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(2) .msn-card-media {
+  height: 225px;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-body h3,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(2) .story-body h3 {
+  font-size: 16.5px;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-body p,
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(2) .story-body p {
+  -webkit-line-clamp: 3;
+}
+
+/* Africa in Focus Lead Card (3 stories on one balanced 4-column row: 1 + 1 + 2) */
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child {
+  grid-column: span 2;
+  background: linear-gradient(135deg, #f3f9ff 0%, #ffffff 100%);
+  border-color: var(--line-strong);
+}
+
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .story-body h3 {
+  font-size: 16.5px;
+}
+
+#africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .story-body p {
+  -webkit-line-clamp: 3;
+}
+
+/* 3. Advertising & Partner Marketing (#news-ads — 7 cards on 4-column grid: 2+1+1 / 1+1+1+1) */
+#news-ads .affiliate-ad-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card,
+#news-ads .affiliate-ad-grid > .affiliate-ad-card:last-child:nth-child(odd) {
+  grid-column: span 1;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-sub);
+  box-shadow: none;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(13, 107, 176, 0.1);
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card:first-child {
+  grid-column: span 2;
+  background: linear-gradient(135deg, #f3f9ff 0%, #ffffff 100%);
+  border-color: var(--line-strong);
+  padding: 10px 12px;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card .ad-thumb,
+#news-ads .affiliate-ad-grid > .affiliate-ad-card:last-child:nth-child(odd) .ad-thumb {
+  flex: none;
+  width: 100%;
+  height: 148px;
+  border-radius: 8px;
+  padding: 6px;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card .ad-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card h4 {
+  font-size: 14.5px;
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card:first-child h4 {
+  font-size: 16.5px;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card p {
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card .ad-price-row {
+  margin: 4px 0 0;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card .ad-price {
+  font-size: 15px;
+}
+
+#news-ads .affiliate-ad-grid > .affiliate-ad-card .ad-cta {
+  margin-top: auto;
+  padding-top: 4px;
+  font-size: 11.5px;
+}
+
+/* 4. Sport, Weather, Economy, Movement & Bottom Modules Panel Parity */
+#sport .sport-layout {
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+#sport .sport-matches-grid {
+  gap: 12px;
+}
+
+#sport .sport-match-card {
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+#weather .weather-grid {
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+#weather .weather-current-card,
+#weather .weather-forecast-card {
+  padding: 18px;
+}
+
+#economy .economy-inner,
+#economy .economy-image {
+  min-height: 225px;
+}
+
+#economy .economy-text {
+  padding: 22px 24px;
+}
+
+#movement .movement-panel {
+  padding: 18px 22px;
+  gap: 22px;
+}
+
+.portal-bottom-modules .msn-bottom-grid {
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 14px;
+}
+
+.portal-bottom-modules .affiliate-box,
+.portal-bottom-modules .join-card {
+  padding: 18px 20px;
+}
+
+/* Tablet Breakpoint Parity (matches Global Live Markets & Real Estate) */
+@media (max-width: 1080px) {
+  #top-stories .msn-bento-hero,
+  #sport .sport-layout,
+  #weather .weather-grid,
+  .portal-bottom-modules .msn-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #top-stories .hero-side-stack {
+    height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto;
+  }
+
+  #latest-news .msn-feed-grid.bento-lead-left,
+  #africa .msn-feed-grid.bento-lead-right,
+  #news-ads .affiliate-ad-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1),
+  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(2),
+  #africa .msn-feed-grid.bento-lead-right > .msn-card:last-child,
+  #news-ads .affiliate-ad-grid > .affiliate-ad-card:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Mobile Breakpoint Parity (matches Global Live Markets & Real Estate) */
+@media (max-width: 680px) {
+  #top-stories .hero-side-stack,
+  #latest-news .msn-feed-grid.bento-lead-left,
+  #africa .msn-feed-grid.bento-lead-right,
+  #news-ads .affiliate-ad-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #latest-news .msn-feed-grid.bento-lead-left,
+  #africa .msn-feed-grid.bento-lead-right {
+    padding: 14px;
+  }
+
+  #latest-news .msn-feed-grid.bento-lead-left > .msn-card,
+  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1),
+  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(2),
+  #africa .msn-feed-grid.bento-lead-right > .msn-card,
+  #africa .msn-feed-grid.bento-lead-right > .msn-card:last-child,
+  #news-ads .affiliate-ad-grid > .affiliate-ad-card,
+  #news-ads .affiliate-ad-grid > .affiliate-ad-card:first-child {
+    grid-column: auto;
+  }
+
+  #latest-news .msn-feed-grid.bento-lead-left > .msn-card .msn-card-media,
+  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .msn-card-media,
+  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(2) .msn-card-media,
+  #africa .msn-feed-grid.bento-lead-right > .msn-card .msn-card-media,
+  #africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .msn-card-media,
+  #news-ads .affiliate-ad-grid > .affiliate-ad-card .ad-thumb {
+    height: 180px;
+  }
+}
+
+
+
