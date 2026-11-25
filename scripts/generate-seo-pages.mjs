@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,6 +10,46 @@ const publicDir = path.join(rootDir, 'public');
 const catalogPath = path.join(rootDir, 'data', 'articles-catalog.json');
 
 const OFFICIAL_ORIGIN = 'https://www.nef123123.co.za';
+
+function normalizeExternalUrlKey(rawUrl) {
+  const trimmed = String(rawUrl || '').trim();
+  if (!trimmed) return '';
+  try {
+    const parsed = new URL(trimmed);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+    const pathname = parsed.pathname.replace(/\/+$/, '').toLowerCase();
+    const kept = [];
+    parsed.searchParams.forEach((v, k) => {
+      const lk = k.toLowerCase();
+      if (lk.startsWith('utm_') || ['fbclid', 'gclid', 'ref', 'source', 'si', 'igshid'].includes(lk)) return;
+      kept.push([lk, v.trim()]);
+    });
+    kept.sort((a, b) => a[0].localeCompare(b[0]));
+    const qs = kept.length ? `?${kept.map(([k, v]) => `${k}=${v}`).join('&')}` : '';
+    return `https://${host}${pathname}${qs}`;
+  } catch {
+    return trimmed.toLowerCase().replace(/\/+$/, '');
+  }
+}
+
+function computeBodyFingerprintKey(article) {
+  const parts = [
+    ...(Array.isArray(article.paragraphs) ? article.paragraphs : []),
+    ...((Array.isArray(article.sections) ? article.sections : []).flatMap((s) =>
+      Array.isArray(s?.paragraphs) ? s.paragraphs : []
+    )),
+  ];
+  const normalized = parts
+    .join(' ')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const words = normalized ? normalized.split(' ').filter((w) => w.length >= 2) : [];
+  if (words.length < 12) return '';
+  return crypto.createHash('sha256').update(normalized, 'utf8').digest('hex');
+}
 
 export function deduplicateRawArticles(list) {
   const bySlug = new Map();
@@ -26,23 +67,47 @@ export function deduplicateRawArticles(list) {
       bySlug.set(normalized, { article, order: existing.order });
     }
   });
-  return Array.from(bySlug.values())
+
+  const slugDeduped = Array.from(bySlug.values())
     .sort((a, b) => a.order - b.order)
     .map((entry) => entry.article);
+
+  const seenExternalUrls = new Set();
+  const seenBodyFingerprints = new Set();
+  const finalArticles = [];
+
+  for (const article of slugDeduped) {
+    const extKey = normalizeExternalUrlKey(article.externalUrl);
+    if (extKey && seenExternalUrls.has(extKey)) {
+      console.warn(`[NEF123123 duplicate-guard] Blocked duplicate externalUrl on "${article.slug}": ${extKey}`);
+      continue;
+    }
+    const bodyFp = computeBodyFingerprintKey(article);
+    if (bodyFp && seenBodyFingerprints.has(bodyFp)) {
+      console.warn(`[NEF123123 duplicate-guard] Blocked duplicate exact content fingerprint on "${article.slug}"`);
+      continue;
+    }
+    if (extKey) seenExternalUrls.add(extKey);
+    if (bodyFp) seenBodyFingerprints.add(bodyFp);
+    finalArticles.push(article);
+  }
+
+  return finalArticles;
 }
 
 /**
  * Safely deletes orphaned `<slug>.html` files in targetNewsDir that are no longer
  * present in `activeSlugs`. Never touches non-HTML assets (e.g. `article-seo.js`)
- * and enforces strict directory boundary containment.
+ * or the archive page `index.html`, and enforces strict directory boundary containment.
  */
 export function removeOrphanedNewsHtml(targetNewsDir, activeSlugs) {
   const resolvedDir = path.resolve(targetNewsDir);
   if (!fs.existsSync(resolvedDir)) return [];
 
-  const allowedFiles = new Set(
-    Array.from(activeSlugs).map((slug) => `${String(slug).trim().toLowerCase()}.html`)
-  );
+  const allowedFiles = new Set([
+    'index.html',
+    ...Array.from(activeSlugs).map((slug) => `${String(slug).trim().toLowerCase()}.html`),
+  ]);
   const removed = [];
 
   for (const entry of fs.readdirSync(resolvedDir)) {
@@ -125,7 +190,7 @@ function buildArticleHtml(article) {
         author: {
           '@type': 'Organization',
           name: 'NEF123123 Editorial Desk',
-          url: `${OFFICIAL_ORIGIN}/`,
+          url: `${OFFICIAL_ORIGIN}/about`,
         },
         publisher: {
           '@type': 'NewsMediaOrganization',
@@ -152,7 +217,7 @@ function buildArticleHtml(article) {
             '@type': 'ListItem',
             position: 2,
             name: 'News',
-            item: `${OFFICIAL_ORIGIN}/#latest-news`,
+            item: `${OFFICIAL_ORIGIN}/news`,
           },
           {
             '@type': 'ListItem',
@@ -165,9 +230,25 @@ function buildArticleHtml(article) {
     ],
   };
 
-  const paragraphsHtml = article.paragraphs
+  const leadParagraphsHtml = article.paragraphs
     .map((paragraph) => `          <p>${escapeHtml(paragraph)}</p>`)
     .join('\n');
+
+  const sectionsHtml = Array.isArray(article.sections)
+    ? article.sections
+        .map((section) => {
+          const secHeading = section.heading
+            ? `          <h2>${escapeHtml(section.heading)}</h2>`
+            : '';
+          const secParas = Array.isArray(section.paragraphs)
+            ? section.paragraphs.map((p) => `          <p>${escapeHtml(p)}</p>`).join('\n')
+            : '';
+          return [secHeading, secParas].filter(Boolean).join('\n');
+        })
+        .join('\n')
+    : '';
+
+  const bodyHtml = [leadParagraphsHtml, sectionsHtml].filter(Boolean).join('\n');
 
   const externalButtonHtml = article.externalUrl
     ? `\n          <a class="news-article-btn" href="${escapeHtml(article.externalUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(article.externalLabel || 'Read original source →')}</a>`
@@ -258,7 +339,7 @@ function buildArticleHtml(article) {
           <a href="https://www.facebook.com/Nef1231231" target="_blank" rel="noopener noreferrer" class="masthead-fb-btn" title="Follow NEF123123 on Facebook" aria-label="Follow NEF123123 on Facebook">
             <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
           </a>
-          <a href="https://www.instagram.com/nef123123/#" target="_blank" rel="noopener noreferrer" class="masthead-ig-btn" title="Follow NEF123123 on Instagram" aria-label="Follow NEF123123 on Instagram">
+          <a href="https://www.instagram.com/nef123123/" target="_blank" rel="noopener noreferrer" class="masthead-ig-btn" title="Follow NEF123123 on Instagram" aria-label="Follow NEF123123 on Instagram">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
           </a>
           <a href="https://www.tiktok.com/@NEF123123" target="_blank" rel="noopener noreferrer" class="masthead-tt-btn" title="Follow NEF123123 on TikTok" aria-label="Follow NEF123123 on TikTok">
@@ -272,16 +353,15 @@ function buildArticleHtml(article) {
     <nav class="main-nav" id="mainNav">
       <div class="wrap nav-inner">
         <a href="/">Home</a>
-        <a href="/#top-stories">Top Stories</a>
-        <a class="active" href="/#latest-news">Latest News</a>
+        <a class="active" href="/news">All News</a>
         <a href="/#africa">Africa</a>
-        <a href="/#news-ads">Advertising</a>
         <a href="/#markets">Markets</a>
         <a href="/#sport">Sport</a>
         <a href="/#weather">Weather</a>
         <a href="/#economy">Economy</a>
-        <a href="/#movement">The Movement</a>
-        <a href="/#contact">Contact</a>
+        <a href="/about">About Us</a>
+        <a href="/editorial-policy">Editorial Policy</a>
+        <a href="/contact">Contact</a>
       </div>
     </nav>
   </header>
@@ -291,7 +371,7 @@ function buildArticleHtml(article) {
       <nav class="news-breadcrumb" aria-label="Breadcrumb">
         <a href="/">NEF123123 Home</a>
         <span aria-hidden="true">/</span>
-        <a href="/#latest-news">News</a>
+        <a href="/news">News Archive</a>
         <span aria-hidden="true">/</span>
         <span>${escapeHtml(article.title)}</span>
       </nav>
@@ -301,7 +381,7 @@ function buildArticleHtml(article) {
           <div class="news-article-kicker">${escapeHtml(article.category)}</div>
           <h1>${escapeHtml(article.title)}</h1>
           <div class="news-article-byline">
-            <span>${escapeHtml(article.source)}</span>
+            <span><strong>Source &amp; Desk:</strong> ${escapeHtml(article.source)}</span>
             <span>Published: <time datetime="${escapeHtml(article.publishedDateIso)}">${escapeHtml(article.publishedDateDisplay)}</time></span>
           </div>
 
@@ -311,11 +391,15 @@ function buildArticleHtml(article) {
           </figure>
 
           <div class="news-article-body">
-${paragraphsHtml}
+${bodyHtml}
+          </div>
+
+          <div class="article-editorial-note">
+            Published by <strong>NEF123123 — Navigant Economic Freedom</strong> under our <a href="/editorial-policy">Editorial Policy</a>. For factual corrections, reader feedback, or right-of-reply requests, please <a href="/contact">contact our desk</a>.
           </div>
 
           <div class="news-article-actions">
-            <a class="news-article-btn news-article-btn-secondary" href="/#latest-news">← Back to NEF123123 News</a>${externalButtonHtml}
+            <a class="news-article-btn news-article-btn-secondary" href="/news">← All NEF123123 News</a>${externalButtonHtml}
           </div>
         </article>
 
@@ -344,17 +428,250 @@ ${relatedHtml}
         <p>Navigating the path to economic freedom. Reporting, teaching and building.</p>
         <strong>✊ Unity, Land, and Freedom.</strong>
       </div>
-      <div><h3>Explore</h3><a href="/#top-stories">Top stories &amp; deals</a><a href="/#latest-news">Latest news</a><a href="/#africa">Africa in focus</a><a href="/#news-ads">Advertising</a><a href="/#markets">Markets &amp; real estate</a><a href="/#sport">Sport</a><a href="/#weather">Live weather</a><a href="/#economy">Economic freedom</a></div>
-      <div><h3>The movement</h3><a href="/#movement">About NEF123123</a><a href="/#affiliates">Partners</a><a href="/#join">Join the movement</a><a href="/#contact">Contact</a></div>
+      <div>
+        <h3>Explore</h3>
+        <a href="/news">All News Reports</a>
+        <a href="/#latest-news">Latest news</a>
+        <a href="/#africa">Africa in focus</a>
+        <a href="/#markets">Markets &amp; real estate</a>
+        <a href="/#sport">Sport</a>
+        <a href="/#weather">Live weather</a>
+        <a href="/#economy">Economic freedom</a>
+      </div>
+      <div>
+        <h3>Organisation &amp; Policies</h3>
+        <a href="/about">About Us</a>
+        <a href="/editorial-policy">Editorial Policy</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms &amp; Conditions</a>
+        <a href="/contact">Contact Us</a>
+      </div>
       <div>
         <h3>Get in touch</h3>
-        <p>For editorial submissions, partnerships and general enquiries:</p>
-        <a class="footer-email-link" href="mailto:info@nef123123.co.za" title="Email info@nef123123.co.za" aria-label="Email info@nef123123.co.za">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="19" height="19" aria-hidden="true">
-            <rect x="2" y="4" width="20" height="16" rx="2"/>
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-          </svg>
+        <p>For editorial submissions, corrections, partnerships, and general enquiries:</p>
+        <p><a class="footer-email-text" href="mailto:info@nef123123.co.za">info@nef123123.co.za</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="wrap">
+        <span>© <span id="year"></span> NEF123123 — Navigant Economic Freedom</span>
+        <span>OFFICIAL DOMAIN: WWW.NEF123123.CO.ZA</span>
+        <a href="/">Back to homepage ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="./article-seo.js"></script>
+</body>
+</html>
+`;
+}
+
+function buildNewsArchiveHtml() {
+  const canonicalUrl = `${OFFICIAL_ORIGIN}/news`;
+  const cardsHtml = ARTICLES.map(
+    (article) => `          <article class="archive-card">
+            <a class="archive-card-media" href="/news/${article.slug}" aria-label="${escapeHtml(article.title)}">
+              <img src="${escapeHtml(article.img)}" alt="${escapeHtml(article.alt)}" loading="lazy">
+            </a>
+            <div class="archive-card-body">
+              <div class="archive-card-meta">
+                <span class="archive-card-cat">${escapeHtml(article.category)}</span>
+                <time datetime="${escapeHtml(article.publishedDateIso)}">${escapeHtml(article.publishedDateDisplay)}</time>
+              </div>
+              <h2><a href="/news/${article.slug}">${escapeHtml(article.title)}</a></h2>
+              <p>${escapeHtml(article.metaDescription)}</p>
+              <div class="archive-card-foot">
+                <span>${escapeHtml(article.source)}</span>
+                <a class="archive-read-link" href="/news/${article.slug}">Read full article →</a>
+              </div>
+            </div>
+          </article>`
+  ).join('\n');
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        name: 'NEF123123 News Archive — The Movement Gazette',
+        description:
+          'Browse all South African news reports, parliamentary dispatches, and African economic freedom analyses published by NEF123123.',
+        url: canonicalUrl,
+        inLanguage: 'en-ZA',
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: ARTICLES.map((article, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            url: `${OFFICIAL_ORIGIN}/news/${article.slug}`,
+            name: article.title,
+          })),
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${OFFICIAL_ORIGIN}/` },
+          { '@type': 'ListItem', position: 2, name: 'News Archive', item: canonicalUrl },
+        ],
+      },
+    ],
+  };
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d6bb0">
+  <meta name="description" content="Complete NEF123123 News Archive — South African politics, parliamentary oversight, Africa in Focus, and Navigant Economic Freedom analyses.">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" id="canonicalLink" href="${canonicalUrl}">
+  <link rel="alternate" type="application/rss+xml" title="NEF123123 — Navigant Economic Freedom RSS Feed" href="${OFFICIAL_ORIGIN}/rss.xml">
+  <link rel="alternate" type="application/atom+xml" title="NEF123123 — Navigant Economic Freedom Atom Feed" href="${OFFICIAL_ORIGIN}/atom.xml">
+  <link rel="alternate" type="application/feed+json" title="NEF123123 — Navigant Economic Freedom JSON Feed" href="${OFFICIAL_ORIGIN}/feed.json">
+  <meta property="og:site_name" content="NEF123123">
+  <meta property="og:locale" content="en_ZA">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="All News &amp; Reports — NEF123123 | The Movement Gazette">
+  <meta property="og:description" content="Browse all South African news reports, parliamentary dispatches, and African economic freedom analyses published by NEF123123.">
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="og:image" content="${OFFICIAL_ORIGIN}/favicon.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="All News &amp; Reports — NEF123123 | The Movement Gazette">
+  <meta name="twitter:description" content="Browse all South African news reports, parliamentary dispatches, and African economic freedom analyses published by NEF123123.">
+  <meta name="twitter:image" content="${OFFICIAL_ORIGIN}/favicon.png">
+  <title>All News &amp; Reports — NEF123123 | The Movement Gazette</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="../styles.css">
+  <script type="application/ld+json">
+  ${JSON.stringify(jsonLd, null, 2)}
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LRM7QXKF2Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-LRM7QXKF2Q');
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7782426836472981" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="utility-bar">
+    <div class="wrap utility-inner">
+      <span>UNITY <b>•</b> LAND <b>•</b> FREEDOM</span>
+      <div class="utility-right">
+        <span>THE MOVEMENT GAZETTE <span id="today"></span></span>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap masthead">
+      <a class="brand" href="/" aria-label="NEF123123 home">
+        <img src="../src/assets/images/regenerated_image_1794535451736.jpg" alt="NEF123123 Emblem Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <span class="brand-mark"><span class="mark-nef">NEF</span><span class="mark-num">123123</span></span>
+          <span class="brand-sub">NAVIGANT ECONOMIC FREEDOM</span>
+        </div>
+      </a>
+
+      <div class="masthead-actions">
+        <div class="masthead-socials">
+          <a href="https://www.youtube.com/@NEF12312" target="_blank" rel="noopener noreferrer" class="masthead-yt-btn" title="Watch NEF123123 on YouTube" aria-label="Watch NEF123123 on YouTube">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/Nef1231231" target="_blank" rel="noopener noreferrer" class="masthead-fb-btn" title="Follow NEF123123 on Facebook" aria-label="Follow NEF123123 on Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/nef123123/" target="_blank" rel="noopener noreferrer" class="masthead-ig-btn" title="Follow NEF123123 on Instagram" aria-label="Follow NEF123123 on Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="https://www.tiktok.com/@NEF123123" target="_blank" rel="noopener noreferrer" class="masthead-tt-btn" title="Follow NEF123123 on TikTok" aria-label="Follow NEF123123 on TikTok">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>
+          </a>
+        </div>
+        <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false">☰</button>
+      </div>
+    </div>
+
+    <nav class="main-nav" id="mainNav">
+      <div class="wrap nav-inner">
+        <a href="/">Home</a>
+        <a class="active" href="/news">All News</a>
+        <a href="/#africa">Africa</a>
+        <a href="/#markets">Markets</a>
+        <a href="/#sport">Sport</a>
+        <a href="/#weather">Weather</a>
+        <a href="/#economy">Economy</a>
+        <a href="/about">About Us</a>
+        <a href="/editorial-policy">Editorial Policy</a>
+        <a href="/contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="portal-canvas news-article-main">
+    <div class="wrap">
+      <nav class="news-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">NEF123123 Home</a>
+        <span aria-hidden="true">/</span>
+        <span>News Archive</span>
+      </nav>
+
+      <section class="news-article-shell archive-header-shell">
+        <div class="news-article-kicker">THE MOVEMENT GAZETTE · COMPLETE ARCHIVE</div>
+        <h1>NEF123123 News &amp; Economic Freedom Reports</h1>
+        <p class="archive-intro">Explore all published South African news reports, parliamentary dispatches, and continental economic sovereignty analyses from NEF123123. Every article is prepared in accordance with our <a href="/editorial-policy">Editorial Policy</a>.</p>
+      </section>
+
+      <section class="archive-grid" aria-label="Published NEF123123 articles">
+${cardsHtml}
+      </section>
+    </div>
+  </main>
+
+  <footer id="contact">
+    <div class="wrap footer-main">
+      <div class="footer-brand">
+        <a class="brand brand-footer" href="/">
+          <img src="../src/assets/images/regenerated_image_1794535454253.jpg" alt="NEF123123 Logo" class="brand-logo-img">
+          <div class="brand-text">
+            <span class="brand-mark"><span class="mark-nef">NEF</span><span class="mark-num">123123</span></span>
+            <span class="brand-sub">NAVIGANT ECONOMIC FREEDOM</span>
+          </div>
         </a>
+        <p>Navigating the path to economic freedom. Reporting, teaching and building.</p>
+        <strong>✊ Unity, Land, and Freedom.</strong>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <a href="/news">All News Reports</a>
+        <a href="/#latest-news">Latest news</a>
+        <a href="/#africa">Africa in focus</a>
+        <a href="/#markets">Markets &amp; real estate</a>
+        <a href="/#sport">Sport</a>
+        <a href="/#weather">Live weather</a>
+        <a href="/#economy">Economic freedom</a>
+      </div>
+      <div>
+        <h3>Organisation &amp; Policies</h3>
+        <a href="/about">About Us</a>
+        <a href="/editorial-policy">Editorial Policy</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms &amp; Conditions</a>
+        <a href="/contact">Contact Us</a>
+      </div>
+      <div>
+        <h3>Get in touch</h3>
+        <p>For editorial submissions, corrections, partnerships, and general enquiries:</p>
+        <p><a class="footer-email-text" href="mailto:info@nef123123.co.za">info@nef123123.co.za</a></p>
       </div>
     </div>
     <div class="footer-bottom">
@@ -373,13 +690,25 @@ ${relatedHtml}
 }
 
 function buildSitemapXml() {
+  const corePages = [
+    { path: '/', changefreq: 'daily', priority: '1.0' },
+    { path: '/news', changefreq: 'daily', priority: '0.9' },
+    { path: '/about', changefreq: 'monthly', priority: '0.7' },
+    { path: '/contact', changefreq: 'monthly', priority: '0.7' },
+    { path: '/editorial-policy', changefreq: 'monthly', priority: '0.6' },
+    { path: '/privacy', changefreq: 'monthly', priority: '0.5' },
+    { path: '/terms', changefreq: 'monthly', priority: '0.5' },
+  ];
+
   const urls = [
-    `  <url>
-    <loc>${escapeXml(`${OFFICIAL_ORIGIN}/`)}</loc>
+    ...corePages.map(
+      (page) => `  <url>
+    <loc>${escapeXml(`${OFFICIAL_ORIGIN}${page.path}`)}</loc>
     <lastmod>${LASTMOD}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>`,
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`
+    ),
     ...ARTICLES.map(
       (article) => `  <url>
     <loc>${escapeXml(`${OFFICIAL_ORIGIN}/news/${article.slug}`)}</loc>
@@ -403,8 +732,18 @@ ${urls.join('\n')}
 }
 
 function buildRobotsTxt() {
-  return `User-agent: *
+  return `User-agent: Mediapartners-Google
 Allow: /
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
 
 Sitemap: ${OFFICIAL_ORIGIN}/sitemap.xml
 Sitemap: ${OFFICIAL_ORIGIN}/news-sitemap.xml
@@ -423,6 +762,8 @@ if (isDirectExecution) {
     fs.writeFileSync(path.join(newsDir, `${article.slug}.html`), html, 'utf8');
   }
 
+  fs.writeFileSync(path.join(newsDir, 'index.html'), buildNewsArchiveHtml(), 'utf8');
+
   const removedOrphans = removeOrphanedNewsHtml(
     newsDir,
     ARTICLES.map((article) => article.slug)
@@ -437,6 +778,6 @@ if (isDirectExecution) {
   fs.writeFileSync(path.join(publicDir, 'robots.txt'), robotsTxt, 'utf8');
 
   console.log(
-    `Generated ${ARTICLES.length} deduplicated Google News/Discover-ready static news pages (removed ${removedOrphans.length} orphaned HTML file(s)), sitemap.xml, and robots.txt from data/articles-catalog.json.`
+    `Generated ${ARTICLES.length} deduplicated Google News/Discover-ready static news pages, news/index.html archive (removed ${removedOrphans.length} orphaned HTML file(s)), sitemap.xml, and robots.txt from data/articles-catalog.json.`
   );
 }

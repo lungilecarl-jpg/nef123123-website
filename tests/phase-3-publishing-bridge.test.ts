@@ -484,12 +484,26 @@ test('P3-11, P3-12 & P3-13. 3-Layer deduplication, unchanged ETag 304 no-op, and
     const t1 = recentIso(40);
     const t2 = recentIso(20);
 
+    const storyOneParagraphs = [
+      'Pretoria — Municipal finance directors tabled quarterly capital-expenditure audits outlining road rehabilitation, substation repairs, and water-meter replacements across Gauteng.',
+      'Provincial oversight boards committed to publishing contractor milestones online every thirty days so residents can track completed infrastructure.',
+    ];
+    const storyTwoParagraphs = [
+      'Durban — Port logistics operators and KwaZulu-Natal citrus exporters introduced an automated rail-to-berth scheduling window to clear seasonal container backlogs.',
+      'Freight associations said faster cold-storage handovers preserve export fruit grades and support regional farm employment.',
+    ];
+    const storyThreeParagraphs = [
+      'Polokwane — Limpopo agricultural cooperatives launched a shared grain milling and packaging initiative designed to supply school nutrition programmes directly from local smallholders.',
+      'Cooperative trustees reported that pooling transport lowered rural delivery expenses while keeping processing revenue inside local districts.',
+    ];
+
     const dupSlugOlder = makeSignedArticle({
       id: 'id-slug-a',
       slug: 'dedup-dispatch-story',
       title: 'Older Duplicate Slug Version of Dispatch Story',
       publishedAt: t1,
       updatedAt: t1,
+      paragraphs: storyOneParagraphs,
     });
     const dupSlugNewer = makeSignedArticle({
       id: 'id-slug-b',
@@ -497,6 +511,7 @@ test('P3-11, P3-12 & P3-13. 3-Layer deduplication, unchanged ETag 304 no-op, and
       title: 'Newer Authoritative Revision of Dispatch Story',
       publishedAt: t1,
       updatedAt: t2,
+      paragraphs: storyOneParagraphs,
     });
 
     // Duplicate upstream ID with different slug
@@ -506,6 +521,7 @@ test('P3-11, P3-12 & P3-13. 3-Layer deduplication, unchanged ETag 304 no-op, and
       title: 'Old Slug For Shared Upstream ID Report',
       publishedAt: t1,
       updatedAt: t1,
+      paragraphs: storyTwoParagraphs,
     });
     const dupIdNewer = makeSignedArticle({
       id: 'shared-upstream-id-77',
@@ -513,6 +529,7 @@ test('P3-11, P3-12 & P3-13. 3-Layer deduplication, unchanged ETag 304 no-op, and
       title: 'Renamed Slug For Shared Upstream ID Report',
       publishedAt: t1,
       updatedAt: t2,
+      paragraphs: storyTwoParagraphs,
     });
 
     // Duplicate externalUrl across two articles
@@ -523,6 +540,7 @@ test('P3-11, P3-12 & P3-13. 3-Layer deduplication, unchanged ETag 304 no-op, and
       publishedAt: t1,
       updatedAt: t1,
       externalUrl: 'https://www.gov.za/speeches/unique-dispatch-2026',
+      paragraphs: storyThreeParagraphs,
     });
     const dupUrlNewer = makeSignedArticle({
       id: 'ext-url-2',
@@ -531,6 +549,7 @@ test('P3-11, P3-12 & P3-13. 3-Layer deduplication, unchanged ETag 304 no-op, and
       publishedAt: t1,
       updatedAt: t2,
       externalUrl: 'https://www.gov.za/speeches/unique-dispatch-2026',
+      paragraphs: storyThreeParagraphs,
     });
 
     let currentEtag = '"feed-v1"';
@@ -596,6 +615,10 @@ test('P3-11, P3-12 & P3-13. 3-Layer deduplication, unchanged ETag 304 no-op, and
       title: 'Updated Evening Edition of Dispatch Story',
       publishedAt: t1,
       updatedAt: t3,
+      paragraphs: [
+        ...storyOneParagraphs,
+        'In an evening addendum, municipal treasuries confirmed phase-two tender disclosures will be published ahead of the winter peak.',
+      ],
     });
     const updatedExistingStatic = makeSignedArticle({
       id: 'static-update-001',
@@ -604,6 +627,10 @@ test('P3-11, P3-12 & P3-13. 3-Layer deduplication, unchanged ETag 304 no-op, and
       publishedAt: '2026-04-15T12:00:00+02:00',
       updatedAt: t3,
       topics: ['africa', 'economy'],
+      paragraphs: [
+        'Updated 2026 continental logistics assessment: African-owned freight corridors and regional agro-processing hubs expanded cross-border volume under AfCFTA protocols.',
+        'New trade-finance facilities launched by African development banks now underwrite working capital for smallholder suppliers and local packaging plants.',
+      ],
     });
     currentEtag = '"feed-v2"';
     currentArticles = [updatedDynamic, dupIdNewer, dupUrlNewer, updatedExistingStatic];
@@ -651,10 +678,20 @@ test('P3-14, P3-15 & P3-16. Signed retraction (HTTP 410 Gone), fault isolation, 
     const keepArticle = makeSignedArticle({
       id: 'keep-001',
       slug: 'resilient-published-dispatch',
+      title: 'Northern Cape Solar Corridor Expands Grid Storage Capacity',
+      paragraphs: [
+        'Kimberley — Utility-scale battery storage stations connected to Northern Cape solar farms began dispatching evening peak power into the national grid this quarter.',
+        'Engineers confirmed that grid-forming inverters improved voltage stability for rural municipalities and industrial customers.',
+      ],
     });
     const toRetract = makeSignedArticle({
       id: 'retract-001',
       slug: 'temporary-retracted-dispatch',
+      title: 'Preliminary Municipal Bus Timetable Under Revision',
+      paragraphs: [
+        'Bloemfontein — Commuter transport coordinators published a preliminary bus timetable covering Mangaung routes pending union consultation.',
+        'Officials noted final departure intervals would be confirmed after public comment closes.',
+      ],
     });
     const malformed = {
       id: 'bad-001',

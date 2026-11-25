@@ -22,6 +22,12 @@ import {
   externalPublishingBridge,
 } from './server/external-publishing-source.ts';
 import {
+  auditPublishedArticlesForDuplicates,
+  duplicateRejectionRegistry,
+  evaluateArticleForDuplicates,
+  type DuplicateCandidateArticle,
+} from './server/duplicate-prevention.ts';
+import {
   renderDynamicArticleHtml,
   renderRetractedArticleHtml,
 } from './server/news-article-renderer.ts';
@@ -177,6 +183,60 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
     res.send(buildRobotsTxt());
   });
 
+  app.get('/ads.txt', (_req, res) => {
+    const candidates = isProduction
+      ? [path.join(distDir, 'ads.txt'), path.join(__dirname, 'public', 'ads.txt')]
+      : [path.join(__dirname, 'public', 'ads.txt'), path.join(distDir, 'ads.txt')];
+    for (const candidate of candidates) {
+      if (fs.existsSync(candidate)) {
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.sendFile(candidate);
+        return;
+      }
+    }
+    res.status(404).type('text/plain').send('ads.txt not configured');
+  });
+
+  // Clean-URL handlers for compliance pages and News Archive (production & test parity)
+  const COMPLIANCE_PAGES = new Set(['about', 'contact', 'privacy', 'terms', 'editorial-policy']);
+  app.get(/^\/(about|contact|privacy|terms|editorial-policy)(?:\.html)?\/?$/i, (req, res, next) => {
+    const slug = String(req.params[0] || '').toLowerCase();
+    if (!COMPLIANCE_PAGES.has(slug)) {
+      next();
+      return;
+    }
+    if (req.path !== `/${slug}`) {
+      res.redirect(301, `/${slug}`);
+      return;
+    }
+    if (isProduction || options.attachFrontend === false) {
+      const base = isProduction ? distDir : __dirname;
+      const target = path.join(base, `${slug}.html`);
+      if (isSafePathInside(base, target) && fs.existsSync(target)) {
+        res.sendFile(target);
+        return;
+      }
+    }
+    next();
+  });
+
+  app.get(/^\/news(?:\/index\.html)?\/?$/i, (req, res, next) => {
+    if (req.path !== '/news') {
+      res.redirect(301, '/news');
+      return;
+    }
+    if (isProduction || options.attachFrontend === false) {
+      const base = isProduction ? distDir : __dirname;
+      const target = path.join(base, 'news', 'index.html');
+      if (isSafePathInside(base, target) && fs.existsSync(target)) {
+        res.sendFile(target);
+        return;
+      }
+    }
+    next();
+  });
+
   // IndexNow domain ownership verification file: /<INDEXNOW_KEY>.txt
   app.get('/:candidateKey.txt', (req, res, next) => {
     const configuredKey = getIndexNowKey();
@@ -207,6 +267,7 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
       webSubPingEnabled: isWebSubPingEnabled(),
       webSubHubUrl: getWebSubHubUrl(),
       externalPublishingBridgeEnabled: bridgeStatus.outboundFetchesAllowed,
+      duplicatePreventionEnabled: true,
       feeds: getPublicFeedsMap(),
       articleCount: getAllPublishedArticles().length,
     });
@@ -262,6 +323,7 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
   app.get('/api/admin/overview', requireAdmin, (_req, res) => {
     const articles = getAllPublishedArticles();
     const readiness = auditGoogleNewsReadiness(articles);
+    const duplicateAudit = auditPublishedArticlesForDuplicates(articles);
     res.json({
       phase: 'safe-phase-1',
       syndicationPhase: 'phase-2-stateless',
@@ -271,6 +333,14 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
       articles,
       feeds: getPublicFeedsMap(),
       readiness,
+      duplicatePrevention: {
+        active: true,
+        cleanStatus: duplicateAudit.cleanStatus,
+        exactDuplicatesCount: duplicateAudit.exactDuplicatesCount,
+        suspectedNearDuplicatesCount: duplicateAudit.suspectedNearDuplicatesCount,
+        relatedDevelopingCoverageCount: duplicateAudit.relatedDevelopingCoverageCount,
+        rejectionsSummary: duplicateRejectionRegistry.getSummary(),
+      },
       publishingBridge: bridge.getStatus(),
       searchSubmissions: getSessionSubmissionHistory(),
       lockedModules: {
@@ -308,6 +378,68 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
 
   app.get('/api/admin/seo/readiness', requireAdmin, (_req, res) => {
     res.json(auditGoogleNewsReadiness(getAllPublishedArticles()));
+  });
+
+  app.get('/api/admin/duplicates/audit', requireAdmin, (_req, res) => {
+    const audit = auditPublishedArticlesForDuplicates(getAllPublishedArticles());
+    res.json({
+      audit,
+      note: 'Read-only duplicate content audit. Existing articles are never automatically deleted, merged, or rewritten.',
+    });
+  });
+
+  app.get('/api/admin/duplicates/rejections', requireAdmin, (req, res) => {
+    const rawLimit = Number(req.query.limit || 50);
+    const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(Math.floor(rawLimit), 250) : 50;
+    res.json({
+      summary: duplicateRejectionRegistry.getSummary(),
+      rejections: duplicateRejectionRegistry.getRecords(limit),
+    });
+  });
+
+  app.post('/api/admin/duplicates/check', requireAdmin, (req, res) => {
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const title = typeof body.title === 'string' ? body.title.trim() : '';
+    const paragraphs = Array.isArray(body.paragraphs)
+      ? body.paragraphs.filter((p: unknown): p is string => typeof p === 'string' && p.trim().length > 0)
+      : typeof body.content === 'string' && body.content.trim()
+        ? body.content
+            .split(/\n+/)
+            .map((line: string) => line.trim())
+            .filter(Boolean)
+        : [];
+
+    if (!title || (paragraphs.length === 0 && !body.metaDescription)) {
+      res.status(400).json({
+        error: 'invalid_article_payload',
+        message: 'Provide at least a title and paragraphs (or content/metaDescription) to run duplicate detection.',
+      });
+      return;
+    }
+
+    const candidate: DuplicateCandidateArticle = {
+      id: typeof body.id === 'string' ? body.id.trim() : undefined,
+      slug: typeof body.slug === 'string' ? body.slug.trim() : undefined,
+      canonicalUrl: typeof body.canonicalUrl === 'string' ? body.canonicalUrl.trim() : undefined,
+      externalUrl: typeof body.externalUrl === 'string' ? body.externalUrl.trim() : undefined,
+      title,
+      metaDescription: typeof body.metaDescription === 'string' ? body.metaDescription.trim() : undefined,
+      source: typeof body.source === 'string' ? body.source.trim() : undefined,
+      publishedDate: typeof body.publishedDate === 'string' ? body.publishedDate.trim() : undefined,
+      updatedDate: typeof body.updatedDate === 'string' ? body.updatedDate.trim() : undefined,
+      paragraphs,
+    };
+
+    const result = evaluateArticleForDuplicates(candidate, getAllPublishedArticles(), {
+      allowSameSlugUpdate: body.allowSameSlugUpdate === true,
+      channel: 'admin_check',
+      recordRejection: body.dryRun !== true,
+    });
+
+    res.status(result.allowed ? 200 : 409).json({
+      result,
+      rejectionsSummary: duplicateRejectionRegistry.getSummary(),
+    });
   });
 
   app.get('/api/admin/search-submissions', requireAdmin, (_req, res) => {

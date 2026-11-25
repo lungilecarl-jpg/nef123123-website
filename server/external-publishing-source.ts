@@ -2,11 +2,19 @@ import crypto from 'node:crypto';
 import {
   OFFICIAL_SITE_ORIGIN,
   deduplicateArticlesBySlug,
+  getCanonicalArticles,
   isValidTopicFeed,
   type CanonicalNewsArticle,
   type TopicFeedKey,
 } from './articles-catalog.ts';
 import { getConfiguredAdminEmail } from './admin-auth.ts';
+import {
+  DuplicateRejectionRegistry,
+  duplicateRejectionRegistry,
+  evaluateArticleForDuplicates,
+  normalizeUrlForDuplicateCheck,
+  type DuplicateCandidateArticle,
+} from './duplicate-prevention.ts';
 import {
   pingWebSubHub,
   submitUrlsToIndexNow,
@@ -158,6 +166,14 @@ export interface BridgeRuntimeConfig {
    */
   allowLocalTestFeed?: boolean;
   notifySearchEngines?: boolean;
+  /**
+   * Optional duplicate rejection registry override (defaults to shared server registry).
+   */
+  duplicateRegistry?: DuplicateRejectionRegistry;
+  /**
+   * Optional existing published catalog provider (defaults to bundled NEF123123 catalog).
+   */
+  existingArticlesProvider?: () => CanonicalNewsArticle[];
 }
 
 function stripControlChars(value: string): string {
@@ -1230,15 +1246,43 @@ export class ExternalPublishingBridge {
       });
     }
 
-    // 3. 3-Layer Deduplication (slug + upstream id + externalUrl) & exclude removedSlugs
+    // 3. Multi-Layer Duplicate Prevention (slug + upstream id + normalized URL +
+    //    existing catalog check + SHA-256 content fingerprint + near-duplicate body + cross-source story)
+    const dupRegistry = this.configOverride.duplicateRegistry || duplicateRejectionRegistry;
+    const existingCatalog = (
+      this.configOverride.existingArticlesProvider
+        ? this.configOverride.existingArticlesProvider()
+        : getCanonicalArticles()
+    ).filter((article) => !nextRemovedSlugs.has(String(article.slug || '').trim().toLowerCase()));
+
     const slugDeduped = deduplicateArticlesBySlug(candidateApproved) as ApprovedBridgeArticle[];
     if (slugDeduped.length < candidateApproved.length) {
-      rejections.push({
-        slug: '(batch)',
-        id: '(dedup)',
-        reason: 'duplicate_suppressed',
-        detail: `Suppressed ${candidateApproved.length - slugDeduped.length} duplicate slug entry(ies).`,
-      });
+      const keptSlugs = new Set(slugDeduped.map((a) => `${a.slug}|${a.contentFingerprint}`));
+      for (const cand of candidateApproved) {
+        if (!keptSlugs.has(`${cand.slug}|${cand.contentFingerprint}`)) {
+          const detail = `Duplicate slug "${cand.slug}" suppressed within sync batch (kept newest revision).`;
+          rejections.push({
+            slug: cand.slug,
+            id: cand.externalId,
+            reason: 'duplicate_suppressed',
+            detail,
+          });
+          dupRegistry.record({
+            channel: 'external_bridge',
+            candidateId: cand.externalId,
+            candidateSlug: cand.slug,
+            candidateTitle: cand.title,
+            candidateSource: cand.source,
+            candidateUrl: cand.externalUrl || cand.canonicalUrl,
+            reasonCode: 'duplicate_slug',
+            explanation: detail,
+            matchedArticleSlug: cand.slug,
+            matchedArticleTitle: cand.title,
+            matchedArticleUrl: cand.canonicalUrl,
+            scores: null,
+          });
+        }
+      }
     }
 
     const byExternalId = new Map<string, ApprovedBridgeArticle>();
@@ -1251,11 +1295,28 @@ export class ExternalPublishingBridge {
       }
       const prevTs = Date.parse(existing.updatedDate || existing.publishedDate) || 0;
       const nextTs = Date.parse(art.updatedDate || art.publishedDate) || 0;
+      const dropped = nextTs >= prevTs ? existing : art;
+      const kept = nextTs >= prevTs ? art : existing;
+      const detail = `Duplicate upstream id "${art.externalId}" suppressed (kept newest revision "${kept.slug}").`;
       rejections.push({
-        slug: nextTs >= prevTs ? existing.slug : art.slug,
+        slug: dropped.slug,
         id: art.externalId,
         reason: 'duplicate_suppressed',
-        detail: `Duplicate upstream id "${art.externalId}" suppressed (kept newest revision).`,
+        detail,
+      });
+      dupRegistry.record({
+        channel: 'external_bridge',
+        candidateId: dropped.externalId,
+        candidateSlug: dropped.slug,
+        candidateTitle: dropped.title,
+        candidateSource: dropped.source,
+        candidateUrl: dropped.externalUrl || dropped.canonicalUrl,
+        reasonCode: 'duplicate_external_id',
+        explanation: detail,
+        matchedArticleSlug: kept.slug,
+        matchedArticleTitle: kept.title,
+        matchedArticleUrl: kept.canonicalUrl,
+        scores: null,
       });
       if (nextTs >= prevTs) {
         byExternalId.set(art.externalId, art);
@@ -1263,13 +1324,13 @@ export class ExternalPublishingBridge {
     }
 
     const byExternalUrl = new Map<string, ApprovedBridgeArticle>();
-    const finalApprovedList: ApprovedBridgeArticle[] = [];
+    const urlDedupedList: ApprovedBridgeArticle[] = [];
     for (const art of byExternalId.values()) {
       if (!art.externalUrl) {
-        finalApprovedList.push(art);
+        urlDedupedList.push(art);
         continue;
       }
-      const normUrl = art.externalUrl.toLowerCase();
+      const normUrl = normalizeUrlForDuplicateCheck(art.externalUrl);
       const existing = byExternalUrl.get(normUrl);
       if (!existing) {
         byExternalUrl.set(normUrl, art);
@@ -1277,18 +1338,60 @@ export class ExternalPublishingBridge {
       }
       const prevTs = Date.parse(existing.updatedDate || existing.publishedDate) || 0;
       const nextTs = Date.parse(art.updatedDate || art.publishedDate) || 0;
+      const dropped = nextTs >= prevTs ? existing : art;
+      const kept = nextTs >= prevTs ? art : existing;
+      const detail = `Duplicate normalized externalUrl "${normUrl}" suppressed (kept newest revision "${kept.slug}").`;
       rejections.push({
-        slug: nextTs >= prevTs ? existing.slug : art.slug,
-        id: art.externalId,
+        slug: dropped.slug,
+        id: dropped.externalId,
         reason: 'duplicate_suppressed',
-        detail: `Duplicate externalUrl "${art.externalUrl}" suppressed (kept newest revision).`,
+        detail,
+      });
+      dupRegistry.record({
+        channel: 'external_bridge',
+        candidateId: dropped.externalId,
+        candidateSlug: dropped.slug,
+        candidateTitle: dropped.title,
+        candidateSource: dropped.source,
+        candidateUrl: dropped.externalUrl || dropped.canonicalUrl,
+        reasonCode: 'duplicate_source_url',
+        explanation: detail,
+        matchedArticleSlug: kept.slug,
+        matchedArticleTitle: kept.title,
+        matchedArticleUrl: kept.canonicalUrl,
+        scores: null,
       });
       if (nextTs >= prevTs) {
         byExternalUrl.set(normUrl, art);
       }
     }
     for (const art of byExternalUrl.values()) {
+      urlDedupedList.push(art);
+    }
+
+    // Content fingerprint, near-duplicate body, and cross-source story checks
+    // against existing published NEF123123 catalog + earlier accepted articles in this batch
+    const finalApprovedList: ApprovedBridgeArticle[] = [];
+    const comparisonPool: DuplicateCandidateArticle[] = [...existingCatalog];
+
+    for (const art of urlDedupedList) {
+      const dupVerdict = evaluateArticleForDuplicates(art, comparisonPool, {
+        allowSameSlugUpdate: true,
+        channel: 'external_bridge',
+        recordRejection: true,
+        registry: dupRegistry,
+      });
+      if (!dupVerdict.allowed) {
+        rejections.push({
+          slug: art.slug,
+          id: art.externalId,
+          reason: 'duplicate_suppressed',
+          detail: `[${dupVerdict.reasonCode || 'duplicate'}] ${dupVerdict.explanation}`,
+        });
+        continue;
+      }
       finalApprovedList.push(art);
+      comparisonPool.push(art);
     }
 
     const nextMap = new Map<string, ApprovedBridgeArticle>();

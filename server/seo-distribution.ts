@@ -169,13 +169,25 @@ export function buildSitemapXml(
     return d > latest ? d : latest;
   }, '2026-04-15');
 
+  const corePages = [
+    { path: '/', changefreq: 'daily', priority: '1.0' },
+    { path: '/news', changefreq: 'daily', priority: '0.9' },
+    { path: '/about', changefreq: 'monthly', priority: '0.7' },
+    { path: '/contact', changefreq: 'monthly', priority: '0.7' },
+    { path: '/editorial-policy', changefreq: 'monthly', priority: '0.6' },
+    { path: '/privacy', changefreq: 'monthly', priority: '0.5' },
+    { path: '/terms', changefreq: 'monthly', priority: '0.5' },
+  ];
+
   const urls = [
-    `  <url>
-    <loc>${escapeXml(`${OFFICIAL_SITE_ORIGIN}/`)}</loc>
+    ...corePages.map(
+      (page) => `  <url>
+    <loc>${escapeXml(`${OFFICIAL_SITE_ORIGIN}${page.path}`)}</loc>
     <lastmod>${latestArticleDate}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>`,
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`
+    ),
     ...uniqueArticles.map((article) => {
       const imageBlock =
         article.imageUrl.startsWith('https://') || article.imageUrl.startsWith('http://')
@@ -423,8 +435,18 @@ export function buildJsonFeed(
 }
 
 export function buildRobotsTxt(): string {
-  return `User-agent: *
+  return `User-agent: Mediapartners-Google
 Allow: /
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
 
 Sitemap: ${OFFICIAL_SITE_ORIGIN}/sitemap.xml
 Sitemap: ${OFFICIAL_SITE_ORIGIN}/news-sitemap.xml

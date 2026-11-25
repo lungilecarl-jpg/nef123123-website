@@ -18,6 +18,10 @@ const faoSchwarzImg =
   document.getElementById('heroSlideFaoImgRef')?.getAttribute('href') ||
   './src/assets/images/fao-schwarz-store-b0d0vnini.jpg';
 
+const amazonBfImg =
+  document.getElementById('heroSlideAmazonBfImgRef')?.getAttribute('href') ||
+  './src/assets/images/amazon-bf-b0hswb4i2-clean.jpg';
+
 const sihleLonziImg =
   document.querySelector('#openSihleLonziImage img')?.getAttribute('src') ||
   '/assets/aistudio/Screenshot_2026-11-19_093542_1cad536d.png';
@@ -73,7 +77,7 @@ document.getElementById('joinForm')?.addEventListener('submit', (event) => {
   const message = document.getElementById('formMessage');
   if (!message) return;
   message.textContent =
-    'Breaking-news subscriber registration is safely paused until durable persistent storage is activated. No email addresses are stored in temporary storage.';
+    'Thank you for your interest. Email briefings are launching soon—follow our latest dispatches on The Movement Gazette or contact info@nef123123.co.za.';
   message.classList.add('form-success');
 });
 
@@ -82,17 +86,17 @@ const heroAmazonImg = '/assets/aistudio/image_a0935a15.png';
 // MSN-style Hero Carousel Switcher across News, Africa, Amazon Deals & Movement perspectives
 const heroSlides = [
   {
-    href: 'https://link.amazon/B0d0vNini',
-    external: true,
-    img: faoSchwarzImg,
-    imgPosition: 'center',
-    alt: 'FAO Schwarz Official Amazon Storefront — A World of Wonder Awaits featuring plush teddy bears, toys, and musical gifts',
-    label: 'AMAZON BRAND STORE',
-    category: 'SPONSORED · FAO SCHWARZ OFFICIAL STORE',
-    title: 'FAO Schwarz on Amazon: A World of Wonder Awaits',
-    desc: 'Explore the official FAO Schwarz storefront featuring iconic Soldier Bear & Adopt-A-Pets plush, Giant Dance Mat Pianos, Kids Electric Guitars, wooden Castle Blocks, Arts & Music kits, and 30% off Early Black Friday gifts.',
-    cta: 'Shop FAO Schwarz Store',
-    ariaLabel: 'Shop the official FAO Schwarz storefront on Amazon',
+    href: '/news/malema-challenges-helen-zille-court-venue',
+    articleId: 'malemaZille',
+    img: malemaZilleImg,
+    imgPosition: 'center top',
+    alt: 'EFF leader Julius Malema smiling in a red beret while speaking with journalists',
+    label: 'LATEST NEWS',
+    category: 'NEF123123 NEWS | SOUTH AFRICA',
+    title: 'Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies',
+    desc: "Julius Malema questions Helen Zille's decision to oppose proceedings in the Western Cape High Court, insisting that the legal dispute should be heard in Johannesburg, where the alleged conduct took place.",
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies',
   },
   {
     href: 'https://www.facebook.com/share/v/1JN4arz1oe/',
@@ -109,20 +113,7 @@ const heroSlides = [
     ariaLabel: 'Watch EFF Treasurer-General Hon. Omphile Maotwe speak on the EFF Insourcing Bill on Facebook',
   },
   {
-    href: '#latest-news',
-    articleId: 'malemaZille',
-    img: malemaZilleImg,
-    imgPosition: 'center top',
-    alt: 'EFF leader Julius Malema smiling in a red beret while speaking with journalists',
-    label: 'LATEST NEWS',
-    category: 'NEF123123 NEWS | SOUTH AFRICA',
-    title: 'Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies',
-    desc: "Julius Malema questions Helen Zille's decision to oppose proceedings in the Western Cape High Court, insisting that the legal dispute should be heard in Johannesburg, where the alleged conduct took place.",
-    cta: 'Read Full Story',
-    ariaLabel: 'Read full story: Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies',
-  },
-  {
-    href: '#latest-news',
+    href: '/news/da-invites-eff-mk-party-municipal-coalition-talks',
     articleId: 'coalition',
     img: coalitionImg,
     imgPosition: 'center top',
@@ -135,9 +126,22 @@ const heroSlides = [
     ariaLabel: 'Read full story: DA Invites EFF and MK Party to Municipal Coalition Talks',
   },
   {
+    href: 'https://link.amazon/B0d0vNini',
+    external: true,
+    img: faoSchwarzImg,
+    imgPosition: 'center',
+    alt: 'FAO Schwarz Official Amazon Storefront — A World of Wonder Awaits featuring plush teddy bears, toys, and musical gifts',
+    label: 'AMAZON BRAND STORE',
+    category: 'SPONSORED · FAO SCHWARZ OFFICIAL STORE',
+    title: 'FAO Schwarz on Amazon: A World of Wonder Awaits',
+    desc: 'Explore the official FAO Schwarz storefront featuring iconic Soldier Bear & Adopt-A-Pets plush, Giant Dance Mat Pianos, Kids Electric Guitars, wooden Castle Blocks, Arts & Music kits, and 30% off Early Black Friday gifts.',
+    cta: 'Shop FAO Schwarz Store',
+    ariaLabel: 'Shop the official FAO Schwarz storefront on Amazon',
+  },
+  {
     href: 'https://link.amazon/B0hSwb4I2',
     external: true,
-    img: './src/assets/images/amazon-bf-b0hswb4i2-clean.jpg',
+    img: amazonBfImg,
     imgPosition: 'center top',
     alt: 'Amazon Black Friday deals start tomorrow featuring Join Prime, up to 65% off devices, 50% off Outlet, 40% off toys, and early brand deals on Skullcandy, MSI gaming desktops, and UGG',
     label: 'AMAZON BLACK FRIDAY 2026',
@@ -148,7 +152,7 @@ const heroSlides = [
     ariaLabel: 'Shop Amazon Black Friday Deals 2026 on Amazon',
   },
   {
-    href: '#africa',
+    href: '/news/african-future-dignity-self-determination',
     articleId: 'africaDignity',
     img: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1100&q=80',
     imgPosition: 'center 72%',
@@ -775,6 +779,185 @@ const articleCatalog = {
     ],
   },
 };
+
+// Permanent client-side duplicate prevention for live RSS, Atom, WP-JSON, and Sport API feeds.
+// Uses normalized canonical URLs, content fingerprints, 4-gram shingles, cosine similarity,
+// and novel-fact checks (never relies on headlines alone) against both existing NEF123123
+// articles and items within the same feed batch.
+const LIVE_FEED_STOPWORDS = new Set([
+  'the', 'and', 'for', 'with', 'that', 'this', 'from', 'have', 'has', 'had',
+  'are', 'was', 'were', 'been', 'will', 'would', 'could', 'should', 'into',
+  'over', 'after', 'before', 'their', 'they', 'them', 'which', 'about', 'more',
+  'also', 'than', 'when', 'what', 'where', 'while', 'says', 'said', 'told',
+  'not', 'but', 'can', 'its', 'our', 'out', 'all', 'who', 'how', 'why', 'now',
+  'new', 'one', 'two', 'his', 'her', 'she', 'him', 'you', 'your', 'may', 'must',
+]);
+
+function normalizeFeedUrlKey(rawUrl) {
+  const trimmed = String(rawUrl || '').trim();
+  if (!trimmed) return '';
+  try {
+    const parsed = new URL(trimmed, OFFICIAL_SITE_ORIGIN);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+    const pathname = parsed.pathname.replace(/\/+$/, '').toLowerCase();
+    const kept = [];
+    parsed.searchParams.forEach((v, k) => {
+      const lk = k.toLowerCase();
+      if (
+        lk.startsWith('utm_') ||
+        lk.startsWith('at_') ||
+        ['fbclid', 'gclid', 'ref', 'source', 'si', 'igshid', 'ocid', 'cmpid'].includes(lk)
+      ) {
+        return;
+      }
+      kept.push([lk, v.trim()]);
+    });
+    kept.sort((a, b) => a[0].localeCompare(b[0]));
+    const qs = kept.length ? `?${kept.map(([k, v]) => `${k}=${v}`).join('&')}` : '';
+    return `https://${host}${pathname}${qs}`;
+  } catch {
+    return trimmed.toLowerCase().replace(/\/+$/, '');
+  }
+}
+
+function normalizeLiveFeedText(text) {
+  return String(text || '')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function tokenizeLiveFeedText(normText) {
+  if (!normText) return [];
+  return normText
+    .split(' ')
+    .filter((w) => w.length >= 3 && !LIVE_FEED_STOPWORDS.has(w));
+}
+
+function buildLiveShingles(normText, n = 4) {
+  const words = normText ? normText.split(' ').filter((w) => w.length >= 2) : [];
+  const set = new Set();
+  for (let i = 0; i <= words.length - n; i += 1) {
+    set.add(words.slice(i, i + n).join(' '));
+  }
+  return set;
+}
+
+function liveCosine(tokensA, tokensB) {
+  if (!tokensA.length || !tokensB.length) return 0;
+  const fA = new Map();
+  const fB = new Map();
+  tokensA.forEach((t) => fA.set(t, (fA.get(t) || 0) + 1));
+  tokensB.forEach((t) => fB.set(t, (fB.get(t) || 0) + 1));
+  let dot = 0;
+  let nA = 0;
+  let nB = 0;
+  fA.forEach((v, k) => {
+    nA += v * v;
+    if (fB.has(k)) dot += v * fB.get(k);
+  });
+  fB.forEach((v) => {
+    nB += v * v;
+  });
+  return nA && nB ? dot / (Math.sqrt(nA) * Math.sqrt(nB)) : 0;
+}
+
+function liveJaccard(setA, setB) {
+  if (!setA.size || !setB.size) return 0;
+  let inter = 0;
+  setA.forEach((v) => {
+    if (setB.has(v)) inter += 1;
+  });
+  return inter / (setA.size + setB.size - inter);
+}
+
+const PUBLISHED_CATALOG_FEED_SIGNATURES = Object.values(articleCatalog)
+  .filter((a) => a && a.slug)
+  .map((a) => {
+    const normTitle = normalizeLiveFeedText(a.title);
+    const normBody = normalizeLiveFeedText((a.paragraphs || []).join(' '));
+    const titleTokens = tokenizeLiveFeedText(normTitle);
+    const bodyTokens = tokenizeLiveFeedText(normBody);
+    return {
+      urlKey: normalizeFeedUrlKey(a.externalUrl || `/news/${a.slug}`),
+      normTitle,
+      normBody,
+      titleTokens,
+      bodyTokens,
+      bodyShingles: buildLiveShingles(normBody, 4),
+      distinctive: new Set([...titleTokens, ...bodyTokens].filter((t) => t.length >= 4)),
+    };
+  });
+
+function deduplicateLiveNewsItems(items, extractor) {
+  const accepted = [];
+  const acceptedSigs = [...PUBLISHED_CATALOG_FEED_SIGNATURES];
+
+  for (const item of items || []) {
+    const info = extractor(item);
+    const normTitle = normalizeLiveFeedText(info.title);
+    if (!normTitle) continue;
+    const normBody = normalizeLiveFeedText(info.body || '');
+    const urlKey = normalizeFeedUrlKey(info.url || '');
+    const titleTokens = tokenizeLiveFeedText(normTitle);
+    const bodyTokens = tokenizeLiveFeedText(normBody);
+    const bodyShingles = buildLiveShingles(normBody, 4);
+    const distinctive = new Set(bodyTokens.filter((t) => t.length >= 4));
+
+    let isDuplicate = false;
+    for (const prev of acceptedSigs) {
+      if (urlKey && prev.urlKey && urlKey === prev.urlKey) {
+        isDuplicate = true;
+        break;
+      }
+      if (normBody.length >= 60 && prev.normBody && normBody === prev.normBody) {
+        isDuplicate = true;
+        break;
+      }
+      const shJac = liveJaccard(bodyShingles, prev.bodyShingles);
+      const bodyCos = liveCosine(bodyTokens, prev.bodyTokens);
+      const headCos = liveCosine(titleTokens, prev.titleTokens);
+
+      let novel = 0;
+      distinctive.forEach((tok) => {
+        if (!prev.distinctive.has(tok)) novel += 1;
+      });
+      const novelRatio = distinctive.size > 0 ? novel / distinctive.size : 1;
+
+      if (shJac >= 0.42 || (bodyCos >= 0.8 && shJac >= 0.22)) {
+        isDuplicate = true;
+        break;
+      }
+      if (headCos >= 0.5 && bodyCos >= 0.55 && novelRatio < 0.42) {
+        isDuplicate = true;
+        break;
+      }
+      if (!normBody && normTitle === prev.normTitle) {
+        isDuplicate = true;
+        break;
+      }
+    }
+
+    if (isDuplicate) continue;
+
+    accepted.push(item);
+    acceptedSigs.push({
+      urlKey,
+      normTitle,
+      normBody,
+      titleTokens,
+      bodyTokens,
+      bodyShingles,
+      distinctive: new Set([...titleTokens, ...bodyTokens].filter((t) => t.length >= 4)),
+    });
+  }
+
+  return accepted;
+}
 
 function findArticleByPath(pathname) {
   const cleaned = String(pathname || '')
@@ -1572,7 +1755,13 @@ document.addEventListener('keydown', (event) => {
       return;
     }
 
-    articles.slice(0, 5).forEach((item) => {
+    const uniqueArticles = deduplicateLiveNewsItems(articles, (item) => ({
+      title: item?.headline || '',
+      body: item?.description || '',
+      url: item?.links?.web?.href || '',
+    }));
+
+    uniqueArticles.slice(0, 5).forEach((item) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'sport-news-item';
@@ -1650,15 +1839,12 @@ document.addEventListener('keydown', (event) => {
     });
   }
 
-  function renderBafanaBoard(primaryArticle) {
+  function renderBafanaBoard() {
     matchesListEl.textContent = '';
 
     const spotlightImgUrl =
-      primaryArticle?.images?.[0]?.url ||
-      'https://a.espncdn.com/photo/2026/0624/r1679059_1296x729_16-9.jpg';
-    const spotlightUrl =
-      primaryArticle?.links?.web?.href ||
-      'https://www.espn.com/espn/story/_/id/50512821/relebohile-mofokeng-south-africa-kenya-bafana-afcon';
+      'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1200&q=85';
+    const spotlightUrl = 'https://www.psl.co.za/';
 
     const spotlightBtn = document.createElement('button');
     spotlightBtn.type = 'button';
@@ -1669,11 +1855,11 @@ document.addEventListener('keydown', (event) => {
     const photo = document.createElement('img');
     photo.setAttribute('referrerpolicy', 'no-referrer');
     photo.src = spotlightImgUrl;
-    photo.alt = 'Relebohile Mofokeng celebrating for South Africa Bafana Bafana';
+    photo.alt = 'Floodlit football stadium pitch for Orlando Pirates 2-0 Betway Premiership victory';
     photo.addEventListener('error', () => {
       const fb = document.createElement('div');
       fb.className = 'sport-news-thumb-fallback';
-      fb.textContent = 'RSA';
+      fb.textContent = 'OPFC';
       photo.replaceWith(fb);
     });
     media.appendChild(photo);
@@ -1683,19 +1869,19 @@ document.addEventListener('keydown', (event) => {
 
     const tag = document.createElement('span');
     tag.className = 'sport-spotlight-tag';
-    tag.textContent = 'YESTERDAY · KENYA 1–2 SOUTH AFRICA (AFCON 2027 QUALIFIER)';
+    tag.textContent = 'LAST NIGHT · ORLANDO PIRATES 2–0 GOLDEN ARROWS (BETWAY PREMIERSHIP)';
 
     const heading = document.createElement('h4');
     heading.textContent =
-      'Relebohile Mofokeng ("President Yama 2K") bags 2 goals as Bafana Bafana beat Kenya';
+      'Orlando Pirates beat Golden Arrows 2–0 to go top of the Betway Premiership table';
 
     const summary = document.createElement('p');
     summary.textContent =
-      'Relebohile Mofokeng struck twice in the second half (68\' and 86\') to guide Pitso Mosimane\'s South Africa past Kenya 2–1 in Nairobi, lifting Bafana back to top of Group D on 10 points.';
+      "Boitumelo Radiopane (90') and Bheki Mabuza (90'+4) struck late at Orlando Amstel Arena to lift unbeaten Orlando Pirates to 28 points at the top of the table.";
 
     const cta = document.createElement('span');
     cta.className = 'sport-spotlight-cta';
-    cta.textContent = 'Read full 2-goal Mofokeng report →';
+    cta.textContent = 'Read full Orlando Pirates match report →';
 
     copy.append(tag, heading, summary, cta);
     spotlightBtn.append(media, copy);
@@ -1704,19 +1890,20 @@ document.addEventListener('keydown', (event) => {
       openArticleReader(
         {
           dot: 'S',
-          category: 'NEF123123 SPORT · BAFANA BAFANA',
+          category: 'NEF123123 SPORT · BETWAY PREMIERSHIP',
           title:
-            'Relebohile Mofokeng ("President Yama 2K") scores two late goals in Bafana Bafana 2–1 win over Kenya',
+            'Late Strike Drama: Orlando Pirates Beat Golden Arrows 2–0 to Go Top of the Table',
           img: spotlightImgUrl,
-          alt: 'Relebohile Mofokeng in action for Bafana Bafana',
-          imgPosition: 'center top',
-          source: 'Matchday Dispatch · Nyayo National Stadium, Nairobi · 17 Nov 2026',
+          alt: 'Floodlit football stadium pitch celebrating Orlando Pirates Betway Premiership win',
+          imgPosition: 'center',
+          source: 'NEF123123 Sport Desk · Orlando Amstel Arena · 24 Nov 2026',
           externalUrl: spotlightUrl,
-          externalLabel: 'Read full ESPN Bafana Bafana report →',
+          externalLabel: 'View official PSL Betway Premiership standings →',
           paragraphs: [
-            'South Africa produced a decisive away performance on Tuesday, 17 November 2026 in Nairobi, defeating Harambee Stars 2–1 in Group D of the 2027 Africa Cup of Nations (AFCON) qualifiers thanks to a match-winning brace from Relebohile Mofokeng.',
-            'Widely nicknamed "President Yama 2K" by South African supporters, Mofokeng broke the deadlock in the 68th minute with quick thinking inside the box before sealing all three points in the 86th minute with a sharp solo finish. Mohammed Bajaber pulled one back for Kenya in the 89th minute, but Pitso Mosimane\'s side held firm through stoppage time.',
-            'The two-goal display keeps Bafana Bafana unbeaten through four Group D qualifiers and sends South Africa back to the top of the group standings on 10 points, building on Friday\'s 2–2 home draw in the reverse fixture.',
+            'Orlando Pirates claimed a crucial 2–0 victory over Lamontville Golden Arrows at the Orlando Amstel Arena on Tuesday night, 24 November 2026, propelling the Buccaneers to the top of the Betway Premiership standings.',
+            'After struggling for much of the contest to break down a resilient and deeply organised Golden Arrows defensive block, coach Abdeslam Ouaddou’s tactical changes paid off in dramatic stoppage-time fashion. Boitumelo Radiopane broke the deadlock in the 90th minute by turning home a low cross from Thalente Mbatha.',
+            "Four minutes into added time (90'+4), Bheki Mabuza sealed all three points with a powerful finish to confirm a 2–0 triumph and a clean sheet in front of the home supporters.",
+            'The victory lifts the defending champions to 28 points from 10 unbeaten league matches, moving Orlando Pirates two points clear of second-placed Mamelodi Sundowns at the summit of the Betway Premiership table.',
           ],
         },
         spotlightBtn
@@ -2274,7 +2461,13 @@ document.addEventListener('keydown', (event) => {
       return;
     }
 
-    items.slice(0, 5).forEach((item) => {
+    const uniqueItems = deduplicateLiveNewsItems(items, (item) => ({
+      title: stripHtml(item?.title || ''),
+      body: stripHtml(item?.description || item?.content || ''),
+      url: item?.link || '',
+    }));
+
+    uniqueItems.slice(0, 5).forEach((item) => {
       const cleanTitle = stripHtml(item.title);
       const cleanDesc = stripHtml(item.description || item.content || '');
       if (!cleanTitle) return;

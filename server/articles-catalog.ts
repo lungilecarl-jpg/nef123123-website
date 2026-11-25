@@ -1,6 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  evaluateArticleForDuplicates,
+  type DuplicateCandidateArticle,
+} from './duplicate-prevention.ts';
 
 export type TopicFeedKey = 'south-africa' | 'africa' | 'parliament' | 'economy';
 
@@ -9,6 +13,11 @@ export interface TopicFeedMeta {
   title: string;
   description: string;
   feedPath: string;
+}
+
+export interface ArticleContentSection {
+  heading: string;
+  paragraphs: string[];
 }
 
 export interface CanonicalNewsArticle {
@@ -26,6 +35,7 @@ export interface CanonicalNewsArticle {
   canonicalUrl: string;
   source: string;
   paragraphs: string[];
+  sections?: ArticleContentSection[];
   externalUrl?: string;
 }
 
@@ -44,6 +54,7 @@ interface RawCatalogArticle {
   alt: string;
   source: string;
   paragraphs?: string[];
+  sections?: ArticleContentSection[];
   externalUrl?: string;
   externalLabel?: string;
 }
@@ -152,6 +163,7 @@ function loadCanonicalArticles(): CanonicalNewsArticle[] {
     canonicalUrl: toCanonical(item.slug),
     source: item.source,
     paragraphs: Array.isArray(item.paragraphs) ? item.paragraphs : [],
+    ...(Array.isArray(item.sections) && item.sections.length > 0 ? { sections: item.sections } : {}),
     ...(item.externalUrl ? { externalUrl: item.externalUrl } : {}),
   }));
   return deduplicateArticlesBySlug(mapped);
@@ -196,8 +208,8 @@ export function getArticlesByTopic(
 
 /**
  * Merges bundled static canonical articles with server-verified external bridge
- * articles, excludes explicitly retracted/unpublished slugs, and deduplicates
- * by normalized slug (keeping the newest updatedDate/publishedDate revision).
+ * articles, excludes explicitly retracted/unpublished slugs, allows strictly newer
+ * same-slug revision updates, and suppresses cross-slug duplicate content/URLs.
  */
 export function mergePublishedArticles(
   bundled: CanonicalNewsArticle[],
@@ -207,9 +219,41 @@ export function mergePublishedArticles(
   const excluded = new Set(
     Array.from(removedSlugs || []).map((s) => String(s || '').trim().toLowerCase())
   );
-  const combined = [...bundled, ...externalApproved].filter(
-    (article) => !excluded.has(String(article.slug || '').trim().toLowerCase())
+  const baseBundled = deduplicateArticlesBySlug(
+    bundled.filter((article) => !excluded.has(String(article.slug || '').trim().toLowerCase()))
   );
-  return deduplicateArticlesBySlug(combined);
+
+  const merged: CanonicalNewsArticle[] = [...baseBundled];
+  const filteredExternal = deduplicateArticlesBySlug(
+    externalApproved.filter(
+      (article) => !excluded.has(String(article.slug || '').trim().toLowerCase())
+    )
+  );
+
+  for (const candidate of filteredExternal) {
+    const normSlug = String(candidate.slug || '').trim().toLowerCase();
+    const existingIdx = merged.findIndex(
+      (item) => String(item.slug || '').trim().toLowerCase() === normSlug
+    );
+    if (existingIdx >= 0) {
+      const prevTs = Date.parse(merged[existingIdx].updatedDate || merged[existingIdx].publishedDate) || 0;
+      const nextTs = Date.parse(candidate.updatedDate || candidate.publishedDate) || 0;
+      if (nextTs >= prevTs) {
+        merged[existingIdx] = candidate;
+      }
+      continue;
+    }
+
+    const dupCheck = evaluateArticleForDuplicates(
+      candidate as DuplicateCandidateArticle,
+      merged as DuplicateCandidateArticle[],
+      { allowSameSlugUpdate: false, recordRejection: false }
+    );
+    if (dupCheck.allowed) {
+      merged.push(candidate);
+    }
+  }
+
+  return merged;
 }
 
