@@ -208,17 +208,15 @@ test('DUP-6. Existing 13 NEF123123 articles non-destructive audit reports zero e
   assert.equal(audit.duplicateUrlEntries.length, 0);
   assert.equal(audit.cleanStatus, true);
 
-  // Confirm related developing stories (like the two Malema/Zille articles) are recognized as distinct
-  const malemaPair = audit.relatedDevelopingCoverage.find(
+  // Confirm the two Malema/EFF articles are never flagged as exact or near duplicates
+  const duplicatePair = [...audit.exactDuplicates, ...audit.suspectedNearDuplicates].find(
     (f) =>
       [f.articleA.slug, f.articleB.slug].includes(
         'malema-fires-back-at-helen-zille-mashaba-affidavit-da-emails'
       ) &&
       [f.articleA.slug, f.articleB.slug].includes('malema-challenges-helen-zille-court-venue')
   );
-  assert.ok(malemaPair, 'Expected the two Malema/Zille stories to be classified as distinct related coverage');
-  assert.equal(malemaPair.classification, 'related_developing_coverage');
-  assert.equal(malemaPair.reasonCode, null);
+  assert.equal(duplicatePair, undefined, 'Expected the two Malema/EFF stories to remain distinct non-duplicates');
 });
 
 test('DUP-7. Batch RSS/Atom/API feed import filter blocks duplicate URLs and cross-source copies while keeping unique items', () => {

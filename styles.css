@@ -4532,6 +4532,10 @@ footer {
   object-position: center 16%;
 }
 
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card .msn-card-media img.msn-card-photo-sibiya {
+  object-position: center 28%;
+}
+
 #latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-body,
 #latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-card-featured-row .story-body,
 #africa .msn-feed-grid.bento-lead-right > .msn-card .story-body {
@@ -4674,10 +4678,10 @@ footer {
 
 #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-body h3,
 #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) .story-body h3 {
-  font-size: 19px;
+  font-size: 18px;
   line-height: 1.22;
   color: #ffffff;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
 }
 
 #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-article-link:hover,

@@ -32,7 +32,7 @@ const malemaWaterCrisisImg =
 
 const malemaFiresBackZilleImg =
   document.querySelector('#openMalemaFiresBackZilleImage img')?.getAttribute('src') ||
-  './src/assets/images/malema-fires-back-zille.jpg';
+  './src/assets/images/da-emails-shadrack-sibiya.jpg';
 
 const malemaBombshellNamesImg =
   document.getElementById('heroSlideMalemaNamesImgRef')?.getAttribute('href') ||
@@ -575,24 +575,24 @@ const articleCatalog = {
   },
   malemaFiresBackZille: {
     slug: 'malema-fires-back-at-helen-zille-mashaba-affidavit-da-emails',
-    seoTitle: 'Malema Fires Back at Helen Zille Over DA Emails | NEF123123',
+    seoTitle: 'Emails Rebut Helen Zille: DA Recommended Shadrack Sibiya | NEF123123',
     metaDescription:
-      'EFF President Julius Malema responds to Helen Zille’s claims, explains his defamation lawsuit, cites Herman Mashaba’s affidavit and leaked DA emails.',
+      'Emails between Glynnis Breytenbach and Herman Mashaba rebut Helen Zille, proving the DA—not Julius Malema or the EFF—recommended Shadrack Sibiya.',
     publishedDate: '2026-04-15',
     dot: 'N',
     category: 'NEF123123 NEWS | SOUTH AFRICA',
-    title: 'Julius Malema Fires Back at Helen Zille: “I’m Going to Sue You!” | Mashaba Affidavit & DA Emails Exposed',
+    title: 'Emails Prove DA—Not Julius Malema or the EFF—Recommended Shadrack Sibiya’s Appointment Under Herman Mashaba',
     img: malemaFiresBackZilleImg,
-    alt: 'Split-screen of Helen Zille and EFF President Julius Malema speaking at a microphone in his red EFF beret',
-    imgPosition: 'center 15%',
+    alt: 'Split-screen showing Glynnis Breytenbach, Helen Zille, and EFF President Julius Malema speaking into a studio microphone in his red EFF beret',
+    imgPosition: 'center 28%',
     source: 'NEF123123 · Facebook Video',
-    externalUrl: 'https://www.facebook.com/share/v/14y7c9DShKA/',
+    externalUrl: 'https://www.facebook.com/share/v/18wMnUjfC7/',
     externalLabel: 'Watch Video on Facebook →',
     paragraphs: [
-      'EFF President Julius Malema has responded forcefully to allegations made by Helen Zille claiming he influenced former Johannesburg Mayor Herman Mashaba to appoint Shadrack Sibiya and manipulate municipal fleet tenders.',
-      'In the NEF123123 video report, Malema explains why he is taking legal action against Zille—declaring "I\'m going to sue you!"—and insists her public accusations must be tested in court rather than driven through unsubstantiated narratives.',
-      'Malema points directly to Herman Mashaba’s affidavit and leaked emails implicating senior Democratic Alliance (DA) leaders, while calling out what he describes as manufactured social media outrage targeting the Economic Freedom Fighters.',
-      'He further questions Zille’s commitment to the people of Johannesburg, criticising her stated intention to serve as a "part-time" Johannesburg councillor while continuing to reside in Cape Town.',
+      'Following a statement from EFF President Julius Malema objecting to lies told about him, the NEF123123 report addresses claims made by Helen Zille alleging that Malema and the EFF influenced Herman Mashaba’s Johannesburg government between 2016 and 2019, specifically regarding the appointment of Shadrack Sibiya.',
+      'According to the report, emails exchanged between senior Democratic Alliance figure Glynnis Breytenbach and former Johannesburg Mayor Herman Mashaba prove that it was actually the DA that advised Sibiya’s appointment as a fit and proper candidate.',
+      'Those emails were handed over to the EFF’s legal team, now form part of the official court record, and have been submitted as evidence to the Matlanga Commission investigating the processes surrounding Shadrack Sibiya’s appointment.',
+      'The disclosures directly challenge public narratives attempting to blame Julius Malema and the Economic Freedom Fighters for staffing decisions taken inside the 2016–2019 Johannesburg coalition administration.',
     ],
   },
   malemaZille: {

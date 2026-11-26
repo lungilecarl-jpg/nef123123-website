@@ -481,7 +481,11 @@ function buildArticleHtml(article) {
           </div>
 
           <figure class="news-article-figure">
-            <img src="${escapeHtml(article.img)}" alt="${escapeHtml(article.alt)}">
+            ${
+              article.externalUrl
+                ? `<a href="${escapeHtml(article.externalUrl)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(article.externalLabel || article.title)}"><img src="${escapeHtml(article.img)}" alt="${escapeHtml(article.alt)}"></a>`
+                : `<img src="${escapeHtml(article.img)}" alt="${escapeHtml(article.alt)}">`
+            }
             <figcaption>${escapeHtml(article.alt)}</figcaption>
           </figure>
 
