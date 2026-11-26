@@ -2221,7 +2221,352 @@ document.addEventListener('keydown', (event) => {
 
   refreshBtn?.addEventListener('click', () => loadLeague(activeLeagueKey));
 
+  // South African Other Sports Latest News (Springboks Rugby, Proteas Cricket, Golf, F1 & MMA)
+  const saOtherSportsEl = document.getElementById('saOtherSportsList');
+  const saOtherSportsUpdatedEl = document.getElementById('saOtherSportsUpdated');
+  const saOtherSportTabs = Array.from(document.querySelectorAll('#saOtherSportTabs .sa-re-tab'));
+
+  const sportHtmlParser = new DOMParser();
+  function stripSportHtml(raw) {
+    if (!raw) return '';
+    const doc = sportHtmlParser.parseFromString(String(raw), 'text/html');
+    return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  let saOtherSportBuckets = {
+    rugby: [],
+    cricket: [],
+    other: [],
+  };
+  let activeSaSportFilter = 'all';
+
+  function classifyCitizenSportItem(item) {
+    const cats = Array.isArray(item.categories) ? item.categories.join(' ') : '';
+    const hay = `${cats} ${item.title || ''} ${item.description || ''}`;
+    if (/\bpsl\b|phakaaathi|bafana|kaizer chiefs|orlando pirates|sundowns|afcon|soccer|football|premier league/i.test(hay)) {
+      return null;
+    }
+    if (/rugby|springbok|boks|urc|stormers|bulls|sharks|lions|blitzboks|nations championship/i.test(hay)) {
+      return { bucket: 'rugby', tag: 'SPRINGBOKS · RUGBY' };
+    }
+    if (/cricket|proteas|bavuma|sa20|test career|odi|t20|wicket|bowler|batting/i.test(hay)) {
+      return { bucket: 'cricket', tag: 'PROTEAS · CRICKET' };
+    }
+    return { bucket: 'other', tag: 'SA SPORT' };
+  }
+
+  function renderSaOtherSports() {
+    if (!saOtherSportsEl) return;
+    saOtherSportsEl.textContent = '';
+
+    let items = [];
+    if (activeSaSportFilter === 'all') {
+      const rugby = saOtherSportBuckets.rugby;
+      const cricket = saOtherSportBuckets.cricket;
+      const other = saOtherSportBuckets.other;
+      // Blend South African rugby, cricket, and other sports evenly across the 4-card row
+      const maxLen = Math.max(rugby.length, cricket.length, other.length);
+      for (let i = 0; i < maxLen; i += 1) {
+        if (rugby[i]) items.push(rugby[i]);
+        if (cricket[i]) items.push(cricket[i]);
+        if (other[i]) items.push(other[i]);
+      }
+    } else {
+      items = saOtherSportBuckets[activeSaSportFilter] || [];
+    }
+
+    const uniqueItems = deduplicateLiveNewsItems(items, (entry) => ({
+      title: entry.title || '',
+      body: entry.summary || '',
+      url: entry.link || '',
+    }));
+
+    if (uniqueItems.length === 0) {
+      const box = document.createElement('div');
+      box.className = 'sport-state-box';
+      const msg = document.createElement('div');
+      msg.className = 'sport-loading';
+      msg.textContent = 'Unable to reach live South African multi-sport feeds right now.';
+      const retry = document.createElement('button');
+      retry.type = 'button';
+      retry.className = 'weather-ctrl-btn sport-retry-btn';
+      retry.textContent = 'Retry SA sport feeds';
+      retry.addEventListener('click', loadSaOtherSports);
+      box.append(msg, retry);
+      saOtherSportsEl.appendChild(box);
+      return;
+    }
+
+    uniqueItems.slice(0, 4).forEach((entry) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sport-news-item sa-other-sport-card';
+      btn.setAttribute('aria-haspopup', 'dialog');
+      btn.setAttribute('aria-controls', 'articleReaderModal');
+
+      const thumb = document.createElement('div');
+      thumb.className = 'sport-news-thumb';
+      if (entry.img && /^https:\/\//i.test(entry.img)) {
+        const img = document.createElement('img');
+        img.setAttribute('referrerpolicy', 'no-referrer');
+        img.src = entry.img;
+        img.alt = entry.title;
+        img.addEventListener('error', () => {
+          const fb = document.createElement('div');
+          fb.className = 'sport-news-thumb-fallback';
+          fb.textContent = entry.fallbackTag || 'SA';
+          img.replaceWith(fb);
+        });
+        thumb.appendChild(img);
+      } else {
+        const fb = document.createElement('div');
+        fb.className = 'sport-news-thumb-fallback';
+        fb.textContent = entry.fallbackTag || 'SA';
+        thumb.appendChild(fb);
+      }
+
+      const copy = document.createElement('div');
+      copy.className = 'sport-news-copy';
+
+      const meta = document.createElement('span');
+      meta.className = 'sport-news-meta';
+      const pubStr = entry.published
+        ? new Date(entry.published).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })
+        : 'Latest';
+      meta.textContent = `${entry.tag} · ${pubStr}`;
+
+      const title = document.createElement('h4');
+      title.textContent = entry.title;
+
+      const desc = document.createElement('p');
+      desc.textContent = entry.summary || 'Tap to read the full South African sport dispatch.';
+
+      copy.append(meta, title, desc);
+      btn.append(thumb, copy);
+
+      btn.addEventListener('click', () => {
+        openArticleReader(
+          {
+            dot: 'S',
+            category: `NEF123123 SPORT · ${entry.tag}`,
+            title: entry.title,
+            img: entry.img || null,
+            alt: entry.title,
+            imgPosition: 'center',
+            source: `Source: ${entry.source} · ${pubStr}`,
+            externalUrl: entry.link || '',
+            externalLabel: `Read full story on ${entry.source} →`,
+            paragraphs: [
+              entry.summary || 'Live South African multi-sport coverage via NEF123123 Sport Desk.',
+              `Published: ${
+                entry.published
+                  ? new Date(entry.published).toLocaleString('en-ZA', {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    })
+                  : 'Recent'
+              }. Follow Springboks rugby, Proteas cricket, golf, motorsport, and MMA updates in the NEF123123 Sport hub.`,
+            ],
+          },
+          btn
+        );
+      });
+
+      saOtherSportsEl.appendChild(btn);
+    });
+  }
+
+  async function loadSaOtherSports() {
+    if (!saOtherSportsEl) return;
+    if (saOtherSportsUpdatedEl) saOtherSportsUpdatedEl.textContent = 'UPDATING SA SPORT…';
+
+    const saAthleteRx =
+      /south africa|springbok|proteas|du plessis|dricus|binder|higgo|lawrence|bezuidenhout|van rooyen|oosthuizen|schwartzel|harris|simbine|van niekerk|tatjana|blitzboks|stormers|bulls|sharks|lions/i;
+
+    const [citizenRes, citizenRugbyRes, saCricketRes, espnRugbyRes, espnF1Res, espnGolfRes, espnUfcRes] =
+      await Promise.allSettled([
+        fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.citizen.co.za%2Fsport%2Ffeed%2F'),
+        fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.citizen.co.za%2Fsport%2Frugby%2Ffeed%2F'),
+        fetch('https://www.sacricketmag.com/wp-json/wp/v2/posts?per_page=8&_embed=1'),
+        fetch('https://site.web.api.espn.com/apis/site/v2/sports/rugby/all/news?limit=8'),
+        fetch('https://site.web.api.espn.com/apis/site/v2/sports/racing/f1/news?limit=6'),
+        fetch('https://site.web.api.espn.com/apis/site/v2/sports/golf/pga/news?limit=6'),
+        fetch('https://site.web.api.espn.com/apis/site/v2/sports/mma/ufc/news?limit=6'),
+      ]);
+
+    const nextBuckets = { rugby: [], cricket: [], other: [] };
+
+    if (citizenRes.status === 'fulfilled' && citizenRes.value.ok) {
+      try {
+        const cj = await citizenRes.value.json();
+        (cj.items || []).forEach((item) => {
+          const classified = classifyCitizenSportItem(item);
+          if (!classified) return;
+          const cleanTitle = stripSportHtml(item.title);
+          if (!cleanTitle) return;
+          nextBuckets[classified.bucket].push({
+            title: cleanTitle,
+            summary: stripSportHtml(item.description || item.content || ''),
+            img: item.thumbnail || item.enclosure?.link || '',
+            published: item.pubDate || '',
+            link: item.link || '',
+            tag: classified.tag,
+            source: 'The Citizen SA',
+            fallbackTag: classified.bucket === 'rugby' ? 'BOKS' : classified.bucket === 'cricket' ? 'PRO' : 'SA',
+          });
+        });
+      } catch {
+        // Ignore malformed upstream feed
+      }
+    }
+
+    if (citizenRugbyRes.status === 'fulfilled' && citizenRugbyRes.value.ok) {
+      try {
+        const rj = await citizenRugbyRes.value.json();
+        (rj.items || []).forEach((item) => {
+          const cleanTitle = stripSportHtml(item.title);
+          if (!cleanTitle) return;
+          nextBuckets.rugby.push({
+            title: cleanTitle,
+            summary: stripSportHtml(item.description || item.content || ''),
+            img: item.thumbnail || item.enclosure?.link || '',
+            published: item.pubDate || '',
+            link: item.link || '',
+            tag: 'SPRINGBOKS · RUGBY',
+            source: 'The Citizen SA',
+            fallbackTag: 'BOKS',
+          });
+        });
+      } catch {
+        // Ignore malformed upstream feed
+      }
+    }
+
+    if (saCricketRes.status === 'fulfilled' && saCricketRes.value.ok) {
+      try {
+        const posts = await saCricketRes.value.json();
+        if (Array.isArray(posts)) {
+          posts.forEach((post) => {
+            const cleanTitle = stripSportHtml(post.title?.rendered || '');
+            if (!cleanTitle) return;
+            nextBuckets.cricket.push({
+              title: cleanTitle,
+              summary: stripSportHtml(post.excerpt?.rendered || ''),
+              img: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
+              published: post.date || '',
+              link: post.link || '',
+              tag: 'PROTEAS · CRICKET',
+              source: 'SA Cricket Mag',
+              fallbackTag: 'PRO',
+            });
+          });
+        }
+      } catch {
+        // Ignore malformed upstream feed
+      }
+    }
+
+    if (espnRugbyRes.status === 'fulfilled' && espnRugbyRes.value.ok) {
+      try {
+        const erj = await espnRugbyRes.value.json();
+        const raw = Array.isArray(erj.articles) ? erj.articles : [];
+        const sorted = [
+          ...raw.filter((a) => saAthleteRx.test(`${a.headline || ''} ${a.description || ''}`)),
+          ...raw.filter((a) => !saAthleteRx.test(`${a.headline || ''} ${a.description || ''}`)),
+        ];
+        sorted.forEach((a) => {
+          if (!a.headline) return;
+          nextBuckets.rugby.push({
+            title: a.headline,
+            summary: a.description || '',
+            img: a.images?.[0]?.url || '',
+            published: a.published || '',
+            link: a.links?.web?.href || '',
+            tag: 'TEST RUGBY',
+            source: 'ESPN Rugby',
+            fallbackTag: 'RUGBY',
+          });
+        });
+      } catch {
+        // Ignore malformed upstream feed
+      }
+    }
+
+    const otherEspnFeeds = [
+      { res: espnGolfRes, tag: 'GOLF · PGA', source: 'ESPN Golf', fallbackTag: 'GOLF' },
+      { res: espnF1Res, tag: 'FORMULA 1', source: 'ESPN F1', fallbackTag: 'F1' },
+      { res: espnUfcRes, tag: 'UFC · MMA', source: 'ESPN MMA', fallbackTag: 'MMA' },
+    ];
+
+    const espnOtherItems = [];
+    for (const feed of otherEspnFeeds) {
+      if (feed.res.status !== 'fulfilled' || !feed.res.value.ok) continue;
+      try {
+        const ej = await feed.res.value.json();
+        (ej.articles || []).forEach((a) => {
+          if (!a.headline) return;
+          espnOtherItems.push({
+            title: a.headline,
+            summary: a.description || '',
+            img: a.images?.[0]?.url || '',
+            published: a.published || '',
+            link: a.links?.web?.href || '',
+            tag: feed.tag,
+            source: feed.source,
+            fallbackTag: feed.fallbackTag,
+          });
+        });
+      } catch {
+        // Ignore malformed upstream feed
+      }
+    }
+
+    const saPriorityOther = espnOtherItems.filter((i) => saAthleteRx.test(`${i.title} ${i.summary}`));
+    const generalOther = espnOtherItems.filter((i) => !saAthleteRx.test(`${i.title} ${i.summary}`));
+    // Interleave Golf, F1, and MMA so "Other" has rich variety
+    const byTag = {
+      'GOLF · PGA': generalOther.filter((i) => i.tag === 'GOLF · PGA'),
+      'FORMULA 1': generalOther.filter((i) => i.tag === 'FORMULA 1'),
+      'UFC · MMA': generalOther.filter((i) => i.tag === 'UFC · MMA'),
+    };
+    const interleavedOther = [];
+    const maxTagLen = Math.max(
+      byTag['GOLF · PGA'].length,
+      byTag['FORMULA 1'].length,
+      byTag['UFC · MMA'].length
+    );
+    for (let i = 0; i < maxTagLen; i += 1) {
+      if (byTag['GOLF · PGA'][i]) interleavedOther.push(byTag['GOLF · PGA'][i]);
+      if (byTag['FORMULA 1'][i]) interleavedOther.push(byTag['FORMULA 1'][i]);
+      if (byTag['UFC · MMA'][i]) interleavedOther.push(byTag['UFC · MMA'][i]);
+    }
+    nextBuckets.other.push(...saPriorityOther, ...interleavedOther);
+
+    saOtherSportBuckets = nextBuckets;
+    const nowStr = new Date().toLocaleTimeString('en-ZA', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    if (saOtherSportsUpdatedEl) saOtherSportsUpdatedEl.textContent = `LIVE SA SPORT · ${nowStr}`;
+    renderSaOtherSports();
+  }
+
+  saOtherSportTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const nextFilter = tab.dataset.saSport || 'all';
+      if (nextFilter === activeSaSportFilter) return;
+      activeSaSportFilter = nextFilter;
+      saOtherSportTabs.forEach((t) => {
+        const isActive = t === tab;
+        t.classList.toggle('active', isActive);
+        t.setAttribute('aria-selected', String(isActive));
+      });
+      renderSaOtherSports();
+    });
+  });
+
   loadLeague('bafana');
+  loadSaOtherSports();
 })();
 
 // Global Live Markets, FX Strip, Property Value Converter & Real-Estate News
@@ -2229,6 +2574,16 @@ document.addEventListener('keydown', (event) => {
   const quoteGridEl = document.getElementById('marketsQuoteGrid');
   const fxListEl = document.getElementById('marketsFxList');
   const updatedTextEl = document.getElementById('marketsUpdatedText');
+  const compactTriggerEl = document.getElementById('marketsCompactTrigger');
+  const compactPrimarySymEl = document.getElementById('marketsCompactPrimarySym');
+  const compactPrimaryValEl = document.getElementById('marketsCompactPrimaryVal');
+  const compactChipsEl = document.getElementById('marketsCompactChips');
+  const compactMetaEl = document.getElementById('marketsCompactMeta');
+  const compactUpdatedEl = document.getElementById('marketsCompactUpdated');
+  const marketsModalEl = document.getElementById('marketsDetailModal');
+  const marketsModalBackdropEl = document.getElementById('marketsModalBackdrop');
+  const closeMarketsModalBtn = document.getElementById('closeMarketsModal');
+  const closeMarketsModalFooterBtn = document.getElementById('closeMarketsModalFooter');
   const globalNewsEl = document.getElementById('globalMarketsNewsList');
   const realEstateNewsEl = document.getElementById('realEstateNewsList');
   const currButtons = document.querySelectorAll('.markets-curr-btn');
@@ -2241,6 +2596,32 @@ document.addEventListener('keydown', (event) => {
   const saPropTabs = document.querySelectorAll('#saPropertyTabs .sa-re-tab');
 
   if (!quoteGridEl || !fxListEl || !globalNewsEl || !realEstateNewsEl) return;
+
+  function openMarketsModal() {
+    if (!marketsModalEl) return;
+    marketsModalEl.hidden = false;
+    document.body.style.overflow = 'hidden';
+    compactTriggerEl?.setAttribute('aria-expanded', 'true');
+    closeMarketsModalBtn?.focus();
+  }
+
+  function closeMarketsModal() {
+    if (!marketsModalEl || marketsModalEl.hidden) return;
+    marketsModalEl.hidden = true;
+    document.body.style.overflow = '';
+    compactTriggerEl?.setAttribute('aria-expanded', 'false');
+    compactTriggerEl?.focus();
+  }
+
+  compactTriggerEl?.addEventListener('click', openMarketsModal);
+  marketsModalBackdropEl?.addEventListener('click', closeMarketsModal);
+  closeMarketsModalBtn?.addEventListener('click', closeMarketsModal);
+  closeMarketsModalFooterBtn?.addEventListener('click', closeMarketsModal);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && marketsModalEl && !marketsModalEl.hidden) {
+      closeMarketsModal();
+    }
+  });
 
   const RSS_FEEDS = {
     markets: {
@@ -2456,6 +2837,36 @@ document.addEventListener('keydown', (event) => {
       card.append(top, name, price, createDeltaEl(item.delta));
       quoteGridEl.appendChild(card);
     });
+
+    const primaryCard = cards[0];
+    if (primaryCard) {
+      if (compactPrimarySymEl) compactPrimarySymEl.textContent = primaryCard.symbol;
+      if (compactPrimaryValEl) compactPrimaryValEl.textContent = primaryCard.price;
+    }
+
+    if (compactChipsEl) {
+      compactChipsEl.textContent = '';
+      cards.slice(1, 5).forEach((item) => {
+        const chip = document.createElement('span');
+        chip.className = 'markets-visual-chip';
+
+        const sym = document.createElement('span');
+        sym.className = 'mv-chip-sym';
+        sym.textContent = item.symbol.replace(/\s*\/\s*/g, '/');
+
+        const val = document.createElement('strong');
+        val.className = 'mv-chip-val';
+        val.textContent = item.price;
+
+        chip.append(sym, val);
+        compactChipsEl.appendChild(chip);
+      });
+    }
+
+    const ethCard = cards[5];
+    if (compactMetaEl && ethCard) {
+      compactMetaEl.textContent = `ETH ${ethCard.price} · Gold, crypto & 8 African FX cross rates live.`;
+    }
   }
 
   function renderFxStrip(rates) {
@@ -2693,6 +3104,7 @@ document.addEventListener('keydown', (event) => {
 
   async function loadMarketData() {
     if (updatedTextEl) updatedTextEl.textContent = 'SYNCING LIVE MARKETS…';
+    if (compactUpdatedEl) compactUpdatedEl.textContent = 'SYNCING LIVE…';
 
     const today = new Date();
     const weekAgo = new Date(today.getTime() - 7 * 86400000);
@@ -2744,6 +3156,7 @@ document.addEventListener('keydown', (event) => {
 
     if (!latestFx && !liveRates && !crypto) {
       if (updatedTextEl) updatedTextEl.textContent = 'FEEDS TEMPORARILY UNAVAILABLE';
+      if (compactUpdatedEl) compactUpdatedEl.textContent = 'FEEDS OFFLINE';
       quoteGridEl.textContent = '';
       const box = document.createElement('div');
       box.className = 'sport-state-box';
@@ -2798,6 +3211,7 @@ document.addEventListener('keydown', (event) => {
       minute: '2-digit',
     });
     if (updatedTextEl) updatedTextEl.textContent = `UPDATED ${nowStr}`;
+    if (compactUpdatedEl) compactUpdatedEl.textContent = `LIVE ${nowStr}`;
   }
 
   async function fetchSingleFeed(feedMeta, containerEl, retryFn) {

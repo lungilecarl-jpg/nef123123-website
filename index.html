@@ -535,8 +535,54 @@
     <section class="wrap portal-section" id="markets" data-searchable>
       <div class="markets-news-layout">
         <div class="news-dispatch-panel markets-news-panel">
-          <div class="sport-news-list" id="globalMarketsNewsList" aria-live="polite">
-            <div class="sport-loading">Loading live global markets dispatches…</div>
+          <div class="markets-panel-grid">
+            <button
+              type="button"
+              class="markets-compact-block"
+              id="marketsCompactTrigger"
+              aria-haspopup="dialog"
+              aria-controls="marketsDetailModal"
+              aria-expanded="false"
+              aria-label="Open live FX rates, gold, digital assets, and African cross rates"
+            >
+              <span class="markets-compact-visual">
+                <span class="markets-visual-top">
+                  <span class="markets-visual-primary">
+                    <span class="markets-visual-sym" id="marketsCompactPrimarySym">USD / ZAR</span>
+                    <strong class="markets-visual-val" id="marketsCompactPrimaryVal">--</strong>
+                  </span>
+                  <span class="markets-visual-pill" id="marketsCompactUpdated">SYNCING…</span>
+                </span>
+                <span class="markets-visual-chips" id="marketsCompactChips" aria-live="polite">
+                  <span class="markets-visual-chip">
+                    <span class="mv-chip-sym">EUR / ZAR</span>
+                    <strong class="mv-chip-val">--</strong>
+                  </span>
+                  <span class="markets-visual-chip">
+                    <span class="mv-chip-sym">GBP / ZAR</span>
+                    <strong class="mv-chip-val">--</strong>
+                  </span>
+                  <span class="markets-visual-chip">
+                    <span class="mv-chip-sym">XAU / OZ</span>
+                    <strong class="mv-chip-val">--</strong>
+                  </span>
+                  <span class="markets-visual-chip">
+                    <span class="mv-chip-sym">BTC</span>
+                    <strong class="mv-chip-val">--</strong>
+                  </span>
+                </span>
+              </span>
+              <span class="markets-compact-copy">
+                <span class="markets-compact-cat">LIVE MARKETS · FX &amp; ASSETS</span>
+                <h3>Rand, Gold &amp; Global FX</h3>
+                <p id="marketsCompactMeta">Live ZAR, gold bullion, Bitcoin, Ethereum &amp; 8 African FX cross rates.</p>
+                <span class="ad-cta">All Quotes &amp; African FX <b>→</b></span>
+              </span>
+            </button>
+
+            <div class="sport-news-list" id="globalMarketsNewsList" aria-live="polite">
+              <div class="sport-loading">Loading live global markets dispatches…</div>
+            </div>
           </div>
         </div>
 
@@ -552,18 +598,6 @@
             <div class="sport-loading">Loading live South Africa property reports…</div>
           </div>
         </div>
-      </div>
-
-      <div class="markets-quote-grid" id="marketsQuoteGrid" aria-live="polite">
-        <div class="sport-loading">Loading live FX rates, gold &amp; global assets…</div>
-      </div>
-
-      <div class="markets-fx-strip msn-widget-card" aria-label="African and major currencies live strip">
-        <div class="markets-fx-strip-head">
-          <span>AFRICAN &amp; GLOBAL FX CROSS RATES (PER 1 USD)</span>
-          <span id="marketsUpdatedText">CONNECTING TO LIVE FEEDS…</span>
-        </div>
-        <div class="markets-fx-pills" id="marketsFxList"></div>
       </div>
     </section>
 
@@ -587,6 +621,21 @@
           <div class="sport-news-list" id="sportNewsList" aria-live="polite">
             <div class="sport-loading">Loading Bafana Bafana reports…</div>
           </div>
+        </div>
+      </div>
+
+      <div class="sa-other-sports-panel news-dispatch-panel" id="saOtherSportsPanel">
+        <div class="sa-other-sports-bar">
+          <div class="sa-re-tabs sa-sport-tabs" id="saOtherSportTabs" role="tablist" aria-label="South African sports categories">
+            <button type="button" class="sa-re-tab active" role="tab" aria-selected="true" data-sa-sport="all">All SA Sports</button>
+            <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="rugby">Springboks &amp; Rugby</button>
+            <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="cricket">Proteas &amp; Cricket</button>
+            <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="other">Golf, F1 &amp; MMA</button>
+          </div>
+          <span class="sa-other-sports-status" id="saOtherSportsUpdated">LIVE SA SPORT</span>
+        </div>
+        <div class="sa-other-sports-grid" id="saOtherSportsList" aria-live="polite">
+          <div class="sport-loading">Loading latest South African Rugby, Cricket, Golf, F1 &amp; MMA news…</div>
         </div>
       </div>
     </section>
@@ -829,6 +878,44 @@
       <div class="article-modal-foot">
         <span>Live Meteorology · Open-Meteo</span>
         <button type="button" class="button" id="closeWeatherModalFooter">Close Weather</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="article-modal markets-modal" id="marketsDetailModal" hidden role="dialog" aria-modal="true" aria-labelledby="marketsModalTitle">
+    <div class="article-modal-backdrop" id="marketsModalBackdrop"></div>
+    <div class="article-modal-card markets-modal-card">
+      <div class="article-modal-head">
+        <div>
+          <div class="article-modal-cat">LIVE MARKETS &amp; FX DESK</div>
+          <h3 id="marketsModalTitle">Live Quotes &amp; African FX Cross Rates</h3>
+        </div>
+        <button type="button" class="article-modal-close" id="closeMarketsModal" aria-label="Close live markets">✕</button>
+      </div>
+      <div class="article-modal-content markets-modal-content">
+        <div class="markets-modal-toolbar">
+          <div class="markets-currency-toggle" role="group" aria-label="Quote currency">
+            <button type="button" class="weather-ctrl-btn markets-curr-btn active" data-currency="zar" aria-pressed="true">ZAR (R)</button>
+            <button type="button" class="weather-ctrl-btn markets-curr-btn" data-currency="usd" aria-pressed="false">USD ($)</button>
+          </div>
+          <button type="button" class="weather-ctrl-btn" id="marketsRefreshBtn">Refresh Live Feeds</button>
+        </div>
+
+        <div class="markets-quote-grid" id="marketsQuoteGrid" aria-live="polite">
+          <div class="sport-loading">Loading live FX rates, gold &amp; global assets…</div>
+        </div>
+
+        <div class="markets-fx-strip msn-widget-card" aria-label="African and major currencies live strip">
+          <div class="markets-fx-strip-head">
+            <span>AFRICAN &amp; GLOBAL FX CROSS RATES (PER 1 USD)</span>
+            <span id="marketsUpdatedText">CONNECTING TO LIVE FEEDS…</span>
+          </div>
+          <div class="markets-fx-pills" id="marketsFxList"></div>
+        </div>
+      </div>
+      <div class="article-modal-foot">
+        <span>Live Spot Feeds · Frankfurter, Open ER-API &amp; CoinGecko</span>
+        <button type="button" class="button" id="closeMarketsModalFooter">Close Markets</button>
       </div>
     </div>
   </div>
