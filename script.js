@@ -3330,3 +3330,473 @@ document.addEventListener('keydown', (event) => {
   loadNewsFeedsSequentially();
 })();
 
+// Latest South Africa News Slides (#saNewsSlidesCard) & Advertising Slide Board (#adSlideBoardCard)
+(() => {
+  const saCard = document.getElementById('saNewsSlidesCard');
+  const adCard = document.getElementById('adSlideBoardCard');
+
+  function cleanPlainText(rawHtml, maxLen = 220) {
+    if (!rawHtml) return '';
+    try {
+      const parsed = new DOMParser().parseFromString(String(rawHtml), 'text/html');
+      const text = (parsed.body?.textContent || '').replace(/\s+/g, ' ').trim();
+      return text.length > maxLen ? `${text.slice(0, maxLen - 1).trim()}…` : text;
+    } catch {
+      return String(rawHtml).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, maxLen);
+    }
+  }
+
+  function formatSlideTime(dateStr) {
+    if (!dateStr) return 'Latest SA';
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return 'Latest SA';
+    const diffMin = Math.max(1, Math.round((Date.now() - d.getTime()) / 60000));
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffHr = Math.round(diffMin / 60);
+    if (diffHr < 24) return `${diffHr}h ago`;
+    return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' });
+  }
+
+  // 1. Live Latest South Africa News Slides Controller
+  if (saCard) {
+    const imgEl = document.getElementById('saNewsSlideImg');
+    const countEl = document.getElementById('saNewsSlideCount');
+    const prevBtn = document.getElementById('saNewsSlidePrev');
+    const nextBtn = document.getElementById('saNewsSlideNext');
+    const dotsEl = document.getElementById('saNewsSlideDots');
+    const mediaBtn = document.getElementById('saNewsSlideMediaBtn');
+    const bodyEl = document.getElementById('saNewsSlideBody');
+    const dotEl = document.getElementById('saNewsSlideDot');
+    const catEl = document.getElementById('saNewsSlideCat');
+    const titleEl = document.getElementById('saNewsSlideTitle');
+    const descEl = document.getElementById('saNewsSlideDesc');
+    const readBtn = document.getElementById('saNewsSlideReadBtn');
+    const timeEl = document.getElementById('saNewsSlideTime');
+
+    const FALLBACK_IMG = './src/assets/images/regenerated_image_1794535449785.jpg';
+    let saSlides = [];
+    let activeIdx = 0;
+    let timerId = null;
+    let isPaused = false;
+
+    const SA_FALLBACK_SLIDES = [
+      {
+        title: 'South Africa National News Desk: Live Updates Across All Nine Provinces',
+        description:
+          'Follow breaking governance, economy, municipal service delivery, and parliamentary developments across South Africa.',
+        img: FALLBACK_IMG,
+        sourceName: 'NEF123123 SA Desk',
+        dot: 'ZA',
+        category: 'SOUTH AFRICA LIVE | NATIONAL',
+        pubDate: '',
+        link: 'https://www.citizen.co.za/news/south-africa/',
+      },
+    ];
+
+    function buildDots() {
+      if (!dotsEl) return;
+      dotsEl.textContent = '';
+      saSlides.forEach((slide, idx) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = `msn-mini-dot${idx === activeIdx ? ' active' : ''}`;
+        dot.setAttribute('role', 'tab');
+        dot.setAttribute('aria-selected', String(idx === activeIdx));
+        dot.setAttribute('aria-label', `Show South Africa news slide ${idx + 1}: ${slide.title}`);
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          renderSlide(idx);
+          restartTimer();
+        });
+        dotsEl.appendChild(dot);
+      });
+    }
+
+    function renderSlide(idx) {
+      if (!saSlides.length) return;
+      activeIdx = ((idx % saSlides.length) + saSlides.length) % saSlides.length;
+      const slide = saSlides[activeIdx];
+
+      if (imgEl) {
+        imgEl.setAttribute('referrerpolicy', 'no-referrer');
+        imgEl.onerror = () => {
+          if (imgEl.getAttribute('src') !== FALLBACK_IMG) {
+            imgEl.setAttribute('src', FALLBACK_IMG);
+          }
+        };
+        imgEl.setAttribute('src', slide.img || FALLBACK_IMG);
+        imgEl.setAttribute('alt', slide.title);
+      }
+      if (countEl) countEl.textContent = `${activeIdx + 1} / ${saSlides.length}`;
+      if (dotEl) dotEl.textContent = slide.dot || 'ZA';
+      if (catEl) catEl.textContent = slide.category || 'SOUTH AFRICA LIVE | NEWS';
+      if (titleEl) titleEl.textContent = slide.title;
+      if (descEl) descEl.textContent = slide.description;
+      if (timeEl) timeEl.textContent = formatSlideTime(slide.pubDate);
+      if (mediaBtn) mediaBtn.setAttribute('aria-label', `Read full story: ${slide.title}`);
+
+      if (dotsEl) {
+        Array.from(dotsEl.children).forEach((dot, i) => {
+          dot.classList.toggle('active', i === activeIdx);
+          dot.setAttribute('aria-selected', String(i === activeIdx));
+        });
+      }
+    }
+
+    function openActiveSaSlide(triggerEl) {
+      const slide = saSlides[activeIdx];
+      if (!slide || typeof openArticleReader !== 'function') return;
+      openArticleReader(
+        {
+          dot: slide.dot || 'ZA',
+          category: slide.category || 'SOUTH AFRICA LIVE | NEWS',
+          title: slide.title,
+          img: slide.img || FALLBACK_IMG,
+          alt: slide.title,
+          paragraphs: [
+            slide.description,
+            `Published by ${slide.sourceName}. Click the source link below to read the full report directly from the publisher.`,
+          ],
+          source: `Source: ${slide.sourceName} · South Africa Live News Slides · `,
+          externalUrl: slide.link && /^https:\/\//i.test(slide.link) ? slide.link : undefined,
+          externalLabel: `Read full report on ${slide.sourceName} ↗`,
+        },
+        triggerEl
+      );
+    }
+
+    function restartTimer() {
+      if (timerId) window.clearInterval(timerId);
+      if (saSlides.length <= 1) return;
+      timerId = window.setInterval(() => {
+        if (!isPaused && !document.hidden) {
+          renderSlide(activeIdx + 1);
+        }
+      }, 6000);
+    }
+
+    prevBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSlide(activeIdx - 1);
+      restartTimer();
+    });
+    nextBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSlide(activeIdx + 1);
+      restartTimer();
+    });
+    mediaBtn?.addEventListener('click', () => openActiveSaSlide(mediaBtn));
+    readBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openActiveSaSlide(readBtn);
+    });
+    bodyEl?.addEventListener('click', () => openActiveSaSlide(bodyEl));
+    bodyEl?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openActiveSaSlide(bodyEl);
+      }
+    });
+
+    saCard.addEventListener('mouseenter', () => {
+      isPaused = true;
+    });
+    saCard.addEventListener('mouseleave', () => {
+      isPaused = false;
+    });
+    saCard.addEventListener('focusin', () => {
+      isPaused = true;
+    });
+    saCard.addEventListener('focusout', () => {
+      isPaused = false;
+    });
+
+    async function loadSouthAfricaNewsSlides() {
+      const citizenUrl =
+        'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.citizen.co.za%2Fnews%2Fsouth-africa%2Ffeed%2F';
+      const businessTechUrl =
+        'https://businesstech.co.za/news/wp-json/wp/v2/posts?per_page=6&_embed=1';
+
+      const [citizenRes, btRes] = await Promise.allSettled([
+        fetch(citizenUrl).then((r) => (r.ok ? r.json() : Promise.reject(new Error('Citizen feed error')))),
+        fetch(businessTechUrl).then((r) => (r.ok ? r.json() : Promise.reject(new Error('BusinessTech feed error')))),
+      ]);
+
+      const citizenItems =
+        citizenRes.status === 'fulfilled' && Array.isArray(citizenRes.value?.items)
+          ? citizenRes.value.items.map((item) => ({
+              title: cleanPlainText(item.title, 140),
+              description:
+                cleanPlainText(item.description || item.content, 200) ||
+                'Read the latest South African news coverage from The Citizen.',
+              img: item.enclosure?.link || item.thumbnail || '',
+              sourceName: 'The Citizen SA',
+              dot: 'CT',
+              category: 'SOUTH AFRICA | THE CITIZEN',
+              pubDate: item.pubDate || '',
+              link: item.link || '',
+            }))
+          : [];
+
+      const btItems =
+        btRes.status === 'fulfilled' && Array.isArray(btRes.value)
+          ? btRes.value.map((post) => ({
+              title: cleanPlainText(post.title?.rendered, 140),
+              description:
+                cleanPlainText(post.excerpt?.rendered, 200) ||
+                'Latest South African economy, business, and national news from BusinessTech.',
+              img: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
+              sourceName: 'BusinessTech SA',
+              dot: 'BT',
+              category: 'SOUTH AFRICA | BUSINESSTECH',
+              pubDate: post.date || '',
+              link: post.link || '',
+            }))
+          : [];
+
+      // Interleave both SA newsrooms so slides offer rich South African variety
+      const combined = [];
+      const maxLen = Math.max(citizenItems.length, btItems.length);
+      for (let i = 0; i < maxLen; i += 1) {
+        if (citizenItems[i]) combined.push(citizenItems[i]);
+        if (btItems[i]) combined.push(btItems[i]);
+      }
+
+      const uniqueItems =
+        typeof deduplicateLiveNewsItems === 'function'
+          ? deduplicateLiveNewsItems(combined, (item) => ({
+              title: item.title,
+              body: item.description,
+              url: item.link,
+            }))
+          : combined;
+
+      const withImages = uniqueItems.filter((item) => item.title && item.img);
+      const selected = (withImages.length >= 3 ? withImages : uniqueItems.filter((item) => item.title)).slice(0, 6);
+
+      saSlides = selected.length > 0 ? selected : SA_FALLBACK_SLIDES;
+      buildDots();
+      renderSlide(0);
+      restartTimer();
+    }
+
+    loadSouthAfricaNewsSlides();
+  }
+
+  // 2. Advertising Slide Board Controller
+  if (adCard) {
+    const mediaLinkEl = document.getElementById('adSlideMediaLink');
+    const imgEl = document.getElementById('adSlideImg');
+    const badgeEl = document.getElementById('adSlideBadge');
+    const countEl = document.getElementById('adSlideCount');
+    const prevBtn = document.getElementById('adSlidePrev');
+    const nextBtn = document.getElementById('adSlideNext');
+    const dotsEl = document.getElementById('adSlideDots');
+    const dotEl = document.getElementById('adSlideDot');
+    const brandEl = document.getElementById('adSlideBrand');
+    const titleLinkEl = document.getElementById('adSlideTitleLink');
+    const descEl = document.getElementById('adSlideDesc');
+    const priceEl = document.getElementById('adSlidePrice');
+    const ctaLinkEl = document.getElementById('adSlideCtaLink');
+
+    const AD_SLIDES = [
+      {
+        badge: 'AD SLIDE BOARD',
+        dot: 'AD',
+        brand: 'SPONSORED | AMAZON SA DEALS',
+        title: 'Amazon Black Friday Deals',
+        description:
+          'Top-rated tech, home, and lifestyle savings with South Africa delivery and live ZAR conversion.',
+        img: './src/assets/images/amazon-bf-b0hswb4i2-clean.jpg',
+        alt: 'Amazon Black Friday Deals featured on NEF123123',
+        href: 'https://link.amazon/B0hSwb4I2',
+        external: true,
+        priceFallback: 'From R262.77 ZAR',
+        ctaLabel: 'Shop Deal ↗',
+      },
+      {
+        badge: 'AD SLIDE BOARD',
+        dot: 'AD',
+        brand: 'PARTNER OFFER | KITCHEN TECH',
+        title: 'Chefman 4 QT Compact Air Fryer',
+        description:
+          'Space-saving 450°F compact air fryer with viewing window and dishwasher-safe nonstick basket.',
+        img: './src/assets/images/chefman-airfryer-b0eqzyyrm.jpg',
+        alt: 'Chefman 4 QT Compact Air Fryer promotional slide',
+        href: 'https://link.amazon/B0eqZyyRm',
+        external: true,
+        priceFallback: 'R876.32 ZAR',
+        ctaLabel: 'View Deal ↗',
+      },
+      {
+        badge: 'AD SLIDE BOARD',
+        dot: 'AD',
+        brand: 'PARTNER OFFER | AUDIO',
+        title: 'JBL Charge 6 Portable Speaker',
+        description:
+          'Bold waterproof Bluetooth speaker with up to 28 hours of playtime and built-in powerbank.',
+        img: './src/assets/images/jbl-charge-6-b0fshbmai.jpg',
+        alt: 'JBL Charge 6 Portable Bluetooth Speaker promotional slide',
+        href: 'https://link.amazon/B0fSHBMaI',
+        external: true,
+        priceFallback: 'R3,505.12 ZAR',
+        ctaLabel: 'View Deal ↗',
+      },
+      {
+        badge: 'AD SLIDE BOARD',
+        dot: 'AD',
+        brand: 'PARTNER OFFER | SMART HOME',
+        title: 'Shark AV2501AE AI Robot Vacuum',
+        description:
+          'Self-emptying robot vacuum with LIDAR home mapping and 60-day HEPA dust base.',
+        img: './src/assets/images/regenerated_image_1794856423304.avif',
+        alt: 'Shark AV2501AE AI Robot Vacuum promotional slide',
+        href: 'https://link.amazon/B09K4dGYQ',
+        external: true,
+        priceFallback: 'R11,394.32 ZAR',
+        ctaLabel: 'View Deal ↗',
+      },
+      {
+        badge: 'AD SLIDE BOARD',
+        dot: 'AD',
+        brand: 'PARTNER OFFER | MOBILE POWER',
+        title: 'Miady 2-Pack 10000mAh Power Bank',
+        description:
+          'Dual-pack slim USB-C portable chargers ideal for load-shedding backup and daily travel.',
+        img: './src/assets/images/miady-powerbank-b03xfr4dt.jpg',
+        alt: 'Miady 2-Pack 10000mAh Slim Power Bank promotional slide',
+        href: 'https://link.amazon/B03xFr4DT',
+        external: true,
+        priceFallback: 'R420.54 ZAR',
+        ctaLabel: 'View Deal ↗',
+      },
+      {
+        badge: 'ADVERTISE HERE',
+        dot: 'SA',
+        brand: 'NEF123123 | BRAND PLACEMENTS',
+        title: 'Advertise Your Brand on NEF123123',
+        description:
+          'Reach engaged South African news readers on our front-page slide board and partner showcase.',
+        img: './src/assets/images/regenerated_image_1794535449785.jpg',
+        alt: 'Advertise on NEF123123 South Africa news portal',
+        href: '/contact',
+        external: false,
+        priceFallback: 'Partner Desk Open',
+        ctaLabel: 'Book Ad Space →',
+      },
+    ];
+
+    let adIdx = 0;
+    let adTimer = null;
+    let adPaused = false;
+
+    function resolveLiveZarPrice(slide) {
+      if (!slide.external) return slide.priceFallback;
+      const matchingCard = document.querySelector(
+        `#news-ads a[href="${slide.href}"]`
+      )?.closest('.affiliate-ad-card');
+      const livePriceText = matchingCard?.querySelector('.ad-price')?.textContent?.trim();
+      return livePriceText || slide.priceFallback;
+    }
+
+    function applyLinkAttrs(anchorEl, slide) {
+      if (!anchorEl) return;
+      anchorEl.setAttribute('href', slide.href);
+      if (slide.external) {
+        anchorEl.setAttribute('target', '_blank');
+        anchorEl.setAttribute('rel', 'noopener noreferrer sponsored');
+      } else {
+        anchorEl.removeAttribute('target');
+        anchorEl.removeAttribute('rel');
+      }
+    }
+
+    function buildAdDots() {
+      if (!dotsEl) return;
+      dotsEl.textContent = '';
+      AD_SLIDES.forEach((slide, idx) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = `msn-mini-dot${idx === adIdx ? ' active' : ''}`;
+        dot.setAttribute('role', 'tab');
+        dot.setAttribute('aria-selected', String(idx === adIdx));
+        dot.setAttribute('aria-label', `Show advertising slide ${idx + 1}: ${slide.title}`);
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          renderAdSlide(idx);
+          restartAdTimer();
+        });
+        dotsEl.appendChild(dot);
+      });
+    }
+
+    function renderAdSlide(idx) {
+      adIdx = ((idx % AD_SLIDES.length) + AD_SLIDES.length) % AD_SLIDES.length;
+      const slide = AD_SLIDES[adIdx];
+
+      applyLinkAttrs(mediaLinkEl, slide);
+      applyLinkAttrs(titleLinkEl, slide);
+      applyLinkAttrs(ctaLinkEl, slide);
+
+      if (mediaLinkEl) mediaLinkEl.setAttribute('aria-label', `${slide.title} — ${slide.ctaLabel}`);
+      if (imgEl) {
+        imgEl.setAttribute('src', slide.img);
+        imgEl.setAttribute('alt', slide.alt);
+      }
+      if (badgeEl) badgeEl.textContent = slide.badge;
+      if (countEl) countEl.textContent = `${adIdx + 1} / ${AD_SLIDES.length}`;
+      if (dotEl) dotEl.textContent = slide.dot;
+      if (brandEl) brandEl.textContent = slide.brand;
+      if (titleLinkEl) titleLinkEl.textContent = slide.title;
+      if (descEl) descEl.textContent = slide.description;
+      if (priceEl) priceEl.textContent = resolveLiveZarPrice(slide);
+      if (ctaLinkEl) ctaLinkEl.textContent = slide.ctaLabel;
+
+      if (dotsEl) {
+        Array.from(dotsEl.children).forEach((dot, i) => {
+          dot.classList.toggle('active', i === adIdx);
+          dot.setAttribute('aria-selected', String(i === adIdx));
+        });
+      }
+    }
+
+    function restartAdTimer() {
+      if (adTimer) window.clearInterval(adTimer);
+      adTimer = window.setInterval(() => {
+        if (!adPaused && !document.hidden) {
+          renderAdSlide(adIdx + 1);
+        }
+      }, 5500);
+    }
+
+    prevBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderAdSlide(adIdx - 1);
+      restartAdTimer();
+    });
+    nextBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderAdSlide(adIdx + 1);
+      restartAdTimer();
+    });
+
+    adCard.addEventListener('mouseenter', () => {
+      adPaused = true;
+    });
+    adCard.addEventListener('mouseleave', () => {
+      adPaused = false;
+    });
+    adCard.addEventListener('focusin', () => {
+      adPaused = true;
+    });
+    adCard.addEventListener('focusout', () => {
+      adPaused = false;
+    });
+
+    buildAdDots();
+    renderAdSlide(0);
+    restartAdTimer();
+  }
+})();
+
+

@@ -4533,7 +4533,7 @@ footer {
 }
 
 #latest-news .msn-feed-grid.bento-lead-left > .msn-card .msn-card-media img.msn-card-photo-sibiya {
-  object-position: center 28%;
+  object-position: center 8%;
 }
 
 #latest-news .msn-feed-grid.bento-lead-left > .msn-card .story-body,
@@ -4622,101 +4622,191 @@ footer {
   font-size: 11.5px;
 }
 
-/* Signature MSN 2-Column Full-Bleed Overlay Feature Tiles (Row 1: 2+1+1, Row 2: 1+1+2; Africa: balanced 4-card 1+1+1+1 row) */
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1),
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) {
-  grid-column: span 2;
-  height: 320px;
-  position: relative;
-  background: #10141a;
-  border-color: rgba(13, 107, 176, 0.2);
-}
-
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1):hover,
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6):hover {
-  background: #10141a;
-}
-
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .msn-card-media,
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) .msn-card-media {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-}
-
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .msn-card-media::after,
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) .msn-card-media::after {
-  content: "";
-  display: block;
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(10, 14, 20, 0.05) 16%,
-    rgba(10, 14, 20, 0.72) 56%,
-    rgba(10, 14, 20, 0.95) 100%
-  );
-}
-
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-body,
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) .story-body {
-  position: relative;
-  z-index: 2;
-  margin-top: auto;
-  flex: 0 0 auto;
-  padding: 16px 18px 14px;
-  gap: 5px;
-  background: transparent;
-}
-
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .category,
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) .category {
-  color: #cfe4f8;
-}
-
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-body h3,
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) .story-body h3 {
-  font-size: 18px;
-  line-height: 1.22;
-  color: #ffffff;
-  -webkit-line-clamp: 3;
-}
-
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-article-link:hover,
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) .story-article-link:hover {
-  color: var(--gold-light);
-}
-
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-body p,
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) .story-body p {
-  font-size: 12.5px;
-  line-height: 1.4;
-  color: #dce6f2;
-  -webkit-line-clamp: 2;
-}
-
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-read-btn,
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) .story-read-btn {
-  color: var(--gold-light);
-}
-
 #africa .msn-feed-grid.bento-lead-right > .msn-card:last-child .msn-card-media::after {
   display: none;
 }
 
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-video-link {
-  color: #ffffff;
-  background: rgba(24, 136, 214, 0.34);
-  padding: 2px 8px;
-  border-radius: 5px;
+/* Mini Slider Cards inside #latest-news (SA Latest News Slides & Advertising Slide Board) */
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-mini-slider-card .msn-mini-slider-media {
+  position: relative;
+  background: #0d1b2a;
 }
 
-#latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1) .story-video-link:hover {
+.msn-mini-slider-media::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 44px;
+  background: linear-gradient(to top, rgba(9, 20, 34, 0.72), rgba(9, 20, 34, 0));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.msn-mini-slide-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
   color: #ffffff;
-  background: rgba(24, 136, 214, 0.56);
-  text-decoration: none;
+  background: rgba(196, 30, 58, 0.92);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+}
+
+.msn-mini-slide-badge.is-live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffd166;
+  box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.32);
+}
+
+.msn-mini-slide-badge.is-ad {
+  background: linear-gradient(135deg, #0d5aa7, #1677c5);
+  color: #ffffff;
+}
+
+.msn-mini-slide-count {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(10, 22, 36, 0.72);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.msn-mini-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: rgba(10, 22, 36, 0.66);
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0 0 1px;
+  transition: background-color 0.16s ease, transform 0.16s ease, border-color 0.16s ease;
+}
+
+.msn-mini-nav-btn.is-prev {
+  left: 7px;
+}
+
+.msn-mini-nav-btn.is-next {
+  right: 7px;
+}
+
+.msn-mini-nav-btn:hover {
+  background: rgba(196, 30, 58, 0.92);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.msn-mini-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 7px;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(9, 20, 34, 0.56);
+}
+
+.msn-mini-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  border: 0;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.48);
+  cursor: pointer;
+  transition: width 0.18s ease, background-color 0.18s ease;
+}
+
+.msn-mini-dot.active {
+  width: 15px;
+  background: #ffffff;
+}
+
+.msn-source-dot.is-sa-dot {
+  background: #0d6bb0;
+}
+
+.msn-source-dot.is-ad-dot {
+  background: #b88212;
+  font-size: 8px;
+}
+
+.msn-mini-slide-time {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--subtle);
+  white-space: nowrap;
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-ad-slideboard-card {
+  border-color: rgba(24, 136, 214, 0.28);
+  background: linear-gradient(180deg, var(--surface) 0%, rgba(24, 136, 214, 0.03) 100%);
+}
+
+#latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-ad-slideboard-card .msn-card-media img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.ad-slide-actions {
+  align-items: center;
+}
+
+.ad-slide-price {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ad-slide-cta {
+  color: var(--blue-dark);
+  white-space: nowrap;
+}
+
+.ad-slide-cta:hover {
+  color: var(--red);
+}
+
+[data-theme="dark"] #latest-news .msn-feed-grid.bento-lead-left > .msn-card.msn-ad-slideboard-card {
+  border-color: rgba(75, 166, 232, 0.32);
+  background: linear-gradient(180deg, var(--surface) 0%, rgba(24, 136, 214, 0.08) 100%);
 }
 
 /* 3. Advertising & Partner Marketing (#news-ads — MSN 4-Column Compact Sponsored Tiles: 2+1+1 / 1+1+1+1) */
@@ -5806,8 +5896,6 @@ footer {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1),
-  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6),
   #news-ads .affiliate-ad-grid > .affiliate-ad-card:first-child {
     grid-column: 1 / -1;
   }
@@ -5835,12 +5923,6 @@ footer {
   #news-ads .affiliate-ad-grid > .affiliate-ad-card:first-child {
     grid-column: auto;
     height: auto;
-  }
-
-  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(1),
-  #latest-news .msn-feed-grid.bento-lead-left > .msn-card:nth-child(6) {
-    grid-column: auto;
-    height: 290px;
   }
 
   #top-stories .hero-side-thumb,
