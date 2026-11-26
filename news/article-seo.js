@@ -3,19 +3,33 @@
   const OFFICIAL_ORIGIN = 'https://www.nef123123.co.za';
 
   function buildCanonicalFromLocation() {
-    const rawPath = (window.location.pathname || '/').split('?')[0].split('#')[0];
-    const cleanPath = rawPath.replace(/\.html$/i, '').replace(/\/+$/, '');
-    if (!cleanPath || cleanPath === '/index') {
+    const rawPath = String(window.location.pathname || '/').split('?')[0].split('#')[0];
+    const normalized = rawPath
+      .replace(/\/+/g, '/')
+      .replace(/\.html$/i, '')
+      .replace(/\/+$/, '')
+      .toLowerCase();
+
+    if (!normalized || normalized === '/' || normalized === '/index') {
       return `${OFFICIAL_ORIGIN}/`;
     }
-    return `${OFFICIAL_ORIGIN}${cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`}`;
+    if (normalized === '/news' || normalized === '/news/index') {
+      return `${OFFICIAL_ORIGIN}/news/`;
+    }
+    const cleanPath = normalized.startsWith('/') ? normalized : `/${normalized}`;
+    return `${OFFICIAL_ORIGIN}${cleanPath}`;
   }
 
   const canonicalUrl = buildCanonicalFromLocation();
-  let canonicalLink = document.head.querySelector('link[rel="canonical"]');
+  const existingCanonicals = Array.from(document.head.querySelectorAll('link[rel="canonical"]'));
+  let canonicalLink = existingCanonicals[0] || null;
+  for (let i = 1; i < existingCanonicals.length; i += 1) {
+    existingCanonicals[i].remove();
+  }
   if (!canonicalLink) {
     canonicalLink = document.createElement('link');
     canonicalLink.setAttribute('rel', 'canonical');
+    canonicalLink.id = 'canonicalLink';
     document.head.appendChild(canonicalLink);
   }
   canonicalLink.setAttribute('href', canonicalUrl);

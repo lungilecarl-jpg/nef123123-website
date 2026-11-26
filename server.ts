@@ -260,8 +260,8 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
   });
 
   app.get(/^\/news(?:\/index\.html)?\/?$/i, (req, res, next) => {
-    if (req.path !== '/news') {
-      res.redirect(301, '/news');
+    if (req.path !== '/news/') {
+      res.redirect(301, '/news/');
       return;
     }
     if (isProduction || options.attachFrontend === false) {
@@ -540,7 +540,7 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
   // ===========================================================================
   const staticNewsDir = isProduction ? path.join(distDir, 'news') : path.join(__dirname, 'news');
 
-  // Prevent duplicate `.html` URLs for dynamic-only bridge articles while preserving static files
+  // Enforce single clean canonical URL for all published and retracted `.html` article requests
   app.get(/^\/news\/([a-z0-9-]+)\.html$/i, (req, res, next) => {
     const slug = String(req.params[0] || '').toLowerCase();
     if (!slug || slug.length > 140) {
@@ -551,11 +551,7 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
     const hasStaticFile =
       isSafePathInside(staticNewsDir, staticCandidate) && fs.existsSync(staticCandidate);
 
-    if (bridge.isSlugRemoved(slug)) {
-      res.redirect(301, `/news/${slug}`);
-      return;
-    }
-    if (!hasStaticFile && bridge.getApprovedArticleBySlug(slug)) {
+    if (bridge.isSlugRemoved(slug) || hasStaticFile || bridge.getApprovedArticleBySlug(slug)) {
       res.redirect(301, `/news/${slug}`);
       return;
     }

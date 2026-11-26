@@ -312,7 +312,7 @@ function buildArticleHtml(article) {
             '@type': 'ListItem',
             position: 2,
             name: 'News',
-            item: `${OFFICIAL_ORIGIN}/news`,
+            item: `${OFFICIAL_ORIGIN}/news/`,
           },
           {
             '@type': 'ListItem',
@@ -448,7 +448,7 @@ function buildArticleHtml(article) {
     <nav class="main-nav" id="mainNav">
       <div class="wrap nav-inner">
         <a href="/">Home</a>
-        <a class="active" href="/news">All News</a>
+        <a class="active" href="/news/">All News</a>
         <a href="/#africa">Africa</a>
         <a href="/#markets">Markets</a>
         <a href="/#sport">Sport</a>
@@ -466,7 +466,7 @@ function buildArticleHtml(article) {
       <nav class="news-breadcrumb" aria-label="Breadcrumb">
         <a href="/">NEF123123 Home</a>
         <span aria-hidden="true">/</span>
-        <a href="/news">News Archive</a>
+        <a href="/news/">News Archive</a>
         <span aria-hidden="true">/</span>
         <span>${escapeHtml(article.title)}</span>
       </nav>
@@ -494,7 +494,7 @@ ${bodyHtml}
           </div>
 
           <div class="news-article-actions">
-            <a class="news-article-btn news-article-btn-secondary" href="/news">← All NEF123123 News</a>${externalButtonHtml}
+            <a class="news-article-btn news-article-btn-secondary" href="/news/">← All NEF123123 News</a>${externalButtonHtml}
           </div>
         </article>
 
@@ -525,7 +525,7 @@ ${relatedHtml}
       </div>
       <div>
         <h3>Explore</h3>
-        <a href="/news">All News Reports</a>
+        <a href="/news/">All News Reports</a>
         <a href="/#latest-news">Latest news</a>
         <a href="/#africa">Africa in focus</a>
         <a href="/#markets">Markets &amp; real estate</a>
@@ -563,7 +563,7 @@ ${relatedHtml}
 }
 
 function buildNewsArchiveHtml() {
-  const canonicalUrl = `${OFFICIAL_ORIGIN}/news`;
+  const canonicalUrl = `${OFFICIAL_ORIGIN}/news/`;
   const cardsHtml = ARTICLES.map(
     (article) => `          <article class="archive-card">
             <a class="archive-card-media" href="/news/${article.slug}" aria-label="${escapeHtml(article.title)}">
@@ -699,7 +699,7 @@ function buildNewsArchiveHtml() {
     <nav class="main-nav" id="mainNav">
       <div class="wrap nav-inner">
         <a href="/">Home</a>
-        <a class="active" href="/news">All News</a>
+        <a class="active" href="/news/">All News</a>
         <a href="/#africa">Africa</a>
         <a href="/#markets">Markets</a>
         <a href="/#sport">Sport</a>
@@ -747,7 +747,7 @@ ${cardsHtml}
       </div>
       <div>
         <h3>Explore</h3>
-        <a href="/news">All News Reports</a>
+        <a href="/news/">All News Reports</a>
         <a href="/#latest-news">Latest news</a>
         <a href="/#africa">Africa in focus</a>
         <a href="/#markets">Markets &amp; real estate</a>
@@ -793,7 +793,7 @@ function buildSitemapXml() {
 
   const corePages = [
     { path: '/', file: 'index.html', changefreq: 'daily', priority: '1.0', includesArticles: true },
-    { path: '/news', file: 'news/index.html', changefreq: 'daily', priority: '0.9', includesArticles: true },
+    { path: '/news/', file: 'news/index.html', changefreq: 'daily', priority: '0.9', includesArticles: true },
     { path: '/about', file: 'about.html', changefreq: 'monthly', priority: '0.7' },
     { path: '/contact', file: 'contact.html', changefreq: 'monthly', priority: '0.7' },
     { path: '/editorial-policy', file: 'editorial-policy.html', changefreq: 'monthly', priority: '0.6' },

@@ -365,10 +365,17 @@ const HOME_SEO = {
 
 function buildDynamicCanonicalUrl(pathname) {
   const rawPath = String(pathname || '/').split('?')[0].split('#')[0];
-  if (!rawPath || rawPath === '/' || rawPath === '/index.html') {
+  const normalized = rawPath
+    .replace(/\/+/g, '/')
+    .replace(/\.html$/i, '')
+    .replace(/\/+$/, '')
+    .toLowerCase();
+  if (!normalized || normalized === '/' || normalized === '/index') {
     return `${OFFICIAL_SITE_ORIGIN}/`;
   }
-  const normalized = rawPath.replace(/\.html$/i, '').replace(/\/+$/, '');
+  if (normalized === '/news' || normalized === '/news/index') {
+    return `${OFFICIAL_SITE_ORIGIN}/news/`;
+  }
   return `${OFFICIAL_SITE_ORIGIN}${normalized.startsWith('/') ? normalized : `/${normalized}`}`;
 }
 
@@ -384,9 +391,13 @@ function upsertMetaTag(attrName, attrValue, content) {
 }
 
 function upsertCanonicalTag(canonicalUrl) {
-  let link =
-    document.getElementById('canonicalLink') ||
-    document.head.querySelector('link[rel="canonical"]');
+  const existing = Array.from(document.head.querySelectorAll('link[rel="canonical"]'));
+  let link = document.getElementById('canonicalLink') || existing[0] || null;
+  for (const candidate of existing) {
+    if (candidate !== link) {
+      candidate.remove();
+    }
+  }
   if (!link) {
     link = document.createElement('link');
     link.setAttribute('rel', 'canonical');

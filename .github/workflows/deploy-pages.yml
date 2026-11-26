@@ -47,6 +47,12 @@ jobs:
           grep -q "https://www.nef123123.co.za/sitemap.xml" dist/robots.txt
           grep -q "https://www.nef123123.co.za/news-sitemap.xml" dist/robots.txt
           grep -q 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' dist/sitemap.xml
+          grep -q '<loc>https://www.nef123123.co.za/</loc>' dist/sitemap.xml
+          grep -q '<loc>https://www.nef123123.co.za/news/</loc>' dist/sitemap.xml
+          if grep -q '<loc>https://www.nef123123.co.za/news</loc>' dist/sitemap.xml; then
+            echo "ERROR: Redirecting /news URL found in dist/sitemap.xml (must be /news/)"
+            exit 1
+          fi
           grep -q 'xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"' dist/news-sitemap.xml
           echo "Verified dist/robots.txt, dist/sitemap.xml, dist/news-sitemap.xml, dist/CNAME, and dist/.nojekyll."
 

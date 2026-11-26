@@ -160,7 +160,7 @@ export function renderDynamicArticleHtml(
             '@type': 'ListItem',
             position: 2,
             name: 'News',
-            item: `${OFFICIAL_SITE_ORIGIN}/#latest-news`,
+            item: `${OFFICIAL_SITE_ORIGIN}/news/`,
           },
           {
             '@type': 'ListItem',
@@ -279,7 +279,7 @@ export function renderDynamicArticleHtml(
     <nav class="main-nav" id="mainNav" aria-label="Primary">
       <div class="wrap nav-inner">
         <a href="/">Home</a>
-        <a class="active" href="/news">All News</a>
+        <a class="active" href="/news/">All News</a>
         <a href="/#africa">Africa</a>
         <a href="/#markets">Markets</a>
         <a href="/#sport">Sport</a>
@@ -296,7 +296,7 @@ export function renderDynamicArticleHtml(
     <nav class="news-breadcrumb" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span aria-hidden="true">/</span>
-      <a href="/news">News Archive</a>
+      <a href="/news/">News Archive</a>
       <span aria-hidden="true">/</span>
       <span>${escapeHtml(article.category)}</span>
     </nav>
@@ -323,7 +323,7 @@ ${paragraphsHtml}
         <div class="news-article-footer">
           <p class="news-article-source"><strong>Source &amp; Attribution:</strong> ${escapeHtml(article.source)}</p>
           <div class="news-article-actions">
-            <a class="news-article-back" href="/news">← All NEF123123 News</a>${externalButtonHtml}
+            <a class="news-article-back" href="/news/">← All NEF123123 News</a>${externalButtonHtml}
           </div>
         </div>
       </article>

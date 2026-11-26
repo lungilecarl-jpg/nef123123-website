@@ -377,7 +377,7 @@ const PUBLIC_CORE_PAGES: Array<{
   includesArticles?: boolean;
 }> = [
   { path: '/', files: ['index.html', 'dist/index.html'], changefreq: 'daily', priority: '1.0', includesArticles: true },
-  { path: '/news', files: ['news/index.html', 'dist/news/index.html'], changefreq: 'daily', priority: '0.9', includesArticles: true },
+  { path: '/news/', files: ['news/index.html', 'dist/news/index.html'], changefreq: 'daily', priority: '0.9', includesArticles: true },
   { path: '/about', files: ['about.html', 'dist/about.html'], changefreq: 'monthly', priority: '0.7' },
   { path: '/contact', files: ['contact.html', 'dist/contact.html'], changefreq: 'monthly', priority: '0.7' },
   { path: '/editorial-policy', files: ['editorial-policy.html', 'dist/editorial-policy.html'], changefreq: 'monthly', priority: '0.6' },
