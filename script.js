@@ -2011,6 +2011,7 @@ document.addEventListener('keydown', (event) => {
 
   const tabs = Array.from(document.querySelectorAll('.sport-tab'));
   const refreshBtn = document.getElementById('sportRefreshBtn');
+  const liveStatusTextEl = document.getElementById('sportLiveStatusText');
   const boardTitleEl = document.getElementById('sportBoardTitle');
   const boardUpdatedEl = document.getElementById('sportBoardUpdated');
   const matchesListEl = document.getElementById('sportMatchesList');
@@ -2020,6 +2021,26 @@ document.addEventListener('keydown', (event) => {
   if (!matchesListEl || !newsListEl) return;
 
   let activeLeagueKey = 'bafana';
+
+  function formatSportAgo(dateStr) {
+    if (!dateStr) return 'Latest';
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return 'Latest';
+    const diffMin = Math.max(1, Math.round((Date.now() - d.getTime()) / 60000));
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffHr = Math.round(diffMin / 60);
+    if (diffHr < 24) return `${diffHr}h ago`;
+    return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' });
+  }
+
+  function stampSportLiveClock() {
+    const timeStr = new Date().toLocaleTimeString('en-ZA', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+    if (liveStatusTextEl) liveStatusTextEl.textContent = `LIVE SPORT · UPDATED ${timeStr}`;
+  }
 
   function formatKickoff(isoDate) {
     if (!isoDate) return 'Scheduled';
@@ -2166,7 +2187,7 @@ document.addEventListener('keydown', (event) => {
       url: item?.links?.web?.href || '',
     }));
 
-    uniqueArticles.slice(0, 5).forEach((item) => {
+    uniqueArticles.slice(0, 6).forEach((item) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'sport-news-item';
@@ -2198,9 +2219,7 @@ document.addEventListener('keydown', (event) => {
 
       const meta = document.createElement('span');
       meta.className = 'sport-news-meta';
-      const pubStr = item.published
-        ? new Date(item.published).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })
-        : 'Latest';
+      const pubStr = formatSportAgo(item.published);
       meta.textContent = `${leagueLabel} · ${pubStr}`;
 
       const title = document.createElement('h4');
@@ -2405,12 +2424,12 @@ document.addEventListener('keydown', (event) => {
     });
   }
 
-  async function loadLeague(key) {
+  async function loadLeague(key, options = {}) {
     const cfg = leagues[key] || leagues.bafana;
     activeLeagueKey = key;
     if (boardTitleEl) boardTitleEl.textContent = cfg.title;
     if (newsTitleEl) newsTitleEl.textContent = cfg.newsTitle;
-    if (boardUpdatedEl) boardUpdatedEl.textContent = 'UPDATING…';
+    if (boardUpdatedEl && !options.silent) boardUpdatedEl.textContent = 'UPDATING…';
 
     if (key === 'bafana') {
       try {
@@ -2432,17 +2451,20 @@ document.addEventListener('keydown', (event) => {
           hour: '2-digit',
           minute: '2-digit',
         });
-        if (boardUpdatedEl) boardUpdatedEl.textContent = `UPDATED ${nowStr}`;
+        if (boardUpdatedEl) boardUpdatedEl.textContent = `LIVE · ${nowStr}`;
+        stampSportLiveClock();
         renderBafanaBoard(primaryMofokeng);
         renderSportNews(prioritized, 'BAFANA · AFCON');
       } catch {
-        if (boardUpdatedEl) boardUpdatedEl.textContent = 'MATCH REPORT';
-        renderBafanaBoard(null);
-        newsListEl.textContent = '';
-        const newsErr = document.createElement('div');
-        newsErr.className = 'sport-loading';
-        newsErr.textContent = 'Headlines unavailable while offline.';
-        newsListEl.appendChild(newsErr);
+        if (!options.silent) {
+          if (boardUpdatedEl) boardUpdatedEl.textContent = 'MATCH REPORT';
+          renderBafanaBoard(null);
+          newsListEl.textContent = '';
+          const newsErr = document.createElement('div');
+          newsErr.className = 'sport-loading';
+          newsErr.textContent = 'Headlines unavailable while offline.';
+          newsListEl.appendChild(newsErr);
+        }
       }
       return;
     }
@@ -2456,10 +2478,12 @@ document.addEventListener('keydown', (event) => {
         hour: '2-digit',
         minute: '2-digit',
       });
-      if (boardUpdatedEl) boardUpdatedEl.textContent = `UPDATED ${nowStr}`;
+      if (boardUpdatedEl) boardUpdatedEl.textContent = `LIVE · ${nowStr}`;
+      stampSportLiveClock();
       renderMatches(scoreJson.events || []);
       renderSportNews(newsJson.articles || [], scoreJson.leagues?.[0]?.abbreviation || 'SPORT');
     } catch {
+      if (options.silent) return;
       if (boardUpdatedEl) boardUpdatedEl.textContent = 'UNAVAILABLE';
       matchesListEl.textContent = '';
       const box = document.createElement('div');
@@ -2495,9 +2519,7 @@ document.addEventListener('keydown', (event) => {
     });
   });
 
-  refreshBtn?.addEventListener('click', () => loadLeague(activeLeagueKey));
-
-  // South African Other Sports Latest News (Springboks Rugby, Proteas Cricket, Golf, F1 & MMA)
+  // Unified Multi-Sport Latest News (Football/PSL, Springboks Rugby, Proteas Cricket, Golf, F1 & MMA)
   const saOtherSportsEl = document.getElementById('saOtherSportsList');
   const saOtherSportsUpdatedEl = document.getElementById('saOtherSportsUpdated');
   const saOtherSportTabs = Array.from(document.querySelectorAll('#saOtherSportTabs .sa-re-tab'));
@@ -2510,6 +2532,7 @@ document.addEventListener('keydown', (event) => {
   }
 
   let saOtherSportBuckets = {
+    football: [],
     rugby: [],
     cricket: [],
     other: [],
@@ -2520,7 +2543,7 @@ document.addEventListener('keydown', (event) => {
     const cats = Array.isArray(item.categories) ? item.categories.join(' ') : '';
     const hay = `${cats} ${item.title || ''} ${item.description || ''}`;
     if (/\bpsl\b|phakaaathi|bafana|kaizer chiefs|orlando pirates|sundowns|afcon|soccer|football|premier league/i.test(hay)) {
-      return null;
+      return { bucket: 'football', tag: 'SA FOOTBALL · PSL' };
     }
     if (/rugby|springbok|boks|urc|stormers|bulls|sharks|lions|blitzboks|nations championship/i.test(hay)) {
       return { bucket: 'rugby', tag: 'SPRINGBOKS · RUGBY' };
@@ -2537,12 +2560,14 @@ document.addEventListener('keydown', (event) => {
 
     let items = [];
     if (activeSaSportFilter === 'all') {
+      const football = saOtherSportBuckets.football;
       const rugby = saOtherSportBuckets.rugby;
       const cricket = saOtherSportBuckets.cricket;
       const other = saOtherSportBuckets.other;
-      // Blend South African rugby, cricket, and other sports evenly across the 4-card row
-      const maxLen = Math.max(rugby.length, cricket.length, other.length);
+      // Blend Football/PSL, Springboks Rugby, Proteas Cricket, and Golf/F1/MMA evenly across the 8-card live grid
+      const maxLen = Math.max(football.length, rugby.length, cricket.length, other.length);
       for (let i = 0; i < maxLen; i += 1) {
+        if (football[i]) items.push(football[i]);
         if (rugby[i]) items.push(rugby[i]);
         if (cricket[i]) items.push(cricket[i]);
         if (other[i]) items.push(other[i]);
@@ -2562,18 +2587,18 @@ document.addEventListener('keydown', (event) => {
       box.className = 'sport-state-box';
       const msg = document.createElement('div');
       msg.className = 'sport-loading';
-      msg.textContent = 'Unable to reach live South African multi-sport feeds right now.';
+      msg.textContent = 'Unable to reach live sports news feeds right now.';
       const retry = document.createElement('button');
       retry.type = 'button';
       retry.className = 'weather-ctrl-btn sport-retry-btn';
-      retry.textContent = 'Retry SA sport feeds';
-      retry.addEventListener('click', loadSaOtherSports);
+      retry.textContent = 'Retry live sports feeds';
+      retry.addEventListener('click', () => loadSaOtherSports());
       box.append(msg, retry);
       saOtherSportsEl.appendChild(box);
       return;
     }
 
-    uniqueItems.slice(0, 4).forEach((entry) => {
+    uniqueItems.slice(0, 8).forEach((entry) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'sport-news-item sa-other-sport-card';
@@ -2606,9 +2631,7 @@ document.addEventListener('keydown', (event) => {
 
       const meta = document.createElement('span');
       meta.className = 'sport-news-meta';
-      const pubStr = entry.published
-        ? new Date(entry.published).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })
-        : 'Latest';
+      const pubStr = formatSportAgo(entry.published);
       meta.textContent = `${entry.tag} · ${pubStr}`;
 
       const title = document.createElement('h4');
@@ -2652,25 +2675,38 @@ document.addEventListener('keydown', (event) => {
     });
   }
 
-  async function loadSaOtherSports() {
+  async function loadSaOtherSports(options = {}) {
     if (!saOtherSportsEl) return;
-    if (saOtherSportsUpdatedEl) saOtherSportsUpdatedEl.textContent = 'UPDATING SA SPORT…';
+    if (saOtherSportsUpdatedEl && !options.silent) {
+      saOtherSportsUpdatedEl.textContent = 'UPDATING LIVE SPORTS…';
+    }
 
     const saAthleteRx =
-      /south africa|springbok|proteas|du plessis|dricus|binder|higgo|lawrence|bezuidenhout|van rooyen|oosthuizen|schwartzel|harris|simbine|van niekerk|tatjana|blitzboks|stormers|bulls|sharks|lions/i;
+      /south africa|springbok|proteas|bafana|kaizer chiefs|orlando pirates|sundowns|du plessis|dricus|binder|higgo|lawrence|bezuidenhout|van rooyen|oosthuizen|schwartzel|harris|simbine|van niekerk|tatjana|blitzboks|stormers|bulls|sharks|lions/i;
 
-    const [citizenRes, citizenRugbyRes, saCricketRes, espnRugbyRes, espnF1Res, espnGolfRes, espnUfcRes] =
-      await Promise.allSettled([
-        fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.citizen.co.za%2Fsport%2Ffeed%2F'),
-        fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.citizen.co.za%2Fsport%2Frugby%2Ffeed%2F'),
-        fetch('https://www.sacricketmag.com/wp-json/wp/v2/posts?per_page=8&_embed=1'),
-        fetch('https://site.web.api.espn.com/apis/site/v2/sports/rugby/all/news?limit=8'),
-        fetch('https://site.web.api.espn.com/apis/site/v2/sports/racing/f1/news?limit=6'),
-        fetch('https://site.web.api.espn.com/apis/site/v2/sports/golf/pga/news?limit=6'),
-        fetch('https://site.web.api.espn.com/apis/site/v2/sports/mma/ufc/news?limit=6'),
-      ]);
+    const [
+      citizenRes,
+      citizenRugbyRes,
+      saCricketRes,
+      espnPslRes,
+      espnPlRes,
+      espnRugbyRes,
+      espnF1Res,
+      espnGolfRes,
+      espnUfcRes,
+    ] = await Promise.allSettled([
+      fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.citizen.co.za%2Fsport%2Ffeed%2F'),
+      fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.citizen.co.za%2Fsport%2Frugby%2Ffeed%2F'),
+      fetch('https://www.sacricketmag.com/wp-json/wp/v2/posts?per_page=8&_embed=1'),
+      fetch('https://site.web.api.espn.com/apis/site/v2/sports/soccer/rsa.1/news?limit=8'),
+      fetch('https://site.web.api.espn.com/apis/site/v2/sports/soccer/eng.1/news?limit=8'),
+      fetch('https://site.web.api.espn.com/apis/site/v2/sports/rugby/all/news?limit=8'),
+      fetch('https://site.web.api.espn.com/apis/site/v2/sports/racing/f1/news?limit=6'),
+      fetch('https://site.web.api.espn.com/apis/site/v2/sports/golf/pga/news?limit=6'),
+      fetch('https://site.web.api.espn.com/apis/site/v2/sports/mma/ufc/news?limit=6'),
+    ]);
 
-    const nextBuckets = { rugby: [], cricket: [], other: [] };
+    const nextBuckets = { football: [], rugby: [], cricket: [], other: [] };
 
     if (citizenRes.status === 'fulfilled' && citizenRes.value.ok) {
       try {
@@ -2688,7 +2724,40 @@ document.addEventListener('keydown', (event) => {
             link: item.link || '',
             tag: classified.tag,
             source: 'The Citizen SA',
-            fallbackTag: classified.bucket === 'rugby' ? 'BOKS' : classified.bucket === 'cricket' ? 'PRO' : 'SA',
+            fallbackTag:
+              classified.bucket === 'football'
+                ? 'PSL'
+                : classified.bucket === 'rugby'
+                  ? 'BOKS'
+                  : classified.bucket === 'cricket'
+                    ? 'PRO'
+                    : 'SA',
+          });
+        });
+      } catch {
+        // Ignore malformed upstream feed
+      }
+    }
+
+    const espnFootballFeeds = [
+      { res: espnPslRes, tag: 'SA PREMIERSHIP', source: 'ESPN SA Football', fallbackTag: 'PSL' },
+      { res: espnPlRes, tag: 'PREMIER LEAGUE', source: 'ESPN Football', fallbackTag: 'EPL' },
+    ];
+    for (const feed of espnFootballFeeds) {
+      if (feed.res.status !== 'fulfilled' || !feed.res.value.ok) continue;
+      try {
+        const fj = await feed.res.value.json();
+        (fj.articles || []).forEach((a) => {
+          if (!a.headline) return;
+          nextBuckets.football.push({
+            title: a.headline,
+            summary: a.description || '',
+            img: a.images?.[0]?.url || '',
+            published: a.published || '',
+            link: a.links?.web?.href || '',
+            tag: feed.tag,
+            source: feed.source,
+            fallbackTag: feed.fallbackTag,
           });
         });
       } catch {
@@ -2799,7 +2868,6 @@ document.addEventListener('keydown', (event) => {
 
     const saPriorityOther = espnOtherItems.filter((i) => saAthleteRx.test(`${i.title} ${i.summary}`));
     const generalOther = espnOtherItems.filter((i) => !saAthleteRx.test(`${i.title} ${i.summary}`));
-    // Interleave Golf, F1, and MMA so "Other" has rich variety
     const byTag = {
       'GOLF · PGA': generalOther.filter((i) => i.tag === 'GOLF · PGA'),
       'FORMULA 1': generalOther.filter((i) => i.tag === 'FORMULA 1'),
@@ -2818,16 +2886,27 @@ document.addEventListener('keydown', (event) => {
     }
     nextBuckets.other.push(...saPriorityOther, ...interleavedOther);
 
-    saOtherSportBuckets = nextBuckets;
+    const hasAnyFresh =
+      nextBuckets.football.length +
+        nextBuckets.rugby.length +
+        nextBuckets.cricket.length +
+        nextBuckets.other.length >
+      0;
+    if (hasAnyFresh || !options.silent) {
+      saOtherSportBuckets = nextBuckets;
+    }
+
     const nowStr = new Date().toLocaleTimeString('en-ZA', {
       hour: '2-digit',
       minute: '2-digit',
     });
-    if (saOtherSportsUpdatedEl) saOtherSportsUpdatedEl.textContent = `LIVE SA SPORT · ${nowStr}`;
+    if (saOtherSportsUpdatedEl) saOtherSportsUpdatedEl.textContent = `LIVE SPORTS · ${nowStr} · AUTO 60S`;
+    stampSportLiveClock();
     renderSaOtherSports();
 
     if (typeof window.nefAddDynamicHeroSlides === 'function') {
       const sportHeroPicks = [
+        ...nextBuckets.football.slice(0, 2),
         ...nextBuckets.rugby.slice(0, 2),
         ...nextBuckets.cricket.slice(0, 2),
         ...nextBuckets.other.slice(0, 2),
@@ -2877,8 +2956,23 @@ document.addEventListener('keydown', (event) => {
     });
   });
 
-  loadLeague('bafana');
-  loadSaOtherSports();
+  function refreshAllSportLive(options = {}) {
+    loadLeague(activeLeagueKey, options);
+    loadSaOtherSports(options);
+  }
+
+  refreshBtn?.addEventListener('click', () => {
+    refreshAllSportLive({ silent: false });
+  });
+
+  refreshAllSportLive({ silent: false });
+
+  // Automatic live sports updates every 60 seconds while the page is visible
+  window.setInterval(() => {
+    if (!document.hidden) {
+      refreshAllSportLive({ silent: true });
+    }
+  }, 60000);
 })();
 
 // Global Live Markets, FX Strip, Property Value Converter & Real-Estate News

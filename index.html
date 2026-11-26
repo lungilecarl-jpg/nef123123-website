@@ -650,40 +650,62 @@
     </section>
 
     <section class="wrap portal-section" id="sport" data-searchable>
-      <div class="sport-layout">
-        <div class="sport-scoreboard-panel msn-widget-card">
-          <div class="panel-subhead">
-            <h3 id="sportBoardTitle">Bafana Bafana · AFCON 2027 Qualifiers</h3>
-            <span id="sportBoardUpdated">LIVE FEED</span>
+      <div class="sport-unified-shell">
+        <div class="sport-unified-head">
+          <div class="sport-unified-title-group">
+            <span class="sport-live-pill" id="sportLiveStatus" aria-live="polite">
+              <span class="sport-live-dot" aria-hidden="true"></span>
+              <span id="sportLiveStatusText">LIVE SPORT · AUTO-UPDATING</span>
+            </span>
           </div>
-          <div class="sport-matches-grid" id="sportMatchesList" aria-live="polite">
-            <div class="sport-loading">Loading Bafana Bafana match report &amp; scores…</div>
+          <div class="sport-league-tabs" role="tablist" aria-label="Live sport competitions">
+            <button type="button" class="sport-tab active" role="tab" aria-selected="true" data-league="bafana">Bafana Bafana</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="rsa-psl">SA Premiership</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="caf-cl">CAF CL</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="eng-pl">Premier League</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="uefa-cl">UEFA CL</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="rugby-intl">Test Rugby</button>
+            <button type="button" class="sport-tab" role="tab" aria-selected="false" data-league="f1">Formula 1</button>
+          </div>
+          <button type="button" class="weather-ctrl-btn sport-refresh-btn" id="sportRefreshBtn" aria-label="Refresh live sport scores and news">Refresh Live</button>
+        </div>
+
+        <div class="sport-layout">
+          <div class="sport-scoreboard-panel">
+            <div class="panel-subhead">
+              <h3 id="sportBoardTitle">Bafana Bafana · AFCON 2027 Qualifiers</h3>
+              <span id="sportBoardUpdated">LIVE FEED</span>
+            </div>
+            <div class="sport-matches-grid" id="sportMatchesList" aria-live="polite">
+              <div class="sport-loading">Loading Bafana Bafana match report &amp; scores…</div>
+            </div>
+          </div>
+
+          <div class="sport-news-panel">
+            <div class="panel-subhead">
+              <h3 id="sportNewsTitle">Bafana Bafana &amp; Mofokeng News</h3>
+              <span>CLICK STORY TO READ</span>
+            </div>
+            <div class="sport-news-list" id="sportNewsList" aria-live="polite">
+              <div class="sport-loading">Loading Bafana Bafana reports…</div>
+            </div>
           </div>
         </div>
 
-        <div class="sport-news-panel news-dispatch-panel">
-          <div class="panel-subhead">
-            <h3 id="sportNewsTitle">Bafana Bafana &amp; Mofokeng News</h3>
-            <span>CLICK STORY TO READ</span>
+        <div class="sa-other-sports-panel" id="saOtherSportsPanel">
+          <div class="sa-other-sports-bar">
+            <div class="sa-re-tabs sa-sport-tabs" id="saOtherSportTabs" role="tablist" aria-label="Latest sports news categories">
+              <button type="button" class="sa-re-tab active" role="tab" aria-selected="true" data-sa-sport="all">All Sports Live</button>
+              <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="football">Football &amp; PSL</button>
+              <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="rugby">Springboks &amp; Rugby</button>
+              <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="cricket">Proteas &amp; Cricket</button>
+              <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="other">Golf, F1 &amp; MMA</button>
+            </div>
+            <span class="sa-other-sports-status" id="saOtherSportsUpdated">LIVE SPORTS NEWS · AUTO 60S</span>
           </div>
-          <div class="sport-news-list" id="sportNewsList" aria-live="polite">
-            <div class="sport-loading">Loading Bafana Bafana reports…</div>
+          <div class="sa-other-sports-grid" id="saOtherSportsList" aria-live="polite">
+            <div class="sport-loading">Loading live Football, Rugby, Cricket, Golf, F1 &amp; MMA sports news…</div>
           </div>
-        </div>
-      </div>
-
-      <div class="sa-other-sports-panel news-dispatch-panel" id="saOtherSportsPanel">
-        <div class="sa-other-sports-bar">
-          <div class="sa-re-tabs sa-sport-tabs" id="saOtherSportTabs" role="tablist" aria-label="South African sports categories">
-            <button type="button" class="sa-re-tab active" role="tab" aria-selected="true" data-sa-sport="all">All SA Sports</button>
-            <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="rugby">Springboks &amp; Rugby</button>
-            <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="cricket">Proteas &amp; Cricket</button>
-            <button type="button" class="sa-re-tab" role="tab" aria-selected="false" data-sa-sport="other">Golf, F1 &amp; MMA</button>
-          </div>
-          <span class="sa-other-sports-status" id="saOtherSportsUpdated">LIVE SA SPORT</span>
-        </div>
-        <div class="sa-other-sports-grid" id="saOtherSportsList" aria-live="polite">
-          <div class="sport-loading">Loading latest South African Rugby, Cricket, Golf, F1 &amp; MMA news…</div>
         </div>
       </div>
     </section>
