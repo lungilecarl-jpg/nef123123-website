@@ -1191,7 +1191,13 @@ document.addEventListener('keydown', (event) => {
     lagos: { name: 'Lagos', region: 'Lagos State · Nigeria', lat: 6.5244, lon: 3.3792 },
   };
 
-  const saSnapshotKeys = ['johannesburg', 'cape-town', 'durban', 'pretoria'];
+  const saSnapshotKeys = ['johannesburg', 'cape-town', 'durban', 'gqeberha'];
+  const saRegionShortLabels = {
+    johannesburg: 'Joburg · GP',
+    'cape-town': 'Cape Town · WC',
+    durban: 'Durban · KZN',
+    gqeberha: 'Gqeberha · EC',
+  };
 
   const cityTabs = Array.from(document.querySelectorAll('.weather-city-tab'));
   const unitBtns = Array.from(document.querySelectorAll('.weather-unit-btn'));
@@ -1215,7 +1221,49 @@ document.addEventListener('keydown', (event) => {
   const regionalGridEl = document.getElementById('weatherRegionalGrid');
   const feedbackEl = document.getElementById('weatherSearchFeedback');
 
+  const compactTriggerEl = document.getElementById('weatherCompactTrigger');
+  const compactIconEl = document.getElementById('weatherCompactIcon');
+  const compactTempEl = document.getElementById('weatherCompactTemp');
+  const compactCityEl = document.getElementById('weatherCompactCity');
+  const compactMetaEl = document.getElementById('weatherCompactMeta');
+  const compactHiLoEl = document.getElementById('weatherCompactHiLo');
+  const compactHumidityEl = document.getElementById('weatherCompactHumidity');
+  const compactWindEl = document.getElementById('weatherCompactWind');
+  const compactRainEl = document.getElementById('weatherCompactRain');
+  const compactRegionsEl = document.getElementById('weatherCompactRegions');
+
+  const weatherModalEl = document.getElementById('weatherDetailModal');
+  const weatherModalBackdropEl = document.getElementById('weatherModalBackdrop');
+  const closeWeatherModalBtn = document.getElementById('closeWeatherModal');
+  const closeWeatherModalFooterBtn = document.getElementById('closeWeatherModalFooter');
+
   if (!cityEl || !forecastListEl) return;
+
+  function openWeatherModal() {
+    if (!weatherModalEl) return;
+    weatherModalEl.hidden = false;
+    compactTriggerEl?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+    closeWeatherModalBtn?.focus();
+  }
+
+  function closeWeatherModal() {
+    if (!weatherModalEl || weatherModalEl.hidden) return;
+    weatherModalEl.hidden = true;
+    compactTriggerEl?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+    compactTriggerEl?.focus();
+  }
+
+  compactTriggerEl?.addEventListener('click', openWeatherModal);
+  closeWeatherModalBtn?.addEventListener('click', closeWeatherModal);
+  closeWeatherModalFooterBtn?.addEventListener('click', closeWeatherModal);
+  weatherModalBackdropEl?.addEventListener('click', closeWeatherModal);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && weatherModalEl && !weatherModalEl.hidden) {
+      closeWeatherModal();
+    }
+  });
 
   let activeCityKey = 'johannesburg';
   let activeLocation = { ...cities.johannesburg };
@@ -1361,6 +1409,41 @@ document.addEventListener('keydown', (event) => {
       rainEl.textContent = typeof prob === 'number' ? `${Math.round(prob)}%` : '0%';
     }
 
+    if (compactIconEl) {
+      compactIconEl.textContent = '';
+      compactIconEl.appendChild(
+        createWeatherSvg(current?.weather_code ?? 2, current?.is_day ?? 1, 28, true)
+      );
+    }
+    const condText = wmoLabel(current?.weather_code);
+    const humText =
+      typeof current?.relative_humidity_2m === 'number'
+        ? `${Math.round(current.relative_humidity_2m)}%`
+        : '--%';
+    const windText =
+      typeof current?.wind_speed_10m === 'number'
+        ? `${Math.round(current.wind_speed_10m)} km/h`
+        : '-- km/h';
+    const prob = daily?.precipitation_probability_max?.[0];
+    const rainText = typeof prob === 'number' ? `${Math.round(prob)}%` : '0%';
+
+    if (compactTempEl) compactTempEl.textContent = formatTemp(current?.temperature_2m);
+    if (compactCityEl) {
+      compactCityEl.textContent = `${activeLocation.name || 'Weather'}: ${condText}`;
+    }
+    if (compactMetaEl) {
+      const regionText = activeLocation.region || 'South Africa';
+      compactMetaEl.textContent = `${regionText} · Humidity ${humText} · Wind ${windText} · Rain ${rainText}`;
+    }
+    if (compactHiLoEl && daily) {
+      compactHiLoEl.textContent = `H ${formatTemp(daily.temperature_2m_max?.[0])} / L ${formatTemp(
+        daily.temperature_2m_min?.[0]
+      )}`;
+    }
+    if (compactHumidityEl) compactHumidityEl.textContent = `Humidity ${humText}`;
+    if (compactWindEl) compactWindEl.textContent = `Wind ${windText}`;
+    if (compactRainEl) compactRainEl.textContent = `Rain ${rainText}`;
+
     forecastListEl.textContent = '';
     const days = daily?.time || [];
     days.slice(0, 5).forEach((dateStr, idx) => {
@@ -1429,6 +1512,32 @@ document.addEventListener('keydown', (event) => {
       btn.append(nameEl, tempEl, condEl);
       regionalGridEl.appendChild(btn);
     });
+
+    if (compactRegionsEl) {
+      compactRegionsEl.textContent = '';
+      saSnapshotKeys.forEach((key, index) => {
+        const city = cities[key];
+        const payload = lastSnapshotPayloads[index];
+        const chip = document.createElement('span');
+        chip.className = `hero-weather-region-chip${activeCityKey === key ? ' active' : ''}`;
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'hw-reg-name';
+        labelEl.textContent = saRegionShortLabels[key] || city.name;
+
+        const rightWrap = document.createElement('span');
+        rightWrap.className = 'hw-reg-right';
+        rightWrap.appendChild(createWeatherSvg(payload?.current?.weather_code ?? 2, 1, 14, true));
+
+        const tempEl = document.createElement('strong');
+        tempEl.className = 'hw-reg-temp';
+        tempEl.textContent = formatTemp(payload?.current?.temperature_2m);
+
+        rightWrap.appendChild(tempEl);
+        chip.append(labelEl, rightWrap);
+        compactRegionsEl.appendChild(chip);
+      });
+    }
   }
 
   async function loadCityWeather(locationObj) {

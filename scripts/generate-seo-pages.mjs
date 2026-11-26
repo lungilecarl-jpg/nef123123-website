@@ -448,12 +448,12 @@ function buildArticleHtml(article) {
     <nav class="main-nav" id="mainNav">
       <div class="wrap nav-inner">
         <a href="/">Home</a>
-        <a class="active" href="/news/">All News</a>
+        <a class="active" href="/news/">News</a>
         <a href="/#africa">Africa</a>
         <a href="/#markets">Markets</a>
         <a href="/#sport">Sport</a>
         <a href="/#weather">Weather</a>
-        <a href="/#economy">Economy</a>
+        <a href="/#economy">Movement</a>
         <a href="/about">About Us</a>
         <a href="/editorial-policy">Editorial Policy</a>
         <a href="/contact">Contact</a>
@@ -525,8 +525,7 @@ ${relatedHtml}
       </div>
       <div>
         <h3>Explore</h3>
-        <a href="/news/">All News Reports</a>
-        <a href="/#latest-news">Latest news</a>
+        <a href="/news/">News</a>
         <a href="/#africa">Africa in focus</a>
         <a href="/#markets">Markets &amp; real estate</a>
         <a href="/#sport">Sport</a>
@@ -699,12 +698,12 @@ function buildNewsArchiveHtml() {
     <nav class="main-nav" id="mainNav">
       <div class="wrap nav-inner">
         <a href="/">Home</a>
-        <a class="active" href="/news/">All News</a>
+        <a class="active" href="/news/">News</a>
         <a href="/#africa">Africa</a>
         <a href="/#markets">Markets</a>
         <a href="/#sport">Sport</a>
         <a href="/#weather">Weather</a>
-        <a href="/#economy">Economy</a>
+        <a href="/#economy">Movement</a>
         <a href="/about">About Us</a>
         <a href="/editorial-policy">Editorial Policy</a>
         <a href="/contact">Contact</a>
@@ -747,8 +746,7 @@ ${cardsHtml}
       </div>
       <div>
         <h3>Explore</h3>
-        <a href="/news/">All News Reports</a>
-        <a href="/#latest-news">Latest news</a>
+        <a href="/news/">News</a>
         <a href="/#africa">Africa in focus</a>
         <a href="/#markets">Markets &amp; real estate</a>
         <a href="/#sport">Sport</a>
