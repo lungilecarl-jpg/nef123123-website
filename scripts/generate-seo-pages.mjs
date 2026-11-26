@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -51,11 +52,48 @@ function computeBodyFingerprintKey(article) {
   return crypto.createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
+const ISO_DATE_RE =
+  /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2}))?$/;
+const ALLOWED_PUBLISHED_STATUSES = new Set(['published', 'approved']);
+
+function parseValidIsoDate(value) {
+  const trimmed = String(value || '').trim();
+  const match = ISO_DATE_RE.exec(trimmed);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (year < 2000 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) return null;
+  const check = new Date(Date.UTC(year, month - 1, day));
+  if (
+    check.getUTCFullYear() !== year ||
+    check.getUTCMonth() !== month - 1 ||
+    check.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  const parsed = new Date(trimmed);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function isPublishedRawArticle(article) {
+  if (!article || typeof article !== 'object') return false;
+  if (article.draft === true || article.published === false) return false;
+  if (article.status !== undefined && String(article.status).trim() !== '') {
+    if (!ALLOWED_PUBLISHED_STATUSES.has(String(article.status).trim().toLowerCase())) return false;
+  }
+  const slug = String(article.slug || '').trim().toLowerCase();
+  if (!slug || !/^[a-z0-9-]+$/.test(slug)) return false;
+  if (!String(article.title || '').trim()) return false;
+  if (!parseValidIsoDate(article.publishedDate)) return false;
+  return true;
+}
+
 export function deduplicateRawArticles(list) {
   const bySlug = new Map();
   list.forEach((article, index) => {
+    if (!isPublishedRawArticle(article)) return;
     const normalized = String(article.slug || '').trim().toLowerCase();
-    if (!normalized) return;
     const existing = bySlug.get(normalized);
     if (!existing) {
       bySlug.set(normalized, { article, order: index });
@@ -134,18 +172,73 @@ function resolveAbsoluteImageUrl(imgPath) {
   return `${OFFICIAL_ORIGIN}${normalized}`;
 }
 
-const ARTICLES = rawArticles.map((article) => ({
-  ...article,
-  ogImageAbsolute: resolveAbsoluteImageUrl(article.ogImage || article.img),
-  publishedDateIso: article.publishedDate,
-  updatedDateIso: article.updatedDate || article.publishedDate,
-  publishedDateDisplay: String(article.publishedDate).slice(0, 10),
-}));
+const ARTICLES = rawArticles.map((article) => {
+  const pubParsed = parseValidIsoDate(article.publishedDate);
+  const updParsed = article.updatedDate ? parseValidIsoDate(article.updatedDate) : null;
+  const effectiveUpdatedIso =
+    updParsed && pubParsed && updParsed.getTime() >= pubParsed.getTime()
+      ? article.updatedDate
+      : article.publishedDate;
 
-const LASTMOD = ARTICLES.reduce((latest, article) => {
-  const datePart = String(article.updatedDateIso || article.publishedDateIso).slice(0, 10);
-  return datePart > latest ? datePart : latest;
-}, '2026-04-15');
+  return {
+    ...article,
+    slug: String(article.slug).trim().toLowerCase(),
+    ogImageAbsolute: resolveAbsoluteImageUrl(article.ogImage || article.img),
+    publishedDateIso: article.publishedDate,
+    updatedDateIso: effectiveUpdatedIso,
+    publishedDateDisplay: String(article.publishedDate).slice(0, 10),
+  };
+});
+
+const hasGitDir = fs.existsSync(path.join(rootDir, '.git'));
+
+function getGitLastCommitDate(relativePath) {
+  if (!hasGitDir) return null;
+  try {
+    const out = execFileSync('git', ['log', '-1', '--format=%cI', '--', relativePath], {
+      cwd: rootDir,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    const parsed = parseValidIsoDate(out);
+    return parsed ? parsed.toISOString().slice(0, 10) : null;
+  } catch {
+    return null;
+  }
+}
+
+function getFileLastmodDate(relativePath) {
+  const candidate = path.resolve(rootDir, relativePath);
+  if (!candidate.startsWith(rootDir + path.sep)) return null;
+  const gitDate = getGitLastCommitDate(relativePath);
+  if (gitDate) return gitDate;
+  try {
+    const stat = fs.statSync(candidate);
+    if (stat.isFile() && !Number.isNaN(stat.mtime.getTime())) {
+      return stat.mtime.toISOString().slice(0, 10);
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function maxDate(a, b) {
+  if (a && b) return a >= b ? a : b;
+  return a || b;
+}
+
+function writeFileIfChanged(filePath, content) {
+  try {
+    if (fs.existsSync(filePath) && fs.readFileSync(filePath, 'utf8') === content) {
+      return false;
+    }
+  } catch {
+    // Proceed to write
+  }
+  fs.writeFileSync(filePath, content, 'utf8');
+  return true;
+}
 
 function escapeHtml(value) {
   return String(value)
@@ -194,7 +287,9 @@ function buildArticleHtml(article) {
         },
         publisher: {
           '@type': 'NewsMediaOrganization',
-          name: 'NEF123123 — Navigant Economic Freedom',
+          '@id': `${OFFICIAL_ORIGIN}/#organization`,
+          name: 'NEF123123',
+          alternateName: ['Navigant Economic Freedom', 'nef123123.co.za'],
           url: `${OFFICIAL_ORIGIN}/`,
           logo: {
             '@type': 'ImageObject',
@@ -690,43 +785,104 @@ ${cardsHtml}
 }
 
 function buildSitemapXml() {
+  const latestArticleDate = ARTICLES.reduce((latest, article) => {
+    const parsed = parseValidIsoDate(article.updatedDateIso || article.publishedDateIso);
+    const datePart = parsed ? parsed.toISOString().slice(0, 10) : null;
+    return maxDate(latest, datePart);
+  }, null);
+
   const corePages = [
-    { path: '/', changefreq: 'daily', priority: '1.0' },
-    { path: '/news', changefreq: 'daily', priority: '0.9' },
-    { path: '/about', changefreq: 'monthly', priority: '0.7' },
-    { path: '/contact', changefreq: 'monthly', priority: '0.7' },
-    { path: '/editorial-policy', changefreq: 'monthly', priority: '0.6' },
-    { path: '/privacy', changefreq: 'monthly', priority: '0.5' },
-    { path: '/terms', changefreq: 'monthly', priority: '0.5' },
+    { path: '/', file: 'index.html', changefreq: 'daily', priority: '1.0', includesArticles: true },
+    { path: '/news', file: 'news/index.html', changefreq: 'daily', priority: '0.9', includesArticles: true },
+    { path: '/about', file: 'about.html', changefreq: 'monthly', priority: '0.7' },
+    { path: '/contact', file: 'contact.html', changefreq: 'monthly', priority: '0.7' },
+    { path: '/editorial-policy', file: 'editorial-policy.html', changefreq: 'monthly', priority: '0.6' },
+    { path: '/privacy', file: 'privacy.html', changefreq: 'monthly', priority: '0.5' },
+    { path: '/terms', file: 'terms.html', changefreq: 'monthly', priority: '0.5' },
   ];
 
   const urls = [
-    ...corePages.map(
-      (page) => `  <url>
-    <loc>${escapeXml(`${OFFICIAL_ORIGIN}${page.path}`)}</loc>
-    <lastmod>${LASTMOD}</lastmod>
+    ...corePages.map((page) => {
+      const fileDate = getFileLastmodDate(page.file);
+      const lastmod = page.includesArticles ? maxDate(fileDate, latestArticleDate) : fileDate;
+      const lastmodTag = lastmod ? `\n    <lastmod>${escapeXml(lastmod)}</lastmod>` : '';
+      return `  <url>
+    <loc>${escapeXml(`${OFFICIAL_ORIGIN}${page.path}`)}</loc>${lastmodTag}
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
-  </url>`
-    ),
-    ...ARTICLES.map(
-      (article) => `  <url>
-    <loc>${escapeXml(`${OFFICIAL_ORIGIN}/news/${article.slug}`)}</loc>
-    <lastmod>${String(article.updatedDateIso || article.publishedDateIso).slice(0, 10)}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
+  </url>`;
+    }),
+    ...ARTICLES.map((article) => {
+      const parsed = parseValidIsoDate(article.updatedDateIso || article.publishedDateIso);
+      const lastmod = parsed ? parsed.toISOString().slice(0, 10) : null;
+      const lastmodTag = lastmod ? `\n    <lastmod>${escapeXml(lastmod)}</lastmod>` : '';
+      const imageBlock = article.ogImageAbsolute.startsWith('https://')
+        ? `\n    <image:image>
       <image:loc>${escapeXml(article.ogImageAbsolute)}</image:loc>
       <image:title>${escapeXml(article.title)}</image:title>
-    </image:image>
-  </url>`
-    ),
+    </image:image>`
+        : '';
+      return `  <url>
+    <loc>${escapeXml(`${OFFICIAL_ORIGIN}/news/${article.slug}`)}</loc>${lastmodTag}
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>${imageBlock}
+  </url>`;
+    }),
   ];
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${urls.join('\n')}
+</urlset>
+`;
+}
+
+function buildNewsSitemapXml(nowMs = Date.now()) {
+  const fortyEightHoursMs = 48 * 60 * 60 * 1000;
+  const eligible = [...ARTICLES]
+    .sort((a, b) => Date.parse(b.publishedDateIso) - Date.parse(a.publishedDateIso))
+    .filter((article) => {
+      const parsed = parseValidIsoDate(article.publishedDateIso);
+      if (!parsed) return false;
+      const ts = parsed.getTime();
+      return nowMs - ts <= fortyEightHoursMs && ts <= nowMs + 60_000;
+    })
+    .slice(0, 1000);
+
+  const entries = eligible.map((article) => {
+    const lastmodTag = article.updatedDateIso
+      ? `\n    <lastmod>${escapeXml(article.updatedDateIso)}</lastmod>`
+      : '';
+    const imageBlock = article.ogImageAbsolute.startsWith('https://')
+      ? `\n    <image:image>
+      <image:loc>${escapeXml(article.ogImageAbsolute)}</image:loc>
+      <image:title>${escapeXml(article.title)}</image:title>
+    </image:image>`
+      : '';
+    return `  <url>
+    <loc>${escapeXml(`${OFFICIAL_ORIGIN}/news/${article.slug}`)}</loc>${lastmodTag}
+    <news:news>
+      <news:publication>
+        <news:name>NEF123123</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>${escapeXml(article.publishedDateIso)}</news:publication_date>
+      <news:title>${escapeXml(article.title)}</news:title>
+    </news:news>${imageBlock}
+  </url>`;
+  });
+
+  const note =
+    entries.length === 0
+      ? '  <!-- No published articles within the last 48 hours per Google News Sitemap guidelines -->\n'
+      : '';
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${note}${entries.join('\n')}
 </urlset>
 `;
 }
@@ -759,10 +915,10 @@ if (isDirectExecution) {
 
   for (const article of ARTICLES) {
     const html = buildArticleHtml(article);
-    fs.writeFileSync(path.join(newsDir, `${article.slug}.html`), html, 'utf8');
+    writeFileIfChanged(path.join(newsDir, `${article.slug}.html`), html);
   }
 
-  fs.writeFileSync(path.join(newsDir, 'index.html'), buildNewsArchiveHtml(), 'utf8');
+  writeFileIfChanged(path.join(newsDir, 'index.html'), buildNewsArchiveHtml());
 
   const removedOrphans = removeOrphanedNewsHtml(
     newsDir,
@@ -770,14 +926,25 @@ if (isDirectExecution) {
   );
 
   const sitemapXml = buildSitemapXml();
-  fs.writeFileSync(path.join(rootDir, 'sitemap.xml'), sitemapXml, 'utf8');
-  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml, 'utf8');
+  writeFileIfChanged(path.join(rootDir, 'sitemap.xml'), sitemapXml);
+  writeFileIfChanged(path.join(publicDir, 'sitemap.xml'), sitemapXml);
+
+  const newsSitemapXml = buildNewsSitemapXml();
+  writeFileIfChanged(path.join(rootDir, 'news-sitemap.xml'), newsSitemapXml);
+  writeFileIfChanged(path.join(publicDir, 'news-sitemap.xml'), newsSitemapXml);
 
   const robotsTxt = buildRobotsTxt();
-  fs.writeFileSync(path.join(rootDir, 'robots.txt'), robotsTxt, 'utf8');
-  fs.writeFileSync(path.join(publicDir, 'robots.txt'), robotsTxt, 'utf8');
+  writeFileIfChanged(path.join(rootDir, 'robots.txt'), robotsTxt);
+  writeFileIfChanged(path.join(publicDir, 'robots.txt'), robotsTxt);
+
+  const rootCnamePath = path.join(rootDir, 'CNAME');
+  if (fs.existsSync(rootCnamePath)) {
+    const cnameContent = fs.readFileSync(rootCnamePath, 'utf8');
+    writeFileIfChanged(path.join(publicDir, 'CNAME'), cnameContent);
+  }
+  writeFileIfChanged(path.join(publicDir, '.nojekyll'), '');
 
   console.log(
-    `Generated ${ARTICLES.length} deduplicated Google News/Discover-ready static news pages, news/index.html archive (removed ${removedOrphans.length} orphaned HTML file(s)), sitemap.xml, and robots.txt from data/articles-catalog.json.`
+    `Generated ${ARTICLES.length} deduplicated Google News/Discover-ready static news pages, news/index.html archive (removed ${removedOrphans.length} orphaned HTML file(s)), sitemap.xml, news-sitemap.xml, and robots.txt from data/articles-catalog.json.`
   );
 }

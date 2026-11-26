@@ -355,7 +355,7 @@ searchForm?.addEventListener('submit', (event) => {
 // Dynamic SEO & Canonical URL Helpers (Official domain: https://www.nef123123.co.za)
 const OFFICIAL_SITE_ORIGIN = 'https://www.nef123123.co.za';
 const HOME_SEO = {
-  title: 'NEF123123 | Navigant Economic Freedom',
+  title: 'NEF123123 | Navigating the Path to Economic Freedom',
   description:
     'NEF123123 — Navigant Economic Freedom. Navigating the path to African liberation, wealth sovereignty and economic justice. Unity, Land, and Freedom.',
   canonicalUrl: `${OFFICIAL_SITE_ORIGIN}/`,
@@ -423,6 +423,7 @@ function applyPageSeo({ title, description, canonicalUrl, ogType, image, article
   document.title = resolvedTitle;
   upsertCanonicalTag(resolvedCanonical);
   upsertMetaTag('name', 'description', resolvedDesc);
+  upsertMetaTag('property', 'og:site_name', 'NEF123123');
   upsertMetaTag('property', 'og:title', resolvedTitle);
   upsertMetaTag('property', 'og:description', resolvedDesc);
   upsertMetaTag('property', 'og:type', ogType || 'website');
@@ -451,8 +452,9 @@ function applyPageSeo({ title, description, canonicalUrl, ogType, image, article
         url: `${OFFICIAL_SITE_ORIGIN}/`,
       },
       publisher: {
-        '@type': 'Organization',
-        name: 'NEF123123 — Navigant Economic Freedom',
+        '@type': 'NewsMediaOrganization',
+        name: 'NEF123123',
+        alternateName: ['Navigant Economic Freedom', 'nef123123.co.za'],
         logo: {
           '@type': 'ImageObject',
           url: `${OFFICIAL_SITE_ORIGIN}/favicon.png`,
@@ -468,19 +470,26 @@ function applyPageSeo({ title, description, canonicalUrl, ogType, image, article
         {
           '@type': 'NewsMediaOrganization',
           '@id': `${OFFICIAL_SITE_ORIGIN}/#organization`,
-          name: 'NEF123123 — Navigant Economic Freedom',
-          alternateName: 'NEF123123',
+          name: 'NEF123123',
+          alternateName: ['Navigant Economic Freedom', 'nef123123.co.za'],
           url: `${OFFICIAL_SITE_ORIGIN}/`,
           logo: {
             '@type': 'ImageObject',
             url: `${OFFICIAL_SITE_ORIGIN}/favicon.png`,
           },
+          sameAs: [
+            'https://www.youtube.com/@NEF12312',
+            'https://www.facebook.com/Nef1231231',
+            'https://www.instagram.com/nef123123/',
+            'https://www.tiktok.com/@NEF123123',
+          ],
         },
         {
           '@type': 'WebSite',
           '@id': `${OFFICIAL_SITE_ORIGIN}/#website`,
+          name: 'NEF123123',
+          alternateName: ['Navigant Economic Freedom', 'nef123123.co.za'],
           url: `${OFFICIAL_SITE_ORIGIN}/`,
-          name: HOME_SEO.title,
           description: HOME_SEO.description,
           publisher: {
             '@id': `${OFFICIAL_SITE_ORIGIN}/#organization`,

@@ -117,6 +117,44 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
     );
 
   app.disable('x-powered-by');
+
+  // Canonical HTTPS + www redirect for official domain (http/non-www -> https://www.nef123123.co.za)
+  // Scoped strictly to nef123123.co.za / www.nef123123.co.za so localhost and preview hosts are unaffected.
+  app.use((req, res, next) => {
+    const rawHost = String(req.headers['x-forwarded-host'] || req.headers.host || '')
+      .split(',')[0]
+      .trim()
+      .toLowerCase();
+    const hostname = rawHost.replace(/:\d+$/, '');
+    const forwardedProto = String(req.headers['x-forwarded-proto'] || '')
+      .split(',')[0]
+      .trim()
+      .toLowerCase();
+    const effectiveProto = forwardedProto || req.protocol;
+
+    // Normalize relative target path safely (never allow protocol-relative open redirects)
+    const rawOriginalUrl = String(req.originalUrl || '/');
+    const safeRelativeUrl = rawOriginalUrl.startsWith('/')
+      ? rawOriginalUrl.replace(/^\/+/, '/')
+      : `/${rawOriginalUrl}`;
+    const normalizedPathUrl = safeRelativeUrl.replace(/^\/index\.html(?=[?#]|$)/i, '/');
+
+    const isOfficialApex = hostname === 'nef123123.co.za';
+    const isOfficialWww = hostname === 'www.nef123123.co.za';
+
+    if (isOfficialApex || (isOfficialWww && effectiveProto === 'http')) {
+      res.redirect(301, `${OFFICIAL_SITE_ORIGIN}${normalizedPathUrl}`);
+      return;
+    }
+
+    if (/^\/index\.html$/i.test(req.path)) {
+      res.redirect(301, normalizedPathUrl);
+      return;
+    }
+
+    next();
+  });
+
   app.use(express.json({ limit: '64kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 

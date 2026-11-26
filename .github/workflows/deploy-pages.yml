@@ -1,0 +1,70 @@
+name: Deploy NEF123123 to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with full git history for accurate page lastmod dates
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build SEO pages, sitemaps, and production dist bundle
+        run: npm run build
+
+      - name: Verify required SEO and GitHub Pages root files exist in dist/
+        run: |
+          for file in dist/index.html dist/robots.txt dist/sitemap.xml dist/news-sitemap.xml dist/CNAME dist/.nojekyll; do
+            if [ ! -f "$file" ]; then
+              echo "ERROR: Missing required build output: $file"
+              exit 1
+            fi
+          done
+          grep -q "https://www.nef123123.co.za/sitemap.xml" dist/robots.txt
+          grep -q "https://www.nef123123.co.za/news-sitemap.xml" dist/robots.txt
+          grep -q 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' dist/sitemap.xml
+          grep -q 'xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"' dist/news-sitemap.xml
+          echo "Verified dist/robots.txt, dist/sitemap.xml, dist/news-sitemap.xml, dist/CNAME, and dist/.nojekyll."
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload complete dist directory as GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

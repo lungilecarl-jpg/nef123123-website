@@ -78,7 +78,7 @@ test('P2-1. Unified data/articles-catalog.json loads 13 articles with +02:00 tim
   }
 });
 
-test('P2-2. Google News Sitemap enforces strict 48-hour window and emits <image:image> tags', () => {
+test('P2-2. Google News Sitemap enforces strict 48-hour window and emits <lastmod> and <image:image> tags', () => {
   const nowMs = Date.parse('2026-05-01T12:00:00Z');
   const sampleBase = CANONICAL_ARTICLES[0];
   const synthetic: CanonicalNewsArticle[] = [
@@ -88,7 +88,12 @@ test('P2-2. Google News Sitemap enforces strict 48-hour window and emits <image:
       canonicalUrl: `${OFFICIAL_SITE_ORIGIN}/news/fresh-breaking-story`,
       title: 'Fresh Breaking Report Within 48 Hours',
       publishedDate: '2026-05-01T10:00:00+02:00', // ~4h ago
-      updatedDate: '2026-05-01T10:00:00+02:00',
+      updatedDate: '2026-05-01T11:15:00+02:00',
+      paragraphs: [
+        'Fresh breaking parliamentary oversight report detailing municipal energy procurement audits across Gauteng and KwaZulu-Natal in May 2026.',
+        'Lawmakers requested updated treasury expenditure schedules and service delivery milestones before the committee reconvenes next week.',
+      ],
+      sections: undefined,
     },
     {
       ...sampleBase,
@@ -97,6 +102,11 @@ test('P2-2. Google News Sitemap enforces strict 48-hour window and emits <image:
       title: 'Archive Report Older Than 48 Hours',
       publishedDate: '2026-04-28T08:00:00+02:00', // >72h ago
       updatedDate: '2026-04-28T08:00:00+02:00',
+      paragraphs: [
+        'Earlier regional agricultural cooperative briefing analysing grain storage expansion and cold-chain freight corridors across Southern Africa.',
+        'Rural producer associations highlighted lower wholesale transport margins and stronger domestic food security across Limpopo and Mpumalanga.',
+      ],
+      sections: undefined,
     },
   ];
 
@@ -104,6 +114,8 @@ test('P2-2. Google News Sitemap enforces strict 48-hour window and emits <image:
   assert.ok(strictXml.includes('xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"'));
   assert.ok(strictXml.includes('xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"'));
   assert.ok(strictXml.includes('/news/fresh-breaking-story'));
+  assert.ok(strictXml.includes('<lastmod>2026-05-01T11:15:00+02:00</lastmod>'));
+  assert.ok(strictXml.includes('<news:publication_date>2026-05-01T10:00:00+02:00</news:publication_date>'));
   assert.ok(strictXml.includes('<image:loc>'));
   assert.equal(strictXml.includes('/news/archive-older-story'), false);
 
@@ -452,4 +464,267 @@ test('P2-15. getCanonicalArticles() returns deduplicated catalog of 13 unique ar
   const uniqueSlugs = new Set(articles.map((a) => a.slug.toLowerCase()));
   assert.equal(uniqueSlugs.size, 13);
 });
+
+test('P2-16. Homepage SEO brand identity, single WebSite JSON-LD schema, and canonical HTTPS/www redirects', async () => {
+  const distDir = path.resolve(process.cwd(), 'dist');
+  const indexHtml = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8');
+
+  assert.ok(
+    indexHtml.includes('<title>NEF123123 | Navigating the Path to Economic Freedom</title>'),
+    'dist/index.html must carry exact NEF123123 homepage SEO title'
+  );
+  assert.ok(
+    indexHtml.includes('<meta property="og:site_name" content="NEF123123">'),
+    'dist/index.html missing og:site_name = NEF123123'
+  );
+  assert.ok(
+    indexHtml.includes('<meta property="og:title" content="NEF123123 | Navigating the Path to Economic Freedom">'),
+    'dist/index.html missing exact og:title'
+  );
+  assert.ok(
+    indexHtml.includes('<meta property="og:url" content="https://www.nef123123.co.za/">'),
+    'dist/index.html missing exact og:url'
+  );
+  assert.ok(
+    indexHtml.includes('<link rel="canonical" id="canonicalLink" href="https://www.nef123123.co.za/">'),
+    'dist/index.html missing exact homepage canonical URL'
+  );
+  assert.ok(
+    indexHtml.includes('ca-pub-7782426836472981'),
+    'dist/index.html must preserve existing AdSense script'
+  );
+
+  // Validate JSON-LD structured data and guarantee zero duplicate WebSite schemas
+  const ldMatches = [...indexHtml.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+  assert.equal(ldMatches.length, 1, 'Homepage must have exactly one JSON-LD script block');
+
+  const websiteNodes: Array<Record<string, unknown>> = [];
+  for (const m of ldMatches) {
+    const parsed = JSON.parse(m[1]);
+    const nodes = Array.isArray(parsed['@graph']) ? parsed['@graph'] : [parsed];
+    for (const node of nodes) {
+      if (node && node['@type'] === 'WebSite') {
+        websiteNodes.push(node);
+      }
+    }
+  }
+  assert.equal(websiteNodes.length, 1, 'Homepage must contain exactly one WebSite structured data node');
+  assert.equal(websiteNodes[0].name, 'NEF123123');
+  assert.deepEqual(websiteNodes[0].alternateName, ['Navigant Economic Freedom', 'nef123123.co.za']);
+  assert.equal(websiteNodes[0].url, 'https://www.nef123123.co.za/');
+
+  // Helper using node:http so raw Host headers are transmitted (fetch strips Host as a forbidden header)
+  const rawGet = (reqPath: string, headers: Record<string, string> = {}) =>
+    new Promise<{ status: number; location: string | undefined }>((resolve, reject) => {
+      const target = new URL(baseUrl);
+      const req = http.request(
+        {
+          hostname: target.hostname,
+          port: Number(target.port),
+          path: reqPath,
+          method: 'GET',
+          headers,
+        },
+        (res) => {
+          res.resume();
+          resolve({
+            status: res.statusCode || 0,
+            location: res.headers.location,
+          });
+        }
+      );
+      req.on('error', reject);
+      req.end();
+    });
+
+  // Verify 301 canonical redirects for non-www and HTTP requests to nef123123.co.za
+  const httpWww = await rawGet('/', { Host: 'www.nef123123.co.za', 'X-Forwarded-Proto': 'http' });
+  assert.equal(httpWww.status, 301);
+  assert.equal(httpWww.location, 'https://www.nef123123.co.za/');
+
+  const httpsApex = await rawGet('/about', { Host: 'nef123123.co.za', 'X-Forwarded-Proto': 'https' });
+  assert.equal(httpsApex.status, 301);
+  assert.equal(httpsApex.location, 'https://www.nef123123.co.za/about');
+
+  const httpApex = await rawGet('/news?page=1', { Host: 'nef123123.co.za', 'X-Forwarded-Proto': 'http' });
+  assert.equal(httpApex.status, 301);
+  assert.equal(httpApex.location, 'https://www.nef123123.co.za/news?page=1');
+
+  const indexHtmlRedirect = await rawGet('/index.html');
+  assert.equal(indexHtmlRedirect.status, 301);
+  assert.equal(indexHtmlRedirect.location, '/');
+
+  // Official canonical HTTPS www host passes through normally without redirect loop
+  const canonicalOk = await rawGet('/robots.txt', {
+    Host: 'www.nef123123.co.za',
+    'X-Forwarded-Proto': 'https',
+  });
+  assert.equal(canonicalOk.status, 200);
+});
+
+test('P2-17. Sitemaps exclude drafts/unpublished/invalid dates/duplicates, preserve real lastmod dates, use canonical HTTPS www URLs, and build dist/news-sitemap.xml', async () => {
+  const nowMs = Date.parse('2026-06-10T12:00:00Z');
+  const validArticle: CanonicalNewsArticle = {
+    ...CANONICAL_ARTICLES[0],
+    slug: 'genuine-published-report',
+    canonicalUrl: `${OFFICIAL_SITE_ORIGIN}/news/genuine-published-report`,
+    title: 'Genuine Published Economic Freedom Report',
+    publishedDate: '2026-06-10T09:00:00+02:00',
+    updatedDate: '2026-06-10T10:30:00+02:00',
+    status: 'published',
+    paragraphs: [
+      'Original field dispatch examining cooperative manufacturing hubs in Eastern Cape industrial zones and regional export financing mechanisms.',
+      'Local industrial planners confirmed phased procurement agreements with municipal utilities and regional retail cooperatives during the second quarter.',
+    ],
+    sections: undefined,
+  };
+
+  const mixedArticles: CanonicalNewsArticle[] = [
+    validArticle,
+    // Draft via status
+    {
+      ...validArticle,
+      slug: 'draft-story-status',
+      canonicalUrl: `${OFFICIAL_SITE_ORIGIN}/news/draft-story-status`,
+      title: 'Unpublished Draft Story',
+      status: 'draft',
+      paragraphs: ['Draft text that must never appear in any public sitemap or news sitemap feed.'],
+    },
+    // Draft via boolean flag
+    {
+      ...validArticle,
+      slug: 'draft-story-flag',
+      canonicalUrl: `${OFFICIAL_SITE_ORIGIN}/news/draft-story-flag`,
+      title: 'Boolean Draft Story',
+      status: undefined,
+      draft: true,
+      paragraphs: ['Boolean draft text that must never appear in any public sitemap.'],
+    },
+    // Unpublished via published: false
+    {
+      ...validArticle,
+      slug: 'unpublished-story',
+      canonicalUrl: `${OFFICIAL_SITE_ORIGIN}/news/unpublished-story`,
+      title: 'Unpublished Article',
+      status: undefined,
+      published: false,
+      paragraphs: ['Unpublished article body excluded from public search sitemaps.'],
+    },
+    // Missing / invalid publication date (must be excluded, never fabricated!)
+    {
+      ...validArticle,
+      slug: 'invalid-date-story',
+      canonicalUrl: `${OFFICIAL_SITE_ORIGIN}/news/invalid-date-story`,
+      title: 'Story Without Valid Date',
+      publishedDate: '2026-02-31T10:00:00+02:00',
+      updatedDate: '',
+      paragraphs: ['Story with impossible calendar date that must be excluded rather than given a fake date.'],
+    },
+    // Foreign non-canonical domain URL
+    {
+      ...validArticle,
+      slug: 'foreign-domain-story',
+      canonicalUrl: 'https://evil.example.com/news/foreign-domain-story',
+      title: 'Foreign Domain Story',
+      paragraphs: ['Foreign domain entry must never enter NEF123123 canonical sitemaps.'],
+    },
+    // Duplicate story (different slug/headline, identical body text)
+    {
+      ...validArticle,
+      slug: 'duplicate-body-repost',
+      canonicalUrl: `${OFFICIAL_SITE_ORIGIN}/news/duplicate-body-repost`,
+      title: 'Repackaged Duplicate Headline Of Same Report',
+    },
+    // Duplicate URL under non-www HTTP variant
+    {
+      ...validArticle,
+      slug: 'genuine-published-report',
+      canonicalUrl: 'http://nef123123.co.za/news/genuine-published-report/',
+      publishedDate: '2026-06-10T08:00:00+02:00',
+      updatedDate: '2026-06-10T08:00:00+02:00',
+    },
+  ];
+
+  const sitemapXml = buildSitemapXml(mixedArticles);
+  const newsXml = buildGoogleNewsSitemapXml(mixedArticles, { nowMs, includeAll: false });
+
+  // Genuine published article included once in both sitemaps with exact canonical URL & dates
+  assert.equal((sitemapXml.match(/\/news\/genuine-published-report<\/loc>/g) || []).length, 1);
+  assert.equal((newsXml.match(/\/news\/genuine-published-report<\/loc>/g) || []).length, 1);
+  assert.ok(newsXml.includes('<lastmod>2026-06-10T10:30:00+02:00</lastmod>'));
+  assert.ok(newsXml.includes('<news:publication_date>2026-06-10T09:00:00+02:00</news:publication_date>'));
+  assert.ok(newsXml.includes('<news:title>Genuine Published Economic Freedom Report</news:title>'));
+
+  // All excluded items are completely absent from BOTH sitemaps
+  for (const blockedSlug of [
+    'draft-story-status',
+    'draft-story-flag',
+    'unpublished-story',
+    'invalid-date-story',
+    'foreign-domain-story',
+    'duplicate-body-repost',
+  ]) {
+    assert.equal(sitemapXml.includes(blockedSlug), false, `sitemap.xml must exclude ${blockedSlug}`);
+    assert.equal(newsXml.includes(blockedSlug), false, `news-sitemap.xml must exclude ${blockedSlug}`);
+  }
+
+  // Every <loc> in live /sitemap.xml uses https://www.nef123123.co.za, has zero duplicates, and no /admin or /api
+  const liveSitemapRes = await fetch(`${baseUrl}/sitemap.xml`);
+  assert.equal(liveSitemapRes.status, 200);
+  const liveSitemap = await liveSitemapRes.text();
+  const locs = [...liveSitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  assert.equal(locs.length, 7 + CANONICAL_ARTICLES.length);
+  assert.equal(new Set(locs).size, locs.length, 'sitemap.xml must contain zero duplicate <loc> URLs');
+  for (const loc of locs) {
+    assert.ok(loc.startsWith('https://www.nef123123.co.za/'), `Non-canonical <loc> in sitemap.xml: ${loc}`);
+    assert.equal(loc.includes('/admin'), false);
+    assert.equal(loc.includes('/api/'), false);
+  }
+
+  // Core homepage lastmod reflects actual file mtime (not stale hardcoded 2026-04-15)
+  const homeUrlBlock = /<url>\s*<loc>https:\/\/www\.nef123123\.co\.za\/<\/loc>[\s\S]*?<\/url>/.exec(liveSitemap);
+  assert.ok(homeUrlBlock, 'Missing homepage <url> block in /sitemap.xml');
+  const homeLastmod = /<lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod>/.exec(homeUrlBlock[0]);
+  assert.ok(homeLastmod && homeLastmod[1] > '2026-04-15', `Expected homepage lastmod newer than 2026-04-15, got ${homeLastmod?.[1]}`);
+
+  // Unmodified bundled articles retain their genuine 2026-04-15 lastmod (never falsely bumped to today)
+  const articleBlock = /<url>\s*<loc>https:\/\/www\.nef123123\.co\.za\/news\/african-owned-supply-chains<\/loc>[\s\S]*?<\/url>/.exec(liveSitemap);
+  assert.ok(articleBlock && articleBlock[0].includes('<lastmod>2026-04-15</lastmod>'));
+
+  // Built dist/ contains robots.txt, sitemap.xml, news-sitemap.xml, CNAME, and .nojekyll for GitHub Pages
+  const distDir = path.resolve(process.cwd(), 'dist');
+  for (const asset of ['robots.txt', 'sitemap.xml', 'news-sitemap.xml', 'CNAME', '.nojekyll']) {
+    const assetPath = path.join(distDir, asset);
+    assert.ok(fs.existsSync(assetPath), `Missing built static SEO/Pages file: dist/${asset}`);
+  }
+  assert.equal(fs.readFileSync(path.join(distDir, 'CNAME'), 'utf8').trim(), 'www.nef123123.co.za');
+
+  const builtSitemap = fs.readFileSync(path.join(distDir, 'sitemap.xml'), 'utf8');
+  assert.ok(builtSitemap.startsWith('<?xml version="1.0" encoding="UTF-8"?>'));
+  assert.ok(builtSitemap.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'));
+  assert.ok(builtSitemap.trim().endsWith('</urlset>'));
+
+  const builtNewsSitemap = fs.readFileSync(path.join(distDir, 'news-sitemap.xml'), 'utf8');
+  assert.ok(builtNewsSitemap.startsWith('<?xml version="1.0" encoding="UTF-8"?>'));
+  assert.ok(builtNewsSitemap.includes('xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"'));
+  assert.ok(builtNewsSitemap.trim().endsWith('</urlset>'));
+
+  // Built robots.txt preserves /admin and /api/ protections and declares both sitemaps
+  const builtRobots = fs.readFileSync(path.join(distDir, 'robots.txt'), 'utf8');
+  assert.ok(builtRobots.includes('Disallow: /admin'));
+  assert.ok(builtRobots.includes('Disallow: /api/'));
+  assert.ok(builtRobots.includes('Sitemap: https://www.nef123123.co.za/sitemap.xml'));
+  assert.ok(builtRobots.includes('Sitemap: https://www.nef123123.co.za/news-sitemap.xml'));
+
+  // GitHub Actions Pages workflow deploys the complete dist/ directory
+  const workflowPath = path.resolve(process.cwd(), '.github', 'workflows', 'deploy-pages.yml');
+  assert.ok(fs.existsSync(workflowPath), 'Missing .github/workflows/deploy-pages.yml');
+  const workflowYaml = fs.readFileSync(workflowPath, 'utf8');
+  assert.ok(workflowYaml.includes('npm run build'));
+  assert.ok(workflowYaml.includes('actions/upload-pages-artifact@v3'));
+  assert.ok(workflowYaml.includes('path: dist'));
+  assert.ok(workflowYaml.includes('actions/deploy-pages@v4'));
+});
+
+
 

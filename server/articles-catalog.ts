@@ -37,6 +37,9 @@ export interface CanonicalNewsArticle {
   paragraphs: string[];
   sections?: ArticleContentSection[];
   externalUrl?: string;
+  status?: string;
+  draft?: boolean;
+  published?: boolean;
 }
 
 interface RawCatalogArticle {
@@ -57,6 +60,9 @@ interface RawCatalogArticle {
   sections?: ArticleContentSection[];
   externalUrl?: string;
   externalLabel?: string;
+  status?: string;
+  draft?: boolean;
+  published?: boolean;
 }
 
 export const OFFICIAL_SITE_ORIGIN = (
@@ -165,6 +171,9 @@ function loadCanonicalArticles(): CanonicalNewsArticle[] {
     paragraphs: Array.isArray(item.paragraphs) ? item.paragraphs : [],
     ...(Array.isArray(item.sections) && item.sections.length > 0 ? { sections: item.sections } : {}),
     ...(item.externalUrl ? { externalUrl: item.externalUrl } : {}),
+    ...(item.status !== undefined ? { status: item.status } : {}),
+    ...(item.draft !== undefined ? { draft: item.draft } : {}),
+    ...(item.published !== undefined ? { published: item.published } : {}),
   }));
   return deduplicateArticlesBySlug(mapped);
 }

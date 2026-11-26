@@ -135,7 +135,9 @@ export function renderDynamicArticleHtml(
         },
         publisher: {
           '@type': 'NewsMediaOrganization',
-          name: 'NEF123123 — Navigant Economic Freedom',
+          '@id': `${OFFICIAL_SITE_ORIGIN}/#organization`,
+          name: 'NEF123123',
+          alternateName: ['Navigant Economic Freedom', 'nef123123.co.za'],
           url: `${OFFICIAL_SITE_ORIGIN}/`,
           logo: {
             '@type': 'ImageObject',
