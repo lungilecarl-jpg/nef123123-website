@@ -83,8 +83,21 @@ document.getElementById('joinForm')?.addEventListener('submit', (event) => {
 
 const heroAmazonImg = '/assets/aistudio/image_a0935a15.png';
 
-// MSN-style Hero Carousel Switcher across News, Africa, Amazon Deals & Movement perspectives
+// Master Site-Wide Randomized Hero Carousel — rotates randomly across ALL website news, Africa, videos, deals, hubs & live SA feeds
 const heroSlides = [
+  {
+    href: '/news/malema-fires-back-at-helen-zille-mashaba-affidavit-da-emails',
+    articleId: 'malemaFiresBackZille',
+    img: malemaFiresBackZilleImg,
+    imgPosition: 'center top',
+    alt: 'NEF123123 report on emails showing DA recommended Shadrack Sibiya under Herman Mashaba',
+    label: 'LATEST NEWS',
+    category: 'NEF123123 NEWS | SOUTH AFRICA',
+    title: 'Emails Prove DA—Not Julius Malema or the EFF—Recommended Shadrack Sibiya’s Appointment Under Herman Mashaba',
+    desc: 'Emails and testimony detail how the DA recommended Shadrack Sibiya’s appointment under former Johannesburg mayor Herman Mashaba.',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: Emails Prove DA—Not Julius Malema or the EFF—Recommended Shadrack Sibiya’s Appointment Under Herman Mashaba',
+  },
   {
     href: '/news/malema-challenges-helen-zille-court-venue',
     articleId: 'malemaZille',
@@ -99,18 +112,17 @@ const heroSlides = [
     ariaLabel: 'Read full story: Malema Challenges Helen Zille Over Court Venue as Legal Battle Intensifies',
   },
   {
-    href: 'https://www.facebook.com/share/v/1JN4arz1oe/',
-    external: true,
-    externalRel: 'noopener noreferrer',
+    href: '/news/eff-omphile-maotwe-insourcing-bill-parliament',
+    articleId: 'agriculture',
     img: effInsourcingImg,
     imgPosition: 'center top',
     alt: 'EFF Treasurer-General and MP Hon. Omphile Maotwe speaking outside Parliament on the EFF Insourcing Bill',
-    label: 'PARLIAMENT VIDEO',
+    label: 'PARLIAMENT',
     category: 'NEF123123 NEWS | PARLIAMENT',
     title: 'EFF’s Omphile Maotwe Urges Swift Progress on Insourcing Bill After Four Years',
     desc: 'EFF Treasurer-General & MP Hon. Omphile Maotwe reflects on the Insourcing Bill’s four-year journey since Nov 2022, confirming Treasury, Presidency & DPSA support and urging no further delays.',
-    cta: 'Watch Video on Facebook',
-    ariaLabel: 'Watch EFF Treasurer-General Hon. Omphile Maotwe speak on the EFF Insourcing Bill on Facebook',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: EFF Omphile Maotwe Urges Swift Progress on Insourcing Bill After Four Years',
   },
   {
     href: '/news/da-invites-eff-mk-party-municipal-coalition-talks',
@@ -126,55 +138,30 @@ const heroSlides = [
     ariaLabel: 'Read full story: DA Invites EFF and MK Party to Municipal Coalition Talks',
   },
   {
-    href: 'https://link.amazon/B0d0vNini',
-    external: true,
-    img: faoSchwarzImg,
-    imgPosition: 'center',
-    alt: 'FAO Schwarz Official Amazon Storefront — A World of Wonder Awaits featuring plush teddy bears, toys, and musical gifts',
-    label: 'AMAZON BRAND STORE',
-    category: 'SPONSORED · FAO SCHWARZ OFFICIAL STORE',
-    title: 'FAO Schwarz on Amazon: A World of Wonder Awaits',
-    desc: 'Explore the official FAO Schwarz storefront featuring iconic Soldier Bear & Adopt-A-Pets plush, Giant Dance Mat Pianos, Kids Electric Guitars, wooden Castle Blocks, Arts & Music kits, and 30% off Early Black Friday gifts.',
-    cta: 'Shop FAO Schwarz Store',
-    ariaLabel: 'Shop the official FAO Schwarz storefront on Amazon',
-  },
-  {
-    href: 'https://link.amazon/B0hSwb4I2',
-    external: true,
-    img: amazonBfImg,
+    href: '/news/eff-sihle-lonzi-weekly-parliament-youth-initiative',
+    articleId: 'sihleLonzi',
+    img: sihleLonziImg,
     imgPosition: 'center top',
-    alt: 'Amazon Black Friday deals start tomorrow featuring Join Prime, up to 65% off devices, 50% off Outlet, 40% off toys, and early brand deals on Skullcandy, MSI gaming desktops, and UGG',
-    label: 'AMAZON BLACK FRIDAY 2026',
-    category: 'SPONSORED · AMAZON BLACK FRIDAY DEALS',
-    title: 'Amazon Black Friday Deals & Early Brand Markdowns',
-    desc: 'Up to 65% off devices, 50% off Outlet, 40% off toys & 30% off home & kitchen—plus up to 57% off Skullcandy headphones, MSI gaming PCs, UGG blankets & fast free Prime shipping.',
-    cta: 'Shop Black Friday Deals',
-    ariaLabel: 'Shop Amazon Black Friday Deals 2026 on Amazon',
-  },
-  {
-    href: '/news/african-future-dignity-self-determination',
-    articleId: 'africaDignity',
-    img: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1100&q=80',
-    imgPosition: 'center 72%',
-    alt: 'African landscape',
-    label: 'AFRICA IN FOCUS',
-    category: 'CONTINENTAL PERSPECTIVE',
-    title: 'Building an African future rooted in dignity and self-determination',
-    desc: 'Explore the ideas, institutions and partnerships helping communities build durable wealth, local skills, and regional resilience across the continent.',
+    alt: 'EFF MP Hon. Sihle Lonzi addressing Parliament in Cape Town',
+    label: 'PARLIAMENT YOUTH',
+    category: 'NEF123123 NEWS | PARLIAMENT',
+    title: 'EFF MP Hon. Sihle Lonzi Invites Students & Young Professionals Into Parliament Weekly',
+    desc: 'Hon. Sihle Lonzi opens weekly seats in Parliament for South African students and young professionals to observe legislative debates firsthand.',
     cta: 'Read Full Story',
-    ariaLabel: 'Read full story: Building an African future rooted in dignity and self-determination',
+    ariaLabel: 'Read full story: EFF MP Hon. Sihle Lonzi Invites Students and Young Professionals Into Parliament Weekly',
   },
   {
-    href: '#economy',
-    img: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1100&q=85',
-    imgPosition: 'center 72%',
-    alt: 'Industrial production facility',
-    label: 'BEYOND EXTRACTION',
-    category: 'WEALTH SOVEREIGNTY',
-    title: 'Wealth must create value here.',
-    desc: 'African resources should support African industrial capacity, skills, innovation and prosperity.',
-    cta: 'Explore economic sovereignty',
-    ariaLabel: 'Explore Beyond Extraction and economic sovereignty',
+    href: '/news/malema-past-warning-south-africa-water-crisis',
+    articleId: 'malemaWaterCrisis',
+    img: malemaWaterCrisisImg,
+    imgPosition: 'center top',
+    alt: 'NEF123123 video report featuring Julius Malema and Bronkhorstspruit residents facing a worsening water crisis',
+    label: 'SOUTH AFRICA',
+    category: 'NEF123123 NEWS | WATER CRISIS',
+    title: 'Julius Malema’s Past Warning Comes True as South Africa’s Water Crisis Escalates',
+    desc: 'As South Africa’s municipal water crisis deepens across Tshwane, Bronkhorstspruit, and Johannesburg, Julius Malema’s past warning resurfaces.',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: Julius Malema Past Warning Comes True as South Africa Water Crisis Escalates',
   },
   {
     href: 'https://www.facebook.com/share/v/1JNzB5KvMC/',
@@ -186,13 +173,235 @@ const heroSlides = [
     label: 'NEF123123 VIDEO',
     category: 'NEF123123 NEWS | EXCLUSIVE INTERVIEW',
     title: 'Julius Malema Drops Bombshell: “You Will Die If I Release The Names!”',
-    desc: 'EFF leader Julius Malema explains why he refuses to publicly name trusted figures allegedly working against the party, cites intelligence tracking secret Zanzibar meetings and financial records, and alleges journalists were compromised dating back to #FeesMustFall.',
+    desc: 'EFF leader Julius Malema explains why he refuses to publicly name trusted figures allegedly working against the party during an explosive interview.',
     cta: 'Watch Video on Facebook',
     ariaLabel: 'Watch NEF123123 video on Facebook: Julius Malema Drops Bombshell — You Will Die If I Release The Names',
+  },
+  {
+    href: '/news/project-mayibuye-spy-operation',
+    articleId: 'projectMayibuyeSpyOperation',
+    img: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1100&q=85',
+    imgPosition: 'center',
+    alt: 'Legal and parliamentary investigation gavel and archive records',
+    label: 'INVESTIGATIONS',
+    category: 'SOUTH AFRICA · INVESTIGATIONS',
+    title: 'Project Mayibuye Spy Operation: Declassified Records & Accountability',
+    desc: 'Declassified archives and public accountability debates surrounding covert operations in South African politics.',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: Project Mayibuye Spy Operation: Declassified Records and Accountability',
+  },
+  {
+    href: '/news/african-owned-supply-chains',
+    articleId: 'africanOwnedSupplyChains',
+    img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1100&q=85',
+    imgPosition: 'center',
+    alt: 'African container logistics and sovereign supply chain terminal',
+    label: 'AFRICA TRADE',
+    category: 'AFRICA · ECONOMIC FREEDOM',
+    title: 'African-Owned Supply Chains: Building Continental Value & Sovereign Trade',
+    desc: 'How intra-African logistics, port ownership, and sovereign regional trade networks unlock lasting continental prosperity.',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: African-Owned Supply Chains: Building Continental Value and Sovereign Trade',
+  },
+  {
+    href: '/news/stokvels-and-savings-circles',
+    articleId: 'stokvelsAndSavingsCircles',
+    img: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1100&q=85',
+    imgPosition: 'center',
+    alt: 'Community capital and savings growth',
+    label: 'COLLECTIVE CAPITAL',
+    category: 'ECONOMIC FREEDOM · FINANCE',
+    title: 'Stokvels and Savings Circles: Mobilising Collective African Capital',
+    desc: 'Turning South Africa’s multibillion-rand stokvel economy into productive community-owned enterprises and wealth.',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: Stokvels and Savings Circles: Mobilising Collective African Capital',
+  },
+  {
+    href: '/news/african-future-dignity-self-determination',
+    articleId: 'africaDignity',
+    img: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1100&q=80',
+    imgPosition: 'center 72%',
+    alt: 'African landscape at sunrise',
+    label: 'AFRICA IN FOCUS',
+    category: 'CONTINENTAL PERSPECTIVE',
+    title: 'Building an African future rooted in dignity and self-determination',
+    desc: 'Explore the ideas, institutions and partnerships helping communities build durable wealth, local skills, and regional resilience across the continent.',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: Building an African future rooted in dignity and self-determination',
+  },
+  {
+    href: '/news/who-owns-future-of-african-development',
+    articleId: 'africaDevelopment',
+    img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1100&q=80',
+    imgPosition: 'center',
+    alt: 'Modern African urban skyline and infrastructure',
+    label: 'AFRICA DEVELOPMENT',
+    category: 'DEVELOPMENT · INFRASTRUCTURE',
+    title: 'Who owns the future of African development?',
+    desc: 'Why infrastructure, energy, and digital networks across Africa must be anchored in African ownership and public benefit.',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: Who owns the future of African development?',
+  },
+  {
+    href: '/news/land-resources-shared-prosperity',
+    articleId: 'africaLand',
+    img: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=1100&q=80',
+    imgPosition: 'center',
+    alt: 'Community partnership and shared prosperity',
+    label: 'LAND & RESOURCES',
+    category: 'AFRICA · SHARED PROSPERITY',
+    title: 'Land, resources and the promise of shared prosperity',
+    desc: 'Examining equitable land reform, mineral beneficiation, and community-centred resource governance in Southern Africa.',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: Land, resources and the promise of shared prosperity',
+  },
+  {
+    href: '/news/continental-value-addition-local-manufacturing',
+    articleId: 'industrialisation',
+    img: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1100&q=85',
+    imgPosition: 'center 72%',
+    alt: 'Industrial production facility',
+    label: 'INDUSTRIALISATION',
+    category: 'BEYOND EXTRACTION · MANUFACTURING',
+    title: 'Continental Value Addition & Local Manufacturing',
+    desc: 'African resources should support African industrial capacity, local processing, skills, and manufacturing jobs.',
+    cta: 'Read Full Story',
+    ariaLabel: 'Read full story: Continental Value Addition and Local Manufacturing',
+  },
+  {
+    href: 'https://link.amazon/B0d0vNini',
+    external: true,
+    img: faoSchwarzImg,
+    imgPosition: 'center',
+    alt: 'FAO Schwarz Official Amazon Storefront — A World of Wonder Awaits featuring plush teddy bears, toys, and musical gifts',
+    label: 'AMAZON BRAND STORE',
+    category: 'SPONSORED · FAO SCHWARZ OFFICIAL STORE',
+    title: 'FAO Schwarz on Amazon: A World of Wonder Awaits',
+    desc: 'Explore the official FAO Schwarz storefront featuring iconic plush toys, musical gifts, and seasonal savings.',
+    cta: 'Shop FAO Schwarz Store',
+    ariaLabel: 'Shop the official FAO Schwarz storefront on Amazon',
+  },
+  {
+    href: 'https://link.amazon/B0hSwb4I2',
+    external: true,
+    img: amazonBfImg,
+    imgPosition: 'center top',
+    alt: 'Amazon Black Friday deals featuring electronics, home and lifestyle savings',
+    label: 'PARTNER DEALS',
+    category: 'SPONSORED · AMAZON BLACK FRIDAY DEALS',
+    title: 'Amazon Black Friday Deals & Early Brand Markdowns',
+    desc: 'Save on electronics, smart home gear, audio, and everyday essentials with live ZAR pricing on NEF123123.',
+    cta: 'Shop Black Friday Deals',
+    ariaLabel: 'Shop Amazon Black Friday Deals on Amazon',
+  },
+  {
+    href: 'https://link.amazon/B0eqZyyRm',
+    external: true,
+    img: './src/assets/images/chefman-airfryer-b0eqzyyrm.jpg',
+    imgPosition: 'center',
+    alt: 'Chefman 4 QT Compact Air Fryer promotional feature',
+    label: 'PARTNER DEAL',
+    category: 'SPONSORED · KITCHEN TECH',
+    title: 'Chefman 4 QT Compact Air Fryer — Featured Partner Deal',
+    desc: 'Compact 450°F air fryer with viewing window and dishwasher-safe basket, priced live in ZAR.',
+    cta: 'View Deal on Amazon',
+    ariaLabel: 'View Chefman 4 QT Compact Air Fryer deal on Amazon',
+  },
+  {
+    href: 'https://link.amazon/B0fSHBMaI',
+    external: true,
+    img: './src/assets/images/jbl-charge-6-b0fshbmai.jpg',
+    imgPosition: 'center',
+    alt: 'JBL Charge 6 Portable Waterproof Bluetooth Speaker',
+    label: 'PARTNER DEAL',
+    category: 'SPONSORED · AUDIO & TECH',
+    title: 'JBL Charge 6 Portable Waterproof Bluetooth Speaker',
+    desc: 'Powerful portable sound with 28-hour battery life and built-in powerbank — live ZAR deal on NEF123123.',
+    cta: 'View Deal on Amazon',
+    ariaLabel: 'View JBL Charge 6 Portable Bluetooth Speaker deal on Amazon',
+  },
+  {
+    href: 'https://link.amazon/B09K4dGYQ',
+    external: true,
+    img: './src/assets/images/regenerated_image_1794856423304.avif',
+    imgPosition: 'center',
+    alt: 'Shark AV2501AE AI Robot Vacuum with self-empty base',
+    label: 'PARTNER DEAL',
+    category: 'SPONSORED · SMART HOME',
+    title: 'Shark AV2501AE AI Robot Vacuum with Self-Empty HEPA Base',
+    desc: 'Precision LIDAR home mapping and 60-day dust storage — explore featured partner deals in ZAR.',
+    cta: 'View Deal on Amazon',
+    ariaLabel: 'View Shark AV2501AE AI Robot Vacuum deal on Amazon',
+  },
+  {
+    href: 'https://link.amazon/B03xFr4DT',
+    external: true,
+    img: './src/assets/images/miady-powerbank-b03xfr4dt.jpg',
+    imgPosition: 'center',
+    alt: 'Miady 2-Pack 10000mAh Slim Portable Power Bank',
+    label: 'PARTNER DEAL',
+    category: 'SPONSORED · MOBILE POWER',
+    title: 'Miady 2-Pack 10000mAh Slim USB-C Power Bank',
+    desc: 'Reliable dual-pack backup power for travel and load-shedding — live ZAR pricing in the NEF123123 showcase.',
+    cta: 'View Deal on Amazon',
+    ariaLabel: 'View Miady 2-Pack 10000mAh Power Bank deal on Amazon',
+  },
+  {
+    href: '#markets',
+    img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1100&q=80',
+    imgPosition: 'center',
+    alt: 'Live financial market charts, ZAR exchange rates, gold bullion, and crypto quotes',
+    label: 'LIVE MARKETS & FX',
+    category: 'MARKETS · ZAR · GOLD · CRYPTO',
+    title: 'Live South African Markets, Gold Bullion & 8 African FX Cross Rates',
+    desc: 'Track real-time USD/ZAR, Gold, Bitcoin, Ethereum, African currencies, and South African property trends.',
+    cta: 'Open Live Markets',
+    ariaLabel: 'Jump to Live Markets and African FX section',
+  },
+  {
+    href: '#markets',
+    img: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?auto=format&fit=crop&w=1100&q=80',
+    imgPosition: 'center',
+    alt: 'South African sky and live weather conditions across provinces',
+    label: 'LIVE WEATHER SA',
+    category: 'SOUTH AFRICA · WEATHER DESK',
+    title: 'Live Weather Forecast Across South African Cities & Provinces',
+    desc: 'Check real-time temperature, hourly outlook, wind, and 5-day forecasts for Johannesburg, Cape Town, Durban, and more.',
+    cta: 'Check Live Weather',
+    ariaLabel: 'Jump to Live Weather section',
+  },
+  {
+    href: '#sport',
+    img: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1100&q=80',
+    imgPosition: 'center',
+    alt: 'South African stadium football, rugby, and cricket action',
+    label: 'SOUTH AFRICAN SPORT',
+    category: 'BAFANA BAFANA · SPRINGBOKS · PROTEAS',
+    title: 'Live South African Sport: Bafana Bafana, Springboks, Proteas & PSL',
+    desc: 'Follow live fixtures, scores, AFCON qualifiers, rugby, cricket, golf, F1, and MMA headlines across South Africa.',
+    cta: 'Explore Live Sport Hub',
+    ariaLabel: 'Jump to Live South African Sport section',
+  },
+  {
+    href: '#economy',
+    img: regeneratedImg,
+    imgPosition: 'center top',
+    alt: 'Navigant Economic Freedom vision and community movement',
+    label: 'NAVIGANT VISION',
+    category: 'THE SEVEN PILLARS · MOVEMENT',
+    title: 'Navigant Economic Freedom: The Seven Pillars, Movement & Affiliates',
+    desc: 'Discover the Seven Pillars of Navigant Economic Freedom, strategic affiliates, and how to join the NEF123123 movement.',
+    cta: 'Explore Navigant Vision',
+    ariaLabel: 'Jump to Navigant Vision, Movement, and Affiliates section',
   },
 ];
 
 let currentSlide = 0;
+let heroShuffleQueue = [];
+const heroHistory = [];
+const heroSeenKeys = new Set(
+  heroSlides.map((s) => `${(s.title || '').toLowerCase().trim()}|${(s.href || '').toLowerCase().trim()}`)
+);
 const heroCard = document.querySelector('#top-stories .msn-hero-card');
 const heroLink = document.getElementById('heroSlideLink');
 const heroImg = document.getElementById('heroSlideImg');
@@ -203,10 +412,41 @@ const heroDesc = document.getElementById('heroSlideDesc');
 const heroCta = document.getElementById('heroSlideCta');
 const heroDots = document.querySelectorAll('.hero-dot');
 
-function renderSlide(index) {
-  currentSlide = (index + heroSlides.length) % heroSlides.length;
+function shuffleArray(indices) {
+  const arr = [...indices];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function refillHeroShuffleQueue(excludeIdx = -1) {
+  const allIndices = heroSlides.map((_, idx) => idx);
+  heroShuffleQueue = shuffleArray(allIndices);
+  if (excludeIdx >= 0 && heroShuffleQueue.length > 1 && heroShuffleQueue[0] === excludeIdx) {
+    const swapPos = 1 + Math.floor(Math.random() * (heroShuffleQueue.length - 1));
+    [heroShuffleQueue[0], heroShuffleQueue[swapPos]] = [heroShuffleQueue[swapPos], heroShuffleQueue[0]];
+  }
+}
+
+function pullNextRandomSlideIndex() {
+  if (heroShuffleQueue.length === 0) {
+    refillHeroShuffleQueue(currentSlide);
+  }
+  return heroShuffleQueue.shift() ?? 0;
+}
+
+function renderSlide(index, options = {}) {
+  if (!heroSlides.length) return;
+  const nextIdx = ((index % heroSlides.length) + heroSlides.length) % heroSlides.length;
+  if (options.recordHistory && nextIdx !== currentSlide) {
+    heroHistory.push(currentSlide);
+    if (heroHistory.length > 40) heroHistory.shift();
+  }
+  currentSlide = nextIdx;
   const slide = heroSlides[currentSlide];
-  heroLink?.setAttribute('href', slide.href);
+  heroLink?.setAttribute('href', slide.href || '#top-stories');
   if (slide.external) {
     heroLink?.setAttribute('target', '_blank');
     heroLink?.setAttribute('rel', slide.externalRel || 'noopener noreferrer sponsored');
@@ -216,28 +456,60 @@ function renderSlide(index) {
   }
   heroLink?.setAttribute('aria-label', slide.ariaLabel || slide.title);
   if (heroImg) {
-    heroImg.setAttribute('referrerpolicy', /^https:\/\//i.test(slide.img) ? 'no-referrer' : '');
-    heroImg.setAttribute('src', slide.img);
-    heroImg.setAttribute('alt', slide.alt);
+    const safeImg = slide.img || regeneratedImg;
+    heroImg.setAttribute('referrerpolicy', /^https:\/\//i.test(safeImg) ? 'no-referrer' : '');
+    heroImg.onerror = () => {
+      if (heroImg.getAttribute('src') !== regeneratedImg) {
+        heroImg.setAttribute('src', regeneratedImg);
+      }
+    };
+    heroImg.setAttribute('src', safeImg);
+    heroImg.setAttribute('alt', slide.alt || slide.title);
     heroImg.classList.toggle('hero-img-top', slide.imgPosition === 'center top');
   }
-  if (heroLabel) heroLabel.textContent = slide.label;
-  if (heroCategory) heroCategory.textContent = slide.category;
+  if (heroLabel) heroLabel.textContent = slide.label || 'NEF123123';
+  if (heroCategory) heroCategory.textContent = slide.category || 'NEF123123 PORTAL';
   if (heroTitle) heroTitle.textContent = slide.title;
-  if (heroDesc) heroDesc.textContent = slide.desc;
-  if (heroCta) heroCta.innerHTML = `${slide.cta} <b>→</b>`;
-  heroDots.forEach((dot, idx) => {
-    const isActive = idx === currentSlide;
-    dot.classList.toggle('active', isActive);
-    dot.setAttribute('aria-selected', String(isActive));
-  });
+  if (heroDesc) heroDesc.textContent = slide.desc || '';
+  if (heroCta) {
+    heroCta.textContent = '';
+    heroCta.append(document.createTextNode(`${slide.cta || 'Explore'} `));
+    const arrow = document.createElement('b');
+    arrow.textContent = '→';
+    heroCta.appendChild(arrow);
+  }
+  if (heroDots.length > 0) {
+    const activeDotIdx = currentSlide % heroDots.length;
+    heroDots.forEach((dot, idx) => {
+      const isActive = idx === activeDotIdx;
+      dot.classList.toggle('active', isActive);
+      dot.setAttribute('aria-selected', String(isActive));
+    });
+  }
 }
+
+window.nefAddDynamicHeroSlides = function addDynamicHeroSlides(incomingSlides) {
+  if (!Array.isArray(incomingSlides) || incomingSlides.length === 0) return;
+  incomingSlides.forEach((item) => {
+    if (!item || !item.title || !item.img) return;
+    const key = `${item.title.toLowerCase().trim()}|${(item.href || '').toLowerCase().trim()}`;
+    if (heroSeenKeys.has(key)) return;
+    heroSeenKeys.add(key);
+    const newIndex = heroSlides.push(item) - 1;
+    // Splice new live slide at a random upcoming spot so viewers see fresh updates quickly
+    const insertAt = Math.floor(Math.random() * (heroShuffleQueue.length + 1));
+    heroShuffleQueue.splice(insertAt, 0, newIndex);
+  });
+};
 
 heroLink?.addEventListener('click', (event) => {
   const slide = heroSlides[currentSlide];
   if (slide?.articleId) {
     event.preventDefault();
     openArticleReader(slide.articleId, heroLink);
+  } else if (slide?.readerArticle) {
+    event.preventDefault();
+    openArticleReader(slide.readerArticle, heroLink);
   }
 });
 
@@ -255,8 +527,10 @@ function startHeroAuto() {
   if (prefersReducedMotion || heroSlides.length <= 1) return;
   stopHeroAuto();
   heroAutoTimer = setInterval(() => {
-    renderSlide(currentSlide + 1);
-  }, 6500);
+    if (!document.hidden) {
+      renderSlide(pullNextRandomSlideIndex(), { recordHistory: true });
+    }
+  }, 5500);
 }
 
 heroCard?.addEventListener('mouseenter', stopHeroAuto);
@@ -265,21 +539,23 @@ heroCard?.addEventListener('focusin', stopHeroAuto);
 heroCard?.addEventListener('focusout', startHeroAuto);
 
 document.getElementById('heroPrev')?.addEventListener('click', () => {
-  renderSlide(currentSlide - 1);
+  const prevIdx = heroHistory.length > 0 ? heroHistory.pop() : pullNextRandomSlideIndex();
+  renderSlide(prevIdx, { recordHistory: false });
   startHeroAuto();
 });
 document.getElementById('heroNext')?.addEventListener('click', () => {
-  renderSlide(currentSlide + 1);
+  renderSlide(pullNextRandomSlideIndex(), { recordHistory: true });
   startHeroAuto();
 });
 heroDots.forEach((dot) =>
   dot.addEventListener('click', () => {
-    renderSlide(Number(dot.dataset.slide || 0));
+    renderSlide(pullNextRandomSlideIndex(), { recordHistory: true });
     startHeroAuto();
   })
 );
 
-renderSlide(0);
+refillHeroShuffleQueue(-1);
+renderSlide(pullNextRandomSlideIndex(), { recordHistory: false });
 startHeroAuto();
 
 // MSN-style Top Search Filtering across cards & pillars
@@ -2549,6 +2825,42 @@ document.addEventListener('keydown', (event) => {
     });
     if (saOtherSportsUpdatedEl) saOtherSportsUpdatedEl.textContent = `LIVE SA SPORT · ${nowStr}`;
     renderSaOtherSports();
+
+    if (typeof window.nefAddDynamicHeroSlides === 'function') {
+      const sportHeroPicks = [
+        ...nextBuckets.rugby.slice(0, 2),
+        ...nextBuckets.cricket.slice(0, 2),
+        ...nextBuckets.other.slice(0, 2),
+      ]
+        .filter((item) => item.title && item.img)
+        .map((item) => ({
+          href: '#sport',
+          img: item.img,
+          imgPosition: 'center top',
+          alt: item.title,
+          label: 'LIVE SA SPORT',
+          category: `${item.tag || 'SOUTH AFRICA SPORT'} · ${item.source || 'LIVE'}`,
+          title: item.title,
+          desc: item.summary || 'Latest South African sports news and updates.',
+          cta: 'Read Sport Update',
+          ariaLabel: `Read live South Africa sport update: ${item.title}`,
+          readerArticle: {
+            dot: item.fallbackTag || 'SA',
+            category: `${item.tag || 'SOUTH AFRICA SPORT'} | LIVE`,
+            title: item.title,
+            img: item.img,
+            alt: item.title,
+            paragraphs: [
+              item.summary || 'Latest South African sports update.',
+              `Published by ${item.source || 'SA Sport Desk'}.`,
+            ],
+            source: `Source: ${item.source || 'SA Sport Desk'} · `,
+            externalUrl: item.link && /^https:\/\//i.test(item.link) ? item.link : undefined,
+            externalLabel: `Read full report on ${item.source || 'publisher'} ↗`,
+          },
+        }));
+      window.nefAddDynamicHeroSlides(sportHeroPicks);
+    }
   }
 
   saOtherSportTabs.forEach((tab) => {
@@ -3264,6 +3576,49 @@ document.addEventListener('keydown', (event) => {
       }));
 
       renderSaPropertyNews();
+
+      if (typeof window.nefAddDynamicHeroSlides === 'function') {
+        const propertyHeroPicks = saPropertyPosts
+          .filter((post) => post.title && post.thumbnail)
+          .slice(0, 3)
+          .map((post) => {
+            const cleanTitle = new DOMParser()
+              .parseFromString(String(post.title), 'text/html')
+              .body.textContent.replace(/\s+/g, ' ')
+              .trim();
+            const cleanSummary = new DOMParser()
+              .parseFromString(String(post.description || ''), 'text/html')
+              .body.textContent.replace(/\s+/g, ' ')
+              .trim();
+            return {
+              href: '#markets',
+              img: post.thumbnail,
+              imgPosition: 'center',
+              alt: cleanTitle,
+              label: 'SA PROPERTY & BUSINESS',
+              category: 'SOUTH AFRICA · REAL ESTATE',
+              title: cleanTitle,
+              desc: cleanSummary || 'Latest South African property and business news.',
+              cta: 'Read Property Brief',
+              ariaLabel: `Read South Africa property update: ${cleanTitle}`,
+              readerArticle: {
+                dot: 'RE',
+                category: 'SOUTH AFRICA · REAL ESTATE & BUSINESS',
+                title: cleanTitle,
+                img: post.thumbnail,
+                alt: cleanTitle,
+                paragraphs: [
+                  cleanSummary || 'Latest South African property and business update.',
+                  'Published by BusinessTech South Africa.',
+                ],
+                source: 'Source: BusinessTech SA · ',
+                externalUrl: post.link && /^https:\/\//i.test(post.link) ? post.link : undefined,
+                externalLabel: 'Read full report on BusinessTech ↗',
+              },
+            };
+          });
+        window.nefAddDynamicHeroSlides(propertyHeroPicks);
+      }
     } catch {
       saPropertyPosts = [];
       renderRssNewsList(realEstateNewsEl, [], RSS_FEEDS.saRealEstate, fetchSouthAfricaRealEstate);
@@ -3578,6 +3933,38 @@ document.addEventListener('keydown', (event) => {
       buildDots();
       renderSlide(0);
       restartTimer();
+
+      if (typeof window.nefAddDynamicHeroSlides === 'function' && selected.length > 0) {
+        const liveSaHeroPicks = selected
+          .filter((item) => item.title && item.img)
+          .map((item) => ({
+            href: '#latest-news',
+            img: item.img,
+            imgPosition: 'center top',
+            alt: item.title,
+            label: 'LIVE SA NEWS',
+            category: item.category || 'SOUTH AFRICA LIVE',
+            title: item.title,
+            desc: item.description,
+            cta: 'Read Full Story',
+            ariaLabel: `Read live South Africa news: ${item.title}`,
+            readerArticle: {
+              dot: item.dot || 'ZA',
+              category: item.category || 'SOUTH AFRICA LIVE | NEWS',
+              title: item.title,
+              img: item.img,
+              alt: item.title,
+              paragraphs: [
+                item.description,
+                `Published by ${item.sourceName}. Click the source link below to read the full report directly from the publisher.`,
+              ],
+              source: `Source: ${item.sourceName} · South Africa Live News · `,
+              externalUrl: item.link && /^https:\/\//i.test(item.link) ? item.link : undefined,
+              externalLabel: `Read full report on ${item.sourceName} ↗`,
+            },
+          }));
+        window.nefAddDynamicHeroSlides(liveSaHeroPicks);
+      }
     }
 
     loadSouthAfricaNewsSlides();

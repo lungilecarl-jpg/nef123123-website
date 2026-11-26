@@ -4197,17 +4197,13 @@ footer {
   margin: 0 0 6px;
 }
 
-#top-stories .msn-hero-card .lead-copy > p:not(.category) {
-  font-size: 12.5px;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+#top-stories .msn-hero-card .lead-copy > p:not(.category),
+#top-stories .msn-hero-card #heroSlideDesc {
+  display: none;
 }
 
 #top-stories .msn-hero-card .read-link {
-  margin-top: 7px;
+  margin-top: 2px;
   font-size: 11.5px;
 }
 
