@@ -4917,8 +4917,7 @@ footer {
 }
 
 #news-ads .affiliate-ad-grid > .affiliate-ad-card .ad-price-row {
-  margin: 3px 0 0;
-  gap: 6px;
+  display: none;
 }
 
 #news-ads .affiliate-ad-grid > .affiliate-ad-card .ad-price {
